@@ -2,6 +2,7 @@ package com.example.clement.studentplanner;
 
 import android.app.LoaderManager;
 import android.content.CursorLoader;
+import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
 import android.os.Bundle;
@@ -38,7 +39,7 @@ public class TermActivity extends AppCompatActivity
         termList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
+                Intent intent = new Intent();
             }
         });
         getLoaderManager().initLoader(0, null, this);

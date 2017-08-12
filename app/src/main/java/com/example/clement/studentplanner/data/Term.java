@@ -2,6 +2,7 @@ package com.example.clement.studentplanner.data;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * Created by Clement on 8/6/2017.
@@ -61,5 +62,10 @@ public class Term {
         } catch (CloneNotSupportedException e) {
             return null;
         }
+    }
+    @Override
+    public String toString() {
+        return String.format(Locale.US, "Term: name '%s', id '%d', startMillis '%d', endMillis '%d'",
+            name, id, startMillis, endMillis);
     }
 }

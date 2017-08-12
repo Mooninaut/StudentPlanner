@@ -1,15 +1,14 @@
 package com.example.clement.studentplanner;
 
 import android.app.Activity;
-import android.support.design.widget.CollapsingToolbarLayout;
 import android.os.Bundle;
+import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
-import com.example.clement.studentplanner.dummy.DummyContent;
+//import com.example.clement.studentplanner.dummy.DummyContent;
 
 /**
  * A fragment representing a single Course detail screen.
@@ -24,10 +23,10 @@ public class CourseDetailFragment extends Fragment {
      */
     public static final String ARG_ITEM_ID = "item_id";
 
-    /**
-     * The dummy content this fragment is presenting.
-     */
-    private DummyContent.DummyItem mItem;
+//    /**
+//     * The dummy content this fragment is presenting.
+//     */
+//    private DummyContent.DummyItem mItem;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -44,12 +43,12 @@ public class CourseDetailFragment extends Fragment {
             // Load the dummy content specified by the fragment
             // arguments. In a real-world scenario, use a Loader
             // to load content from a content provider.
-            mItem = DummyContent.ITEM_MAP.get(getArguments().getString(ARG_ITEM_ID));
+//            mItem = DummyContent.ITEM_MAP.get(getArguments().getString(ARG_ITEM_ID));
 
             Activity activity = this.getActivity();
             CollapsingToolbarLayout appBarLayout = (CollapsingToolbarLayout) activity.findViewById(R.id.toolbar_layout);
             if (appBarLayout != null) {
-                appBarLayout.setTitle(mItem.content);
+//                appBarLayout.setTitle(mItem.content);
             }
         }
     }
@@ -60,9 +59,9 @@ public class CourseDetailFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.course_detail_fragment, container, false);
 
         // Show the dummy content as text in a TextView.
-        if (mItem != null) {
-            ((TextView) rootView.findViewById(R.id.course_detail)).setText(mItem.details);
-        }
+//        if (mItem != null) {
+//            ((TextView) rootView.findViewById(R.id.course_detail)).setText(mItem.details);
+//        }
 
         return rootView;
     }

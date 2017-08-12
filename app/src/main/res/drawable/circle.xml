@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="oval">
+    <solid android:color="#197fff"/>
+    <stroke
+        android:width="2dp"
+        android:color="#444444"/>
+</shape>
+<!-- Credit to Pedram at Stack Overflow for this Drawable
+https://stackoverflow.com/a/34724737
+https://stackoverflow.com/users/2970351/pedram -->

@@ -1,7 +1,9 @@
 package com.example.clement.studentplanner.data;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * Created by Clement on 8/8/2017.
@@ -14,7 +16,7 @@ public class Course {
         Status(int value) {
             this.value = value;
         }
-        private int value() { return value; }
+        public int getValue() { return value; }
     }
     private String name;
     private int id;
@@ -32,7 +34,7 @@ public class Course {
         this.assessmentList = new ArrayList<>();
         this.setTerm(term);
         this.setStatus(status);
-    }
+}
 
     public String getName() {
         return name;
@@ -46,8 +48,16 @@ public class Course {
         return startMillis;
     }
 
+    public Date getStartDate() {
+        return new Date(startMillis);
+    }
+
     public long getEndMillis() {
         return endMillis;
+    }
+
+    public Date getEndDate() {
+        return new Date(endMillis);
     }
 
     public List<Assessment> getAssessmentList() {
@@ -57,7 +67,9 @@ public class Course {
     public int getTerm() {
         return term;
     }
-
+    public Status getStatus() {
+        return status;
+    }
     public void setName(String name) {
         this.name = name;
     }
@@ -80,5 +92,11 @@ public class Course {
 
     public void setStatus(Status status) {
         this.status = status;
+    }
+
+    @Override
+    public String toString() {
+        return String.format(Locale.US, "Course: name '%s', id '%d', startMillis '%d', endMillis '%d', term '%d', status '%s'",
+            name, id, startMillis, endMillis, term, status.toString());
     }
 }

@@ -1,12 +1,19 @@
 package com.example.clement.studentplanner.data;
 
+import java.util.Locale;
+
 /**
  * Created by Clement on 8/8/2017.
  */
 
 public class Assessment {
     public enum Type {
-        PERFORMANCE, OBJECTIVE
+        PERFORMANCE(1), OBJECTIVE(2);
+        private final int value;
+        Type(int value) {
+            this.value = value;
+        }
+        public int getValue() { return value; }
     }
     private final String name;
     private final Type type;
@@ -45,5 +52,10 @@ public class Assessment {
         } catch (CloneNotSupportedException e) {
             return null;
         }
+    }
+    @Override
+    public String toString() {
+        return String.format(Locale.US, "Assessment: name '%s', startMillis '%d', type '%s', notes '%s'",
+            name, startMillis, type.toString(), notes);
     }
 }

@@ -9,6 +9,7 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -18,7 +19,9 @@ import android.widget.CursorAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.example.clement.studentplanner.data.Course;
 import com.example.clement.studentplanner.data.Term;
+import com.example.clement.studentplanner.database.CourseCursorAdapter;
 import com.example.clement.studentplanner.database.StorageHelper;
 import com.example.clement.studentplanner.database.TermCursorAdapter;
 import com.example.clement.studentplanner.database.TermProvider;
@@ -28,6 +31,7 @@ public class MainActivity extends AppCompatActivity
         TermListingFragment.OnTermListFragmentInteractionListener {
 
     private CursorAdapter termCursorAdapter;
+    private CursorAdapter courseCursorAdapter;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -46,6 +50,11 @@ public class MainActivity extends AppCompatActivity
                 startActivity(intent);
             }
         });
+
+        courseCursorAdapter = new CourseCursorAdapter(this, null, 0);
+        ListView courseList = (ListView) findViewById(R.id.main_course_list);
+        courseList.setAdapter(courseCursorAdapter);
+
         getLoaderManager().initLoader(0, null, this);
     }
 
@@ -84,6 +93,7 @@ public class MainActivity extends AppCompatActivity
         long startMillis = startSeconds * 1000L;
         long endMillis = endSeconds * 1000L;
         insertTerm(new Term(1, "Sample Term", startMillis, endMillis));
+        insertCourse(new Course("Course Name Goes Here", 1, startMillis, endMillis, 1, Course.Status.IN_PROGRESS));
     }
 
     private void insertTerm(Term term) {
@@ -94,6 +104,14 @@ public class MainActivity extends AppCompatActivity
 //        values.put(StorageHelper.TERM_NUMBER, term.getNumber());
         Uri termUri = getContentResolver().insert(TermProvider.CONTENT_URI, values);
         restartLoader();
+    }
+    private void insertCourse(Course course) {
+        ContentValues values = new ContentValues();
+        values.put(StorageHelper.COURSE_NAME, course.getName());
+        values.put(StorageHelper.COURSE_START, course.getStartMillis());
+        values.put(StorageHelper.COURSE_END, course.getEndMillis());
+        values.put(StorageHelper.COURSE_STATUS, course.getStatus().getValue());
+        values.put(StorageHelper.COURSE_TERM_ID, course.getTerm());
     }
     private void restartLoader() {
         getLoaderManager().restartLoader(0, null, this);

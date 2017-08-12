@@ -10,20 +10,20 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 /**
- * Created by Clement on 8/6/2017.
+ * Created by Clement on 8/12/2017.
  */
 
-public class TermProvider extends ContentProvider {
-    public static final String AUTHORITY = "com.example.clement.studentplanner.termprovider";
-    public static final String BASE_PATH = "term";
+public class CourseProvider extends ContentProvider {
+    public static final String AUTHORITY = "com.example.clement.studentplanner.courseprovider";
+    public static final String BASE_PATH = "course";
     public static final Uri CONTENT_URI = Uri.parse("content://" + AUTHORITY + "/" + BASE_PATH);
-    private static final int TERM_ALL = 1;
-    private static final int TERM_ID = 2;
+    private static final int COURSE_ALL = 1;
+    private static final int COURSE_ID = 2;
     private static final UriMatcher uriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
-    public static final String CONTENT_ITEM_TYPE = "Term";
+    public static final String CONTENT_ITEM_TYPE = "Course";
     static {
-        uriMatcher.addURI(AUTHORITY, BASE_PATH, TERM_ALL);
-        uriMatcher.addURI(AUTHORITY, BASE_PATH + "/#", TERM_ID);
+        uriMatcher.addURI(AUTHORITY, BASE_PATH, COURSE_ALL);
+        uriMatcher.addURI(AUTHORITY, BASE_PATH + "/#", COURSE_ID);
     }
     private SQLiteDatabase database;
     private StorageHelper helper;
@@ -42,24 +42,22 @@ public class TermProvider extends ContentProvider {
         }
         return database;
     }
-
     @Nullable
     @Override
     public Cursor query(@NonNull Uri uri, @Nullable String[] projection, @Nullable String selection, @Nullable String[] selectionArgs, @Nullable String sortOrder) {
-        if (uriMatcher.match(uri) == TERM_ID) {
-            selection = StorageHelper.TERM_ID + "=" + uri.getLastPathSegment();
+        if (uriMatcher.match(uri) == COURSE_ID) {
+            selection = StorageHelper.COURSE_ID + "=" + uri.getLastPathSegment();
         }
         return getDatabase().query(
-            StorageHelper.TERM_TABLE,
-            StorageHelper.TERM_COLUMNS,
+            StorageHelper.COURSE_TABLE,
+            StorageHelper.COURSE_COLUMNS,
             selection,
             null,
             null,
             null,
-            StorageHelper.TERM_ID + " ASC"
+            StorageHelper.COURSE_ID + " ASC"
         );
     }
-
     @Nullable
     @Override
     public String getType(@NonNull Uri uri) {
@@ -70,22 +68,24 @@ public class TermProvider extends ContentProvider {
     @Override
     public Uri insert(@NonNull Uri uri, @Nullable ContentValues values) {
         long id = getDatabase().insert(
-            StorageHelper.TERM_TABLE,
+            StorageHelper.COURSE_TABLE,
             null,
             values
         );
         return Uri.parse(BASE_PATH + '/' + id);
     }
-
     @Override
     public int delete(@NonNull Uri uri, @Nullable String selection, @Nullable String[] selectionArgs) {
-        return getDatabase().delete(StorageHelper.TERM_TABLE, selection, selectionArgs);
+        return getDatabase().delete(StorageHelper.COURSE_TABLE, selection, selectionArgs);
     }
-
     @Override
     public int update(@NonNull Uri uri, @Nullable ContentValues values, @Nullable String selection, @Nullable String[] selectionArgs) {
-        return getDatabase().update(StorageHelper.TERM_TABLE, values, selection, selectionArgs);
+        return getDatabase().update(StorageHelper.COURSE_TABLE, values, selection, selectionArgs);
     }
+
+    /**
+     * Erases all data in the database, not just Courses.
+     */
     public void erase() {
         helper.erase(getDatabase());
     }

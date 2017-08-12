@@ -10,6 +10,8 @@ import android.widget.TextView;
 
 import com.example.clement.studentplanner.R;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
@@ -18,6 +20,9 @@ import java.util.Locale;
  */
 
 public class TermCursorAdapter extends CursorAdapter{
+
+    private static DateFormat dateFormat = DateFormat.getDateInstance();
+
     public TermCursorAdapter(Context context, Cursor cursor, int flags) {
         super(context, cursor, flags);
     }
@@ -43,13 +48,13 @@ public class TermCursorAdapter extends CursorAdapter{
         Date termStart = new Date(cursor.getLong(cursor.getColumnIndex(StorageHelper.TERM_START)));
         Date termEnd = new Date(cursor.getLong(cursor.getColumnIndex(StorageHelper.TERM_END)));
         TextView nameTV = (TextView) view.findViewById(R.id.termNameTextView);
+        TextView numberTV = (TextView) view.findViewById(R.id.termNumberTextView);
         TextView startTV = (TextView) view.findViewById(R.id.termStartTextView);
         TextView endTV = (TextView) view.findViewById(R.id.termEndTextView);
-        nameTV.setText(String.format(Locale.getDefault(), "Term name: %s\nNumber: %d",
-            termName,
-            termId));
-        startTV.setText(termStart.toString());
-//            termNumber,
-        endTV.setText(termEnd.toString());
+
+        nameTV.setText(termName);
+        numberTV.setText(String.format(Locale.getDefault(), "%d", termId));
+        startTV.setText(dateFormat.format(termStart));
+        endTV.setText(dateFormat.format(termEnd));
     }
 }

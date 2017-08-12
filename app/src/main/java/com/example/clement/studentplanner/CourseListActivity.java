@@ -17,8 +17,12 @@ import android.support.v4.app.NavUtils;
 import android.support.v7.app.ActionBar;
 import android.view.MenuItem;
 
-import com.example.clement.studentplanner.dummy.DummyContent;
+//import com.example.clement.studentplanner.dummy.DummyContent;
 
+import com.example.clement.studentplanner.data.Course;
+import com.example.clement.studentplanner.database.CourseCursorAdapter;
+
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -36,6 +40,7 @@ public class CourseListActivity extends AppCompatActivity {
      * device.
      */
     private boolean mTwoPane;
+    private CourseCursorAdapter courseAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,8 +64,9 @@ public class CourseListActivity extends AppCompatActivity {
         if (actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
+        courseAdapter = new CourseCursorAdapter(this, null, 0);
 
-        View recyclerView = findViewById(R.id.course_list);
+        View recyclerView = findViewById(R.id.course_listing_list);
         assert recyclerView != null;
         setupRecyclerView((RecyclerView) recyclerView);
 
@@ -91,16 +97,16 @@ public class CourseListActivity extends AppCompatActivity {
     }
 
     private void setupRecyclerView(@NonNull RecyclerView recyclerView) {
-        recyclerView.setAdapter(new SimpleItemRecyclerViewAdapter(DummyContent.ITEMS));
+        recyclerView.setAdapter(new CourseRecyclerAdapter(courseAdapter));
     }
 
-    public class SimpleItemRecyclerViewAdapter
-        extends RecyclerView.Adapter<SimpleItemRecyclerViewAdapter.ViewHolder> {
+    public class CourseRecyclerAdapter
+        extends RecyclerView.Adapter<CourseRecyclerAdapter.ViewHolder> {
 
-        private final List<DummyContent.DummyItem> mValues;
+        private final CourseCursorAdapter courseCursorAdapter;
 
-        public SimpleItemRecyclerViewAdapter(List<DummyContent.DummyItem> items) {
-            mValues = items;
+        public CourseRecyclerAdapter(CourseCursorAdapter adapter) {
+            courseCursorAdapter = adapter;
         }
 
         @Override
@@ -112,16 +118,17 @@ public class CourseListActivity extends AppCompatActivity {
 
         @Override
         public void onBindViewHolder(final ViewHolder holder, int position) {
-            holder.mItem = mValues.get(position);
-            holder.mIdView.setText(mValues.get(position).id);
-            holder.mContentView.setText(mValues.get(position).content);
+            Course course = (Course) courseCursorAdapter.getItem(position);
+            holder.mItem = course;
+            holder.mIdView.setText(course.getName());
+            holder.mContentView.setText(course.toString());
 
             holder.mView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     if (mTwoPane) {
                         Bundle arguments = new Bundle();
-                        arguments.putString(CourseDetailFragment.ARG_ITEM_ID, holder.mItem.id);
+                        arguments.putString(CourseDetailFragment.ARG_ITEM_ID, holder.mItem.getName());
                         CourseDetailFragment fragment = new CourseDetailFragment();
                         fragment.setArguments(arguments);
                         getSupportFragmentManager().beginTransaction()
@@ -130,7 +137,7 @@ public class CourseListActivity extends AppCompatActivity {
                     } else {
                         Context context = v.getContext();
                         Intent intent = new Intent(context, CourseDetailActivity.class);
-                        intent.putExtra(CourseDetailFragment.ARG_ITEM_ID, holder.mItem.id);
+                        intent.putExtra(CourseDetailFragment.ARG_ITEM_ID, holder.mItem.getName());
 
                         context.startActivity(intent);
                     }
@@ -140,14 +147,14 @@ public class CourseListActivity extends AppCompatActivity {
 
         @Override
         public int getItemCount() {
-            return mValues.size();
+            return courseCursorAdapter.getCount();
         }
 
         public class ViewHolder extends RecyclerView.ViewHolder {
             public final View mView;
             public final TextView mIdView;
             public final TextView mContentView;
-            public DummyContent.DummyItem mItem;
+            public Course mItem;
 
             public ViewHolder(View view) {
                 super(view);
