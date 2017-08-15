@@ -21,8 +21,23 @@
             android:name=".database.TermProvider"
             android:authorities="com.example.clement.studentplanner.termprovider"
             android:enabled="true"
-            android:exported="false">
-        </provider>
+            android:exported="false"/>
+
+        <provider
+            android:name=".database.EventProvider"
+            android:authorities="com.example.clement.studentplanner.eventprovider"
+            android:enabled="true"
+            android:exported="false"/>
+        <provider
+            android:name=".database.CourseProvider"
+            android:authorities="com.example.clement.studentplanner.courseprovider"
+            android:enabled="true"
+            android:exported="false"/>
+        <provider
+            android:name=".database.AssessmentProvider"
+            android:authorities="com.example.clement.studentplanner.assessmentprovider"
+            android:enabled="true"
+            android:exported="false"/>
 
         <activity
             android:name=".TermActivity"

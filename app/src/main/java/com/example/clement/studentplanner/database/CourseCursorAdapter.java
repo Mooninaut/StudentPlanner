@@ -36,16 +36,16 @@ public class CourseCursorAdapter extends CursorAdapter{
     @Override
     public void bindView(View view, Context context, Cursor cursor) {
         String courseName = cursor.getString(
-            cursor.getColumnIndex(StorageHelper.COURSE_NAME)
+            cursor.getColumnIndex(StorageHelper.COLUMN_NAME)
         );
 /*        int courseNumber = cursor.getInt(
             cursor.getColumnIndex(StorageHelper.COURSE_NUMBER)
         );*/
         int courseId = cursor.getInt(
-            cursor.getColumnIndex(StorageHelper.COURSE_ID)
+            cursor.getColumnIndex(StorageHelper.COLUMN_ID)
         );
-        Date courseStart = new Date(cursor.getLong(cursor.getColumnIndex(StorageHelper.COURSE_START)));
-        Date courseEnd = new Date(cursor.getLong(cursor.getColumnIndex(StorageHelper.COURSE_END)));
+        Date courseStart = new Date(cursor.getLong(cursor.getColumnIndex(StorageHelper.COLUMN_START)));
+        Date courseEnd = new Date(cursor.getLong(cursor.getColumnIndex(StorageHelper.COLUMN_END)));
         TextView nameTV = (TextView) view.findViewById(R.id.courseNameTextView);
         TextView numberTV = (TextView) view.findViewById(R.id.courseNumberTextView);
         TextView startTV = (TextView) view.findViewById(R.id.courseStartTextView);

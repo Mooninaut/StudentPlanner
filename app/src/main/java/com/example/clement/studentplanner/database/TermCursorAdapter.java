@@ -11,7 +11,6 @@ import android.widget.TextView;
 import com.example.clement.studentplanner.R;
 
 import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
@@ -37,16 +36,16 @@ public class TermCursorAdapter extends CursorAdapter{
     @Override
     public void bindView(View view, Context context, Cursor cursor) {
         String termName = cursor.getString(
-            cursor.getColumnIndex(StorageHelper.TERM_NAME)
+            cursor.getColumnIndex(StorageHelper.COLUMN_NAME)
         );
 /*        int termNumber = cursor.getInt(
             cursor.getColumnIndex(StorageHelper.TERM_NUMBER)
         );*/
         int termId = cursor.getInt(
-            cursor.getColumnIndex(StorageHelper.TERM_ID)
+            cursor.getColumnIndex(StorageHelper.COLUMN_ID)
         );
-        Date termStart = new Date(cursor.getLong(cursor.getColumnIndex(StorageHelper.TERM_START)));
-        Date termEnd = new Date(cursor.getLong(cursor.getColumnIndex(StorageHelper.TERM_END)));
+        Date termStart = new Date(cursor.getLong(cursor.getColumnIndex(StorageHelper.COLUMN_START)));
+        Date termEnd = new Date(cursor.getLong(cursor.getColumnIndex(StorageHelper.COLUMN_END)));
         TextView nameTV = (TextView) view.findViewById(R.id.termNameTextView);
         TextView numberTV = (TextView) view.findViewById(R.id.termNumberTextView);
         TextView startTV = (TextView) view.findViewById(R.id.termStartTextView);

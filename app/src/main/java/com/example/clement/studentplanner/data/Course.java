@@ -1,5 +1,7 @@
 package com.example.clement.studentplanner.data;
 
+import android.support.annotation.NonNull;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -9,7 +11,7 @@ import java.util.Locale;
  * Created by Clement on 8/8/2017.
  */
 
-public class Course {
+public class Course extends AcademicEvent {
     public enum Status {
         IN_PROGRESS(1), COMPLETED(2), DROPPED(3), PLANNED(4);
         private final int value;
@@ -18,85 +20,96 @@ public class Course {
         }
         public int getValue() { return value; }
     }
-    private String name;
+//    private String name;
     private int id;
-    private long startMillis;
-    private long endMillis;
+//    private long startMillis;
+//    private long endMillis;
+    @NonNull
     private final List<Assessment> assessmentList;
     private int term;
+    @NonNull
     private Status status;
 
-    public Course(String name, int id, long startMillis, long endMillis, int term, Status status) {
-        this.setName(name);
-        this.setId(id);
-        this.setStartMillis(startMillis);
-        this.setEndMillis(endMillis);
+    public Course(@NonNull String name, long startMillis, long endMillis, int id, int term, @NonNull Status status) {
+        super(name, startMillis, endMillis);
+        this.id = id;
         this.assessmentList = new ArrayList<>();
-        this.setTerm(term);
-        this.setStatus(status);
+        this.term = term;
+        this.status = status;
 }
-
-    public String getName() {
-        return name;
+    public Course(@NonNull Course other) {
+        super(other);
+        this.id = other.getId();
+        this.assessmentList = new ArrayList<>(other.getAssessmentList());
+        this.term = other.getTerm();
+        this.status = other.getStatus();
     }
 
-    public int getId() {
+//    public String getName() {
+//        return name;
+//    }
+
+    public final int getId() {
         return id;
     }
 
-    public long getStartMillis() {
-        return startMillis;
-    }
+//    public long getStartMillis() {
+//        return startMillis;
+//    }
 
-    public Date getStartDate() {
-        return new Date(startMillis);
-    }
+//    public Date getStartDate() {
+//        return new Date(startMillis);
+//    }
 
-    public long getEndMillis() {
-        return endMillis;
-    }
+//    public long getEndMillis() {
+//        return endMillis;
+//    }
 
-    public Date getEndDate() {
-        return new Date(endMillis);
-    }
+//    public Date getEndDate() {
+//        return new Date(endMillis);
+//    }
 
-    public List<Assessment> getAssessmentList() {
+    @NonNull
+    public final List<Assessment> getAssessmentList() {
         return assessmentList;
     }
 
-    public int getTerm() {
+    public final int getTerm() {
         return term;
     }
-    public Status getStatus() {
+
+    @NonNull
+    public final Status getStatus() {
         return status;
     }
-    public void setName(String name) {
-        this.name = name;
-    }
+//    public void setName(String name) {
+//        this.name = name;
+//    }
 
-    public void setId(int id) {
+    public final void setId(int id) {
         this.id = id;
     }
 
-    public void setStartMillis(long startMillis) {
-        this.startMillis = startMillis;
-    }
+//    public void setStartMillis(long startMillis) {
+//        this.startMillis = startMillis;
+//    }
 
-    public void setEndMillis(long endMillis) {
-        this.endMillis = endMillis;
-    }
+//    public void setEndMillis(long endMillis) {
+//        this.endMillis = endMillis;
+//    }
 
-    public void setTerm(int term) {
+    public final void setTerm(int term) {
         this.term = term;
     }
 
-    public void setStatus(Status status) {
+    public final void setStatus(@NonNull Status status) {
         this.status = status;
     }
 
     @Override
     public String toString() {
         return String.format(Locale.US, "Course: name '%s', id '%d', startMillis '%d', endMillis '%d', term '%d', status '%s'",
-            name, id, startMillis, endMillis, term, status.toString());
+            getName(), id, getStartMillis(), getEndMillis(), term, status.toString());
     }
+
 }

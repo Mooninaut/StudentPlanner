@@ -7,9 +7,8 @@ import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
 import android.net.Uri;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.RecyclerView;
+import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -21,17 +20,24 @@ import android.widget.Toast;
 
 import com.example.clement.studentplanner.data.Course;
 import com.example.clement.studentplanner.data.Term;
-import com.example.clement.studentplanner.database.CourseCursorAdapter;
+import com.example.clement.studentplanner.database.EventCursorAdapter;
+import com.example.clement.studentplanner.database.EventProvider;
 import com.example.clement.studentplanner.database.StorageHelper;
 import com.example.clement.studentplanner.database.TermCursorAdapter;
 import com.example.clement.studentplanner.database.TermProvider;
 
 public class MainActivity extends AppCompatActivity
-    implements LoaderManager.LoaderCallbacks<Cursor>,
-        TermListingFragment.OnTermListFragmentInteractionListener {
-
+    implements TermListingFragment.OnTermListFragmentInteractionListener {
+    public static final int EVENT_LOADER_ID = 1;
+    public static final int TERM_LOADER_ID = 2;
+//    public static final int COURSE_LOADER_ID = 3;
+//    public static final int ASSESSMENT_LOADER_ID = 4;
+    private final TermLoaderListener termLoaderListener = new TermLoaderListener();
     private CursorAdapter termCursorAdapter;
-    private CursorAdapter courseCursorAdapter;
+//    private CursorAdapter courseCursorAdapter;
+    private CursorAdapter eventCursorAdapter;
+    private final EventLoaderListener eventLoaderListener = new EventLoaderListener();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -51,11 +57,13 @@ public class MainActivity extends AppCompatActivity
             }
         });
 
-        courseCursorAdapter = new CourseCursorAdapter(this, null, 0);
-        ListView courseList = (ListView) findViewById(R.id.main_course_list);
-        courseList.setAdapter(courseCursorAdapter);
+        eventCursorAdapter = new EventCursorAdapter(this, null, 0);
+        ListView eventList = (ListView) findViewById(R.id.main_event_list);
+        eventList.setAdapter(eventCursorAdapter);
 
-        getLoaderManager().initLoader(0, null, this);
+        getLoaderManager().initLoader(TERM_LOADER_ID, null, termLoaderListener);
+        getLoaderManager().initLoader(EVENT_LOADER_ID, null, eventLoaderListener);
+//        getLoaderManager().initLoader(COURSE_LOADER_ID, null, courseLoaderListener);
     }
 
     @Override
@@ -92,45 +100,60 @@ public class MainActivity extends AppCompatActivity
         long endSeconds = endDays * 3600L * 24L + 3600L * 12L;
         long startMillis = startSeconds * 1000L;
         long endMillis = endSeconds * 1000L;
-        insertTerm(new Term(1, "Sample Term", startMillis, endMillis));
-        insertCourse(new Course("Course Name Goes Here", 1, startMillis, endMillis, 1, Course.Status.IN_PROGRESS));
+        insertTerm(new Term("Sample Term", startMillis, endMillis, 1));
+        insertCourse(new Course("Course Name Goes Here", startMillis, endMillis, 1, 1, Course.Status.IN_PROGRESS));
     }
 
     private void insertTerm(Term term) {
-        ContentValues values = new ContentValues();
-        values.put(StorageHelper.TERM_NAME, term.getName());
-        values.put(StorageHelper.TERM_START, term.getStartMillis());
-        values.put(StorageHelper.TERM_END, term.getEndMillis());
-//        values.put(StorageHelper.TERM_NUMBER, term.getNumber());
-        Uri termUri = getContentResolver().insert(TermProvider.CONTENT_URI, values);
+        //Uri termUri =
+        getContentResolver().insert(TermProvider.CONTENT_URI, TermProvider.termToValues(term));
         restartLoader();
     }
     private void insertCourse(Course course) {
         ContentValues values = new ContentValues();
-        values.put(StorageHelper.COURSE_NAME, course.getName());
-        values.put(StorageHelper.COURSE_START, course.getStartMillis());
-        values.put(StorageHelper.COURSE_END, course.getEndMillis());
-        values.put(StorageHelper.COURSE_STATUS, course.getStatus().getValue());
-        values.put(StorageHelper.COURSE_TERM_ID, course.getTerm());
+        values.put(StorageHelper.COLUMN_NAME, course.getName());
+        values.put(StorageHelper.COLUMN_START, course.getStartMillis());
+        values.put(StorageHelper.COLUMN_END, course.getEndMillis());
+        values.put(StorageHelper.COLUMN_STATUS, course.getStatus().getValue());
+        values.put(StorageHelper.COLUMN_TERM_ID, course.getTerm());
     }
     private void restartLoader() {
-        getLoaderManager().restartLoader(0, null, this);
+        getLoaderManager().restartLoader(0, null, termLoaderListener);
+    }
+    private class TermLoaderListener implements LoaderManager.LoaderCallbacks<Cursor> {
+        @Override
+        public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+            return new CursorLoader(MainActivity.this, TermProvider.CONTENT_URI,
+                null, null, null, null);
+        }
+
+        @Override
+        public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+            termCursorAdapter.swapCursor(data);
+        }
+
+        @Override
+        public void onLoaderReset(Loader<Cursor> loader) {
+            termCursorAdapter.swapCursor(null);
+        }
     }
 
-    @Override
-    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        return new CursorLoader(this, TermProvider.CONTENT_URI,
-            null, null, null, null);
-    }
+    private class EventLoaderListener implements LoaderManager.LoaderCallbacks<Cursor> {
+        @Override
+        public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+            return new CursorLoader(MainActivity.this, EventProvider.CONTENT_URI,
+                null, null, null, null);
+        }
 
-    @Override
-    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        termCursorAdapter.swapCursor(data);
-    }
+        @Override
+        public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+            eventCursorAdapter.swapCursor(data);
+        }
 
-    @Override
-    public void onLoaderReset(Loader<Cursor> loader) {
-        termCursorAdapter.swapCursor(null);
+        @Override
+        public void onLoaderReset(Loader<Cursor> loader) {
+            eventCursorAdapter.swapCursor(null);
+        }
     }
 
     @Override

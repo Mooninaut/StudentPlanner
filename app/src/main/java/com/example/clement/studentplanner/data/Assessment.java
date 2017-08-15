@@ -1,12 +1,14 @@
 package com.example.clement.studentplanner.data;
 
+import android.support.annotation.NonNull;
+
 import java.util.Locale;
 
 /**
  * Created by Clement on 8/8/2017.
  */
 
-public class Assessment {
+public class Assessment extends AcademicEvent {
     public enum Type {
         PERFORMANCE(1), OBJECTIVE(2);
         private final int value;
@@ -15,47 +17,44 @@ public class Assessment {
         }
         public int getValue() { return value; }
     }
-    private final String name;
-    private final Type type;
-    private final long startMillis;
-    private final String notes;
-    public Assessment(String name, Type type, long startMillis, String notes) {
-        this.name = name;
+    //private String name;
+    @NonNull
+    private Type type;
+    //private long startMillis;
+    @NonNull
+    private String notes;
+
+    public Assessment(@NonNull String name, long startMillis, long endMillis, @NonNull Type type, @NonNull String notes) {
+        super(name, startMillis, endMillis);
         this.type = type;
-        this.startMillis = startMillis;
         this.notes = notes;
     }
-
-    public String getName() {
-        return name;
+    public Assessment(@NonNull Assessment other) {
+        super(other);
+        this.type = other.getType();
+        this.notes = other.getNotes();
     }
 
-    public Type getType() {
+    @NonNull
+    public final Type getType() {
         return type;
     }
 
-    public long getStartMillis() {
-        return startMillis;
-    }
-
-    public String getNotes() {
+    @NonNull
+    public final String getNotes() {
         return notes;
     }
 
-    @Override
-    protected Object clone() throws CloneNotSupportedException {
-        return super.clone();
+    public final void setType(@NonNull Type type) {
+        this.type = type;
     }
-    public Assessment copy() {
-        try {
-            return (Assessment) clone();
-        } catch (CloneNotSupportedException e) {
-            return null;
-        }
+    public final void setNotes(@NonNull String notes) {
+        this.notes = notes;
     }
-    @Override
+
+    @Override @NonNull
     public String toString() {
-        return String.format(Locale.US, "Assessment: name '%s', startMillis '%d', type '%s', notes '%s'",
-            name, startMillis, type.toString(), notes);
+        return String.format(Locale.US, "Assessment: name '%s', startMillis '%d', endMillis '%d', type '%s', notes '%s'",
+            getName(), getStartMillis(), getEndMillis(), type.toString(), notes);
     }
 }

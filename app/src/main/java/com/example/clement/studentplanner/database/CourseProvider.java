@@ -46,16 +46,16 @@ public class CourseProvider extends ContentProvider {
     @Override
     public Cursor query(@NonNull Uri uri, @Nullable String[] projection, @Nullable String selection, @Nullable String[] selectionArgs, @Nullable String sortOrder) {
         if (uriMatcher.match(uri) == COURSE_ID) {
-            selection = StorageHelper.COURSE_ID + "=" + uri.getLastPathSegment();
+            selection = StorageHelper.COLUMN_ID + "=" + uri.getLastPathSegment();
         }
         return getDatabase().query(
-            StorageHelper.COURSE_TABLE,
-            StorageHelper.COURSE_COLUMNS,
+            StorageHelper.TABLE_COURSE,
+            StorageHelper.COLUMNS_COURSE,
             selection,
             null,
             null,
             null,
-            StorageHelper.COURSE_ID + " ASC"
+            StorageHelper.COLUMN_ID + " ASC"
         );
     }
     @Nullable
@@ -68,7 +68,7 @@ public class CourseProvider extends ContentProvider {
     @Override
     public Uri insert(@NonNull Uri uri, @Nullable ContentValues values) {
         long id = getDatabase().insert(
-            StorageHelper.COURSE_TABLE,
+            StorageHelper.TABLE_COURSE,
             null,
             values
         );
@@ -76,11 +76,11 @@ public class CourseProvider extends ContentProvider {
     }
     @Override
     public int delete(@NonNull Uri uri, @Nullable String selection, @Nullable String[] selectionArgs) {
-        return getDatabase().delete(StorageHelper.COURSE_TABLE, selection, selectionArgs);
+        return getDatabase().delete(StorageHelper.TABLE_COURSE, selection, selectionArgs);
     }
     @Override
     public int update(@NonNull Uri uri, @Nullable ContentValues values, @Nullable String selection, @Nullable String[] selectionArgs) {
-        return getDatabase().update(StorageHelper.COURSE_TABLE, values, selection, selectionArgs);
+        return getDatabase().update(StorageHelper.TABLE_COURSE, values, selection, selectionArgs);
     }
 
     /**
