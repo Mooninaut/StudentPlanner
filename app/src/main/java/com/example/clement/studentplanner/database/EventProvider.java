@@ -3,8 +3,10 @@ package com.example.clement.studentplanner.database;
 import android.content.ContentProvider;
 import android.content.ContentUris;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.UriMatcher;
 import android.database.Cursor;
+import android.database.MergeCursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.support.annotation.NonNull;
@@ -46,10 +48,12 @@ public class EventProvider extends ContentProvider {
         uriMatcher.addURI(AUTHORITY, BASE_PATH + "/" + TERM_PATH + "/#", EVENT_TERM_ID);
         uriMatcher.addURI(AUTHORITY, BASE_PATH + "/" + ASSESSMENT_PATH + "/#", EVENT_ASSESSMENT_ID);
     }
-    TermProvider termProvider;
-    CourseProvider courseProvider;
-    AssessmentProvider assessmentProvider;
-//    private StorageHelper helper;
+    private TermProvider termProvider;
+    private CourseProvider courseProvider;
+    private AssessmentProvider assessmentProvider;
+
+    private StorageHelper helper;
+    private SQLiteDatabase database;
     @Override
     public boolean onCreate() {
 //        helper = new StorageHelper(getContext());
@@ -80,6 +84,27 @@ public class EventProvider extends ContentProvider {
         }
         return assessmentProvider;
     }
+    /**
+     * Lazily initialize the database object
+     */
+    @NonNull
+    private synchronized StorageHelper getHelper() {
+        if (helper == null) {
+            Context context = getContext();
+            if (context == null) {
+                throw new NullPointerException();
+            }
+            helper = new StorageHelper(context);
+        }
+        return helper;
+    }
+    @NonNull
+    private synchronized SQLiteDatabase getDatabase() {
+        if (database == null) {
+            database = getHelper().getWritableDatabase();
+        }
+        return database;
+    }
     @Nullable
     @Override
     public Cursor query(@NonNull Uri uri, @Nullable String[] projection, @Nullable String selection, @Nullable String[] selectionArgs, @Nullable String sortOrder) {
@@ -87,10 +112,14 @@ public class EventProvider extends ContentProvider {
         Cursor cursor;
         switch(match) {
             case EVENT_TERM_ID:
+                uri = ContentUris.withAppendedId(TermProvider.CONTENT_URI, ContentUris.parseId(uri));
                 cursor = getTermProvider().query(uri, EVENT_COLUMNS, selection, selectionArgs, sortOrder);
                 break;
-/* TODO           case EVENT_ALL:
-                break;*/
+            case EVENT_ALL:
+                cursor = new MergeCursor(new Cursor[]{getDatabase().rawQuery("SELECT "+StorageHelper.COLUMN_ID+", "+StorageHelper.COLUMN_NAME+", "+
+                    StorageHelper.COLUMN_START+", "+StorageHelper.COLUMN_END+" FROM "+StorageHelper.TABLE_TERM+";", null)}
+                );
+                break;
             case EVENT_COURSE_ID:
                 cursor = getCourseProvider().query(uri, EVENT_COLUMNS, selection, selectionArgs, sortOrder);
                 break;

@@ -2,6 +2,7 @@ package com.example.clement.studentplanner.database;
 
 import android.content.ContentProvider;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.UriMatcher;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -29,16 +30,27 @@ public class CourseProvider extends ContentProvider {
     private StorageHelper helper;
     @Override
     public boolean onCreate() {
-        helper = new StorageHelper(getContext());
         return true;
     }
 
     /**
      * Lazily initialize the database object
      */
+    @NonNull
+    private synchronized StorageHelper getHelper() {
+        if (helper == null) {
+            Context context = getContext();
+            if (context == null) {
+                throw new NullPointerException();
+            }
+            helper = new StorageHelper(context);
+        }
+        return helper;
+    }
+    @NonNull
     private synchronized SQLiteDatabase getDatabase() {
         if (database == null) {
-            database = helper.getWritableDatabase();
+            database = getHelper().getWritableDatabase();
         }
         return database;
     }

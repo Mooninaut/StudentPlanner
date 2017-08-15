@@ -82,7 +82,7 @@ public class MainActivity extends AppCompatActivity
                 insertSampleData();
                 return true;
             case R.id.delete_sample_data:
-                new TermProvider().erase();
+                getContentResolver().delete(TermProvider.CONTENT_URI, null, null);
                 restartLoader();
                 Toast.makeText(this, "KABOOM!", Toast.LENGTH_SHORT).show();
         }
@@ -118,7 +118,8 @@ public class MainActivity extends AppCompatActivity
         values.put(StorageHelper.COLUMN_TERM_ID, course.getTerm());
     }
     private void restartLoader() {
-        getLoaderManager().restartLoader(0, null, termLoaderListener);
+        getLoaderManager().restartLoader(TERM_LOADER_ID, null, termLoaderListener);
+        getLoaderManager().restartLoader(EVENT_LOADER_ID, null, eventLoaderListener);
     }
     private class TermLoaderListener implements LoaderManager.LoaderCallbacks<Cursor> {
         @Override

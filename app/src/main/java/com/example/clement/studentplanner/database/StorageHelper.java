@@ -3,6 +3,7 @@ package com.example.clement.studentplanner.database;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.support.annotation.NonNull;
 import android.util.Log;
 
 import java.util.ArrayList;
@@ -15,7 +16,7 @@ import static com.example.clement.studentplanner.database.StorageHelper.COLUMN_F
 
 public class StorageHelper extends SQLiteOpenHelper {
 
-    public static final int DATABASE_VERSION = 6;
+    public static final int DATABASE_VERSION = 9;
     public static final String TABLE_TERM = "term";
     public static final String COLUMN_ID = "_id";
     public static final String COLUMN_NAME = "name";
@@ -55,6 +56,10 @@ public class StorageHelper extends SQLiteOpenHelper {
     public static final String TABLE_PHOTO = "photo";
     public static final String COLUMN_ASSESSMENT_ID = "assessment_id";
     public static final String COLUMN_FILE_NAME = "file_name";
+
+    public static final String[] COLUMNS_EVENT = {
+        COLUMN_ID, COLUMN_NAME, COLUMN_START, COLUMN_END
+    };
     private static final String[] CREATE_DATABASE;
     static {
         ArrayList<String> schema = new ArrayList<String>(20);
@@ -69,51 +74,34 @@ public class StorageHelper extends SQLiteOpenHelper {
 //        schema.add("CREATE TABLE event (_id INTEGER PRIMARY KEY, name TEXT, start INTEGER, end INTEGER)");
 //        schema.add("CREATE TABLE term (_id INTEGER PRIMARY KEY, event_id INTEGER REFERENCES event(_id))");
 
-        schema.add("CREATE TABLE "+TABLE_TERM+" ("+COLUMN_ID+" INTEGER AUTOINCREMENT PRIMARY KEY, "+
+        schema.add("CREATE TABLE "+TABLE_TERM+" ("+COLUMN_ID+" INTEGER PRIMARY KEY AUTOINCREMENT, "+
             COLUMN_NAME+" TEXT, "+COLUMN_START+" INTEGER, "+COLUMN_END+" INTEGER)");
-        // TODO // schema.add("INSERT INTO "+TABLE_TERM+"")
+        schema.add("INSERT INTO "+TABLE_TERM+" ("+COLUMN_ID+", "+COLUMN_NAME+", "+COLUMN_START+", "+
+            COLUMN_END+") VALUES (1000000, 'A', 1, 1);");
 //        schema.add("CREATE TABLE course (_id INTEGER PRIMARY KEY, event_id INTEGER REFERENCES event(_id), term_id INTEGER REFERENCES term(_id), status INTEGER)");
 
-        schema.add("CREATE TABLE "+TABLE_COURSE+ "("+COLUMN_ID+" INTEGER AUTOINCREMENT PRIMARY KEY, "+
+        schema.add("CREATE TABLE "+TABLE_COURSE+ "("+COLUMN_ID+" INTEGER PRIMARY KEY AUTOINCREMENT, "+
             COLUMN_NAME+" TEXT, "+COLUMN_START+" INTEGER, "+COLUMN_END+" INTEGER, " +
             COLUMN_TERM_ID+" INTEGER REFERENCES "+TABLE_TERM+"("+COLUMN_ID+"), "+
             COLUMN_STATUS+" INTEGER)");
+        schema.add("INSERT INTO "+TABLE_COURSE+" ("+COLUMN_ID+", "+COLUMN_NAME+", "+COLUMN_START+", "+
+            COLUMN_END+", "+COLUMN_TERM_ID+", "+COLUMN_STATUS+") VALUES (2000000, 'B', 2, 2, 1000000, 2);");
 
 //        schema.add("CREATE TABLE assessment(_id INTEGER PRIMARY KEY, event_id INTEGER REFERENCES event(_id), course_id INTEGER REFERENCES course(_id), type INTEGER, notes TEXT)");
 
-        schema.add("CREATE TABLE "+TABLE_ASSESSMENT+"("+COLUMN_ID+" INTEGER AUTOINCREMENT PRIMARY KEY, "+
+        schema.add("CREATE TABLE "+TABLE_ASSESSMENT+"("+COLUMN_ID+" INTEGER PRIMARY KEY AUTOINCREMENT, "+
             COLUMN_NAME+" TEXT, "+COLUMN_START+" INTEGER, "+COLUMN_END+" INTEGER, "+
             COLUMN_COURSE_ID+" INTEGER REFERENCES "+TABLE_COURSE+"("+COLUMN_ID+"), "+
             COLUMN_TYPE+" INTEGER, "+COLUMN_NOTES+" TEXT)");
-
-        schema.add("CREATE TABLE "+TABLE_PHOTO+"("+COLUMN_ID+" INTEGER AUTOINCREMENT PRIMARY KEY, "+
+        schema.add("INSERT INTO "+TABLE_ASSESSMENT+" ("+COLUMN_ID+", "+COLUMN_NAME+", "+COLUMN_START+", "+
+            COLUMN_END+", "+COLUMN_COURSE_ID+", "+COLUMN_TYPE+", "+COLUMN_NOTES+") VALUES (3000000, 'C', 3, 3, 2000000, 3, 'C');");
+        schema.add("CREATE TABLE "+TABLE_PHOTO+"("+COLUMN_ID+" INTEGER PRIMARY KEY AUTOINCREMENT, "+
             COLUMN_ASSESSMENT_ID+" INTEGER REFERENCES "+TABLE_ASSESSMENT+"("+COLUMN_ID+"), "+
             COLUMN_FILE_NAME+" TEXT)");
-//        schema.add("CREATE VIEW termView AS SELECT term._id AS _id, event_id, name, start, end FROM event JOIN term ON event._id = term.event_id");
-//        schema.add("CREATE VIEW courseView AS SELECT course._id AS _id, event_id, name, start, end, term_id, status FROM event JOIN course ON event._id = course.event_id");
-//        schema.add("CREATE VIEW assessmentView AS SELECT assessment._id AS _id, event_id, name, start, end, course_id, type, notes FROM event JOIN assessment ON event._id = assessment.event_id");
-        /*
-         * SQLite does not directly permit updates on views. The following triggers allow updates to
-         * views to be passed along to the underlying tables as though the views were read/write
-         */
-/*
-        String[] tables = { "term", "course", "assessment"};
-        String[] fields = { "name", "start", "end"};
-        for (String table : tables) {
-            for (String field : fields) {
-                // From SQLite documentation
-                schema.add("CREATE TRIGGER " +
-                    table+"_"+field+"_change INSTEAD OF UPDATE OF " +
-                    field + " ON " + table+"View BEGIN UPDATE event SET " +
-                    field + " = NEW."+field + " WHERE _id = NEW._id; END;\n"
-                );
-            }
-        }
-        // From https://stackoverflow.com/a/34127908
-        schema.add("CREATE TRIGGER term_event_insert INSTEAD OF INSERT ON termView BEGIN " +
-            "INSERT INTO event (name, start, end) values (NEW.name, NEW.start, NEW.end);" +
-            "INSERT INTO term (event_id) values (NEW._id); END;"
-        );*/
+        schema.add("DELETE FROM "+TABLE_ASSESSMENT+" WHERE "+COLUMN_ID+" = 3000000;");
+        schema.add("DELETE FROM "+TABLE_COURSE+" WHERE "+COLUMN_ID+" = 2000000;");
+        schema.add("DELETE FROM "+TABLE_TERM+" WHERE "+COLUMN_ID+" = 1000000;");
+
         CREATE_DATABASE = schema.toArray(new String[schema.size()]);
     }
 //    private static final String CREATE_COURSE_TABLE = String.format(
@@ -127,7 +115,7 @@ public class StorageHelper extends SQLiteOpenHelper {
         }
         Log.i(StorageHelper.class.getSimpleName(), "Database created!");
     }
-    public StorageHelper(Context context) {
+    public StorageHelper(@NonNull Context context) {
         super(context, "schedule", null, DATABASE_VERSION);
     }
 

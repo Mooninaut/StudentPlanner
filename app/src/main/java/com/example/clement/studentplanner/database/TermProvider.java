@@ -3,6 +3,7 @@ package com.example.clement.studentplanner.database;
 import android.content.ContentProvider;
 import android.content.ContentUris;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.UriMatcher;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -29,46 +30,73 @@ public class TermProvider extends ContentProvider {
         .build();
     private static final int TERM_ALL = 1;
     private static final int TERM_ID = 2;
+    private static final int TERM_EVENT = 3;
     private static final UriMatcher uriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
     public static final String CONTENT_ITEM_TYPE = "Term";
     static {
         uriMatcher.addURI(AUTHORITY, BASE_PATH, TERM_ALL);
         uriMatcher.addURI(AUTHORITY, BASE_PATH + "/#", TERM_ID);
+        uriMatcher.addURI(AUTHORITY, BASE_PATH + "/event/#", TERM_EVENT);
     }
     private SQLiteDatabase database;
     private StorageHelper helper;
     @Override
     public boolean onCreate() {
-        helper = new StorageHelper(getContext());
         return true;
     }
 
     /**
      * Lazily initialize the database object
      */
+    @NonNull
     private synchronized SQLiteDatabase getDatabase() {
         if (database == null) {
-            database = helper.getWritableDatabase();
+            database = getStorageHelper().getWritableDatabase();
         }
         return database;
     }
-
+    @NonNull
+    private synchronized StorageHelper getStorageHelper() {
+        if (helper == null) {
+            Context context = getContext();
+            if (context == null) {
+                throw new NullPointerException();
+            }
+            helper = new StorageHelper(context);
+        }
+        return helper;
+    }
     @Nullable
     @Override
     public Cursor query(@NonNull Uri uri, @Nullable String[] projection, @Nullable String selection, @Nullable String[] selectionArgs, @Nullable String sortOrder) {
-        if (uriMatcher.match(uri) == TERM_ID) {
-            selection = StorageHelper.COLUMN_ID + " = " + uri.getLastPathSegment();
+        int match = uriMatcher.match(uri);
+        switch(match) {
+            case TERM_ID:
+                selection = StorageHelper.COLUMN_ID + " = " + uri.getLastPathSegment();
+                // deliberate fallthrough, not a bug
+            case TERM_ALL:
+                return getDatabase().query(
+                    StorageHelper.TABLE_TERM,
+                    StorageHelper.COLUMNS_TERM,
+                    selection,
+                    null,
+                    null,
+                    null,
+                    StorageHelper.COLUMN_ID + " ASC"
+                );
+            case TERM_EVENT:
+                return getDatabase().query(
+                    StorageHelper.TABLE_TERM,
+                    StorageHelper.COLUMNS_EVENT,
+                    selection,
+                    null,
+                    null,
+                    null,
+                    StorageHelper.COLUMN_ID + " ASC"
+                );
+            default:
+                return null;
         }
-        Log.i(this.getClass().getSimpleName(), "About to request database instance");
-        return getDatabase().query(
-            StorageHelper.TABLE_TERM,
-            StorageHelper.COLUMNS_TERM,
-            selection,
-            null,
-            null,
-            null,
-            StorageHelper.COLUMN_ID + " ASC"
-        );
     }
 
     @Nullable
@@ -90,6 +118,7 @@ public class TermProvider extends ContentProvider {
     @NonNull
     public static ContentValues termToValues(@NonNull Term term) {
         ContentValues values = new ContentValues();
+//        values.put(StorageHelper.COLUMN_ID, term.getId());
         values.put(StorageHelper.COLUMN_NAME, term.getName());
         values.put(StorageHelper.COLUMN_START, term.getStartMillis());
         values.put(StorageHelper.COLUMN_END, term.getEndMillis());
@@ -98,7 +127,15 @@ public class TermProvider extends ContentProvider {
 
     @Override
     public int delete(@NonNull Uri uri, @Nullable String selection, @Nullable String[] selectionArgs) {
-        return getDatabase().delete(StorageHelper.TABLE_TERM, selection, selectionArgs);
+        if (uriMatcher.match(uri) == TERM_ID) {
+            selection = StorageHelper.COLUMN_ID + " = " + ContentUris.parseId(uri);
+        }
+        Log.i(this.getClass().getSimpleName(), "About to request database instance");
+        return getDatabase().delete(
+            StorageHelper.TABLE_TERM,
+            selection,
+            null
+        );
     }
 
     @Override
@@ -106,6 +143,6 @@ public class TermProvider extends ContentProvider {
         return getDatabase().update(StorageHelper.TABLE_TERM, values, selection, selectionArgs);
     }
     public void erase() {
-        helper.erase(getDatabase());
+        getStorageHelper().erase(getDatabase());
     }
 }
