@@ -16,30 +16,19 @@ import static com.example.clement.studentplanner.database.StorageHelper.COLUMN_F
 
 public class StorageHelper extends SQLiteOpenHelper {
 
-    public static final int DATABASE_VERSION = 9;
+    public static final int DATABASE_VERSION = 10;
     public static final String TABLE_TERM = "term";
     public static final String COLUMN_ID = "_id";
     public static final String COLUMN_NAME = "name";
 //    public static final String COLUMN_EVENT_ID = "event_id";
-//    public static final String TERM_NUMBER = "number";
+    public static final String COLUMN_NUMBER = "number";
     public static final String COLUMN_START = "start";
     public static final String COLUMN_END = "end";
     public static final String[] COLUMNS_TERM = {
-        COLUMN_ID, COLUMN_NAME, COLUMN_START, COLUMN_END
+        COLUMN_ID, COLUMN_NAME, COLUMN_START, COLUMN_END, COLUMN_NUMBER
 };
-/*    private static final String CREATE_TERM_TABLE = String.format(
-        "CREATE TABLE %s (%s INTEGER PRIMARY KEY, %s TEXT, %s TEXT, %s TEXT);",
-        TABLE_TERM,
-        TERM_ID,
-        TERM_NAME,
-        TERM_START,
-        TERM_END
-    );*/
     public static final String TABLE_COURSE = "course";
-//    public static final String COURSE_ID = "_id";
-//    public static final String COURSE_NAME = "name";
-//    public static final String COURSE_START = "start";
-//    public static final String COURSE_END = "end";
+
     public static final String COLUMN_TERM_ID = "term_id";
     public static final String COLUMN_STATUS = "status";
     public static final String[] COLUMNS_COURSE = {
@@ -75,9 +64,9 @@ public class StorageHelper extends SQLiteOpenHelper {
 //        schema.add("CREATE TABLE term (_id INTEGER PRIMARY KEY, event_id INTEGER REFERENCES event(_id))");
 
         schema.add("CREATE TABLE "+TABLE_TERM+" ("+COLUMN_ID+" INTEGER PRIMARY KEY AUTOINCREMENT, "+
-            COLUMN_NAME+" TEXT, "+COLUMN_START+" INTEGER, "+COLUMN_END+" INTEGER)");
+            COLUMN_NAME+" TEXT, "+COLUMN_START+" INTEGER, "+COLUMN_END+" INTEGER, "+COLUMN_NUMBER+" INTEGER)");
         schema.add("INSERT INTO "+TABLE_TERM+" ("+COLUMN_ID+", "+COLUMN_NAME+", "+COLUMN_START+", "+
-            COLUMN_END+") VALUES (1000000, 'A', 1, 1);");
+            COLUMN_END+", "+COLUMN_NUMBER+") VALUES (1000000, 'A', 1, 1, 1);");
 //        schema.add("CREATE TABLE course (_id INTEGER PRIMARY KEY, event_id INTEGER REFERENCES event(_id), term_id INTEGER REFERENCES term(_id), status INTEGER)");
 
         schema.add("CREATE TABLE "+TABLE_COURSE+ "("+COLUMN_ID+" INTEGER PRIMARY KEY AUTOINCREMENT, "+

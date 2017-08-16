@@ -23,20 +23,25 @@ import static android.content.ContentResolver.SCHEME_CONTENT;
 public class TermProvider extends ContentProvider {
     public static final String AUTHORITY = "com.example.clement.studentplanner.termprovider";
     public static final String BASE_PATH = "term";
-    public static final Uri CONTENT_URI = new Uri.Builder()
-        .scheme(SCHEME_CONTENT)
-        .authority(AUTHORITY)
-        .path(BASE_PATH)
-        .build();
+    public static final Uri CONTENT_URI;
+    public static final Uri EVENT_URI;
     private static final int TERM_ALL = 1;
     private static final int TERM_ID = 2;
     private static final int TERM_EVENT = 3;
     private static final UriMatcher uriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
     public static final String CONTENT_ITEM_TYPE = "Term";
     static {
+        Uri.Builder builder = new Uri.Builder()
+            .scheme(SCHEME_CONTENT)
+            .authority(AUTHORITY)
+            .path(BASE_PATH);
+        CONTENT_URI = builder.build();
+        builder = builder.appendPath("event");
+        EVENT_URI = builder.build();
+        Log.i(TermProvider.class.getSimpleName(), EVENT_URI.getPath());
         uriMatcher.addURI(AUTHORITY, BASE_PATH, TERM_ALL);
         uriMatcher.addURI(AUTHORITY, BASE_PATH + "/#", TERM_ID);
-        uriMatcher.addURI(AUTHORITY, BASE_PATH + "/event/#", TERM_EVENT);
+        uriMatcher.addURI(AUTHORITY, BASE_PATH + "/event", TERM_EVENT);
     }
     private SQLiteDatabase database;
     private StorageHelper helper;
@@ -118,10 +123,11 @@ public class TermProvider extends ContentProvider {
     @NonNull
     public static ContentValues termToValues(@NonNull Term term) {
         ContentValues values = new ContentValues();
-//        values.put(StorageHelper.COLUMN_ID, term.getId());
+        values.put(StorageHelper.COLUMN_NUMBER, term.getNumber());
         values.put(StorageHelper.COLUMN_NAME, term.getName());
         values.put(StorageHelper.COLUMN_START, term.getStartMillis());
         values.put(StorageHelper.COLUMN_END, term.getEndMillis());
+
         return values;
     }
 

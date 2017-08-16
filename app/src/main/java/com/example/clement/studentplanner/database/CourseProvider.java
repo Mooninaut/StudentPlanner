@@ -10,6 +10,7 @@ import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import static android.content.ContentResolver.SCHEME_CONTENT;
 /**
  * Created by Clement on 8/12/2017.
  */
@@ -17,14 +18,24 @@ import android.support.annotation.Nullable;
 public class CourseProvider extends ContentProvider {
     public static final String AUTHORITY = "com.example.clement.studentplanner.courseprovider";
     public static final String BASE_PATH = "course";
-    public static final Uri CONTENT_URI = Uri.parse("content://" + AUTHORITY + "/" + BASE_PATH);
+    public static final Uri CONTENT_URI;
+    public static final Uri EVENT_URI;
     private static final int COURSE_ALL = 1;
     private static final int COURSE_ID = 2;
+    private static final int COURSE_EVENT = 3;
     private static final UriMatcher uriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
     public static final String CONTENT_ITEM_TYPE = "Course";
     static {
+        Uri.Builder builder = new Uri.Builder()
+            .scheme(SCHEME_CONTENT)
+            .authority(AUTHORITY)
+            .path(BASE_PATH);
+        CONTENT_URI = builder.build();
+        builder = builder.appendPath("event");
+        EVENT_URI = builder.build();
         uriMatcher.addURI(AUTHORITY, BASE_PATH, COURSE_ALL);
         uriMatcher.addURI(AUTHORITY, BASE_PATH + "/#", COURSE_ID);
+        uriMatcher.addURI(AUTHORITY, BASE_PATH + "/event", COURSE_EVENT);
     }
     private SQLiteDatabase database;
     private StorageHelper helper;
@@ -57,19 +68,36 @@ public class CourseProvider extends ContentProvider {
     @Nullable
     @Override
     public Cursor query(@NonNull Uri uri, @Nullable String[] projection, @Nullable String selection, @Nullable String[] selectionArgs, @Nullable String sortOrder) {
-        if (uriMatcher.match(uri) == COURSE_ID) {
-            selection = StorageHelper.COLUMN_ID + "=" + uri.getLastPathSegment();
+        int match = uriMatcher.match(uri);
+        switch(match) {
+            case COURSE_ID:
+                selection = StorageHelper.COLUMN_ID + "=" + uri.getLastPathSegment();
+                // deliberate fallthrough, not a bug
+            case COURSE_ALL:
+                return getDatabase().query(
+                    StorageHelper.TABLE_COURSE,
+                    StorageHelper.COLUMNS_COURSE,
+                    selection,
+                    null,
+                    null,
+                    null,
+                    StorageHelper.COLUMN_ID + " ASC"
+                );
+            case COURSE_EVENT:
+                return getDatabase().query(
+                    StorageHelper.TABLE_COURSE,
+                    StorageHelper.COLUMNS_EVENT,
+                    selection,
+                    null,
+                    null,
+                    null,
+                    StorageHelper.COLUMN_ID + " ASC"
+                );
+            default:
+                return null;
         }
-        return getDatabase().query(
-            StorageHelper.TABLE_COURSE,
-            StorageHelper.COLUMNS_COURSE,
-            selection,
-            null,
-            null,
-            null,
-            StorageHelper.COLUMN_ID + " ASC"
-        );
     }
+
     @Nullable
     @Override
     public String getType(@NonNull Uri uri) {

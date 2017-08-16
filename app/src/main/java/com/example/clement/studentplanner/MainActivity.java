@@ -20,6 +20,7 @@ import android.widget.Toast;
 
 import com.example.clement.studentplanner.data.Course;
 import com.example.clement.studentplanner.data.Term;
+import com.example.clement.studentplanner.database.CourseProvider;
 import com.example.clement.studentplanner.database.EventCursorAdapter;
 import com.example.clement.studentplanner.database.EventProvider;
 import com.example.clement.studentplanner.database.StorageHelper;
@@ -30,13 +31,14 @@ public class MainActivity extends AppCompatActivity
     implements TermListingFragment.OnTermListFragmentInteractionListener {
     public static final int EVENT_LOADER_ID = 1;
     public static final int TERM_LOADER_ID = 2;
-//    public static final int COURSE_LOADER_ID = 3;
+    public static final int COURSE_LOADER_ID = 3;
 //    public static final int ASSESSMENT_LOADER_ID = 4;
     private final TermLoaderListener termLoaderListener = new TermLoaderListener();
     private CursorAdapter termCursorAdapter;
 //    private CursorAdapter courseCursorAdapter;
     private CursorAdapter eventCursorAdapter;
     private final EventLoaderListener eventLoaderListener = new EventLoaderListener();
+//    private final CourseLoaderListener courseLoaderListener = new CourseLoaderListener();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,6 +63,8 @@ public class MainActivity extends AppCompatActivity
         ListView eventList = (ListView) findViewById(R.id.main_event_list);
         eventList.setAdapter(eventCursorAdapter);
 
+//        courseCursorAdapter = new CourseCursorAdapter()
+
         getLoaderManager().initLoader(TERM_LOADER_ID, null, termLoaderListener);
         getLoaderManager().initLoader(EVENT_LOADER_ID, null, eventLoaderListener);
 //        getLoaderManager().initLoader(COURSE_LOADER_ID, null, courseLoaderListener);
@@ -83,6 +87,7 @@ public class MainActivity extends AppCompatActivity
                 return true;
             case R.id.delete_sample_data:
                 getContentResolver().delete(TermProvider.CONTENT_URI, null, null);
+                getContentResolver().delete(CourseProvider.CONTENT_URI, null, null);
                 restartLoader();
                 Toast.makeText(this, "KABOOM!", Toast.LENGTH_SHORT).show();
         }
@@ -91,11 +96,9 @@ public class MainActivity extends AppCompatActivity
 
     private void insertSampleData() {
         long startYear = 2017L-1970L;
-        long endYear = 2018L-1970L;
         long startLeaps = (2017L-1968L)/4L;
-        long endLeaps = (2018L-1968L)/4L;
         long startDays = startYear * 365L + startLeaps;
-        long endDays = endYear * 365L + endLeaps;
+        long endDays = startDays + 180L;
         long startSeconds = startDays * 3600L * 24L + 3600L * 12L;
         long endSeconds = endDays * 3600L * 24L + 3600L * 12L;
         long startMillis = startSeconds * 1000L;
@@ -106,8 +109,11 @@ public class MainActivity extends AppCompatActivity
 
     private void insertTerm(Term term) {
         //Uri termUri =
-        getContentResolver().insert(TermProvider.CONTENT_URI, TermProvider.termToValues(term));
-        restartLoader();
+        Uri inserted = getContentResolver().insert(TermProvider.CONTENT_URI, TermProvider.termToValues(term));
+        if (inserted != null) {
+            getContentResolver().notifyChange(TermProvider.CONTENT_URI, null);
+            restartLoader();
+        }
     }
     private void insertCourse(Course course) {
         ContentValues values = new ContentValues();
@@ -116,6 +122,12 @@ public class MainActivity extends AppCompatActivity
         values.put(StorageHelper.COLUMN_END, course.getEndMillis());
         values.put(StorageHelper.COLUMN_STATUS, course.getStatus().getValue());
         values.put(StorageHelper.COLUMN_TERM_ID, course.getTerm());
+        Uri inserted = getContentResolver().insert(CourseProvider.CONTENT_URI, values);
+        if (inserted != null) {
+            getContentResolver().notifyChange(EventProvider.CONTENT_URI, null);
+            restartLoader();
+        }
+
     }
     private void restartLoader() {
         getLoaderManager().restartLoader(TERM_LOADER_ID, null, termLoaderListener);
@@ -145,18 +157,30 @@ public class MainActivity extends AppCompatActivity
             return new CursorLoader(MainActivity.this, EventProvider.CONTENT_URI,
                 null, null, null, null);
         }
-
         @Override
         public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
             eventCursorAdapter.swapCursor(data);
         }
-
         @Override
         public void onLoaderReset(Loader<Cursor> loader) {
             eventCursorAdapter.swapCursor(null);
         }
     }
-
+/*    private class CourseLoaderListener implements LoaderManager.LoaderCallbacks<Cursor> {
+        @Override
+        public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+            return new CursorLoader(MainActivity.this, CourseProvider.CONTENT_URI,
+                null, null, null, null);
+        }
+        @Override
+        public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+            eventCursorAdapter.swapCursor(data);
+        }
+        @Override
+        public void onLoaderReset(Loader<Cursor> loader) {
+            eventCursorAdapter.swapCursor(null);
+        }
+    }*/
     @Override
     public void onTermListFragmentInteraction(Term term) {
 

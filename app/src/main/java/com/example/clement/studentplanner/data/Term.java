@@ -1,6 +1,5 @@
 package com.example.clement.studentplanner.data;
 
-import android.content.ContentValues;
 import android.support.annotation.NonNull;
 
 import java.util.ArrayList;
@@ -13,33 +12,33 @@ import java.util.Locale;
 
 public class Term extends AcademicEvent {
 //    private final String name;
-    private int id;
+    private int number;
 //    private final long startMillis;
 //    private final long endMillis;
     @NonNull
     private final List<Course> courseList;
 //    private final int number;
 
-    public Term(@NonNull String name, long startMillis, long endMillis, int id) {
+    public Term(@NonNull String name, long startMillis, long endMillis, int number) {
         super(name, startMillis, endMillis);
-        this.id = id;
+        this.number = number;
         this.courseList = new ArrayList<>();
     }
 
     public Term(@NonNull Term other) {
         super(other);
-        this.id = other.getId();
+        this.number = other.getNumber();
         this.courseList = new ArrayList<>(other.getCourseList());
     }
 //    public String getName() {
 //        return name;
 //    }
 
-    public int getId() {
-        return id;
+    public int getNumber() {
+        return number;
     }
-    public void setId(int id) {
-        this.id = id;
+    public void setNumber(int number) {
+        this.number = number;
     }
 
 //    public long getStartMillis() {
@@ -63,8 +62,8 @@ public class Term extends AcademicEvent {
 
     @Override @NonNull
     public String toString() {
-        return String.format(Locale.US, "Term: name '%s', id '%d', startMillis '%d', endMillis '%d'",
-            getName(), getId(), getStartMillis(), getEndMillis());
+        return String.format(Locale.US, "Term: name '%s', number '%d', startMillis '%d', endMillis '%d'",
+            getName(), getNumber(), getStartMillis(), getEndMillis());
     }
 
 }

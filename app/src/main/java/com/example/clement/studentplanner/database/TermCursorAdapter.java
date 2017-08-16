@@ -41,8 +41,8 @@ public class TermCursorAdapter extends CursorAdapter{
 /*        int termNumber = cursor.getInt(
             cursor.getColumnIndex(StorageHelper.TERM_NUMBER)
         );*/
-        int termId = cursor.getInt(
-            cursor.getColumnIndex(StorageHelper.COLUMN_ID)
+        int termNumber = cursor.getInt(
+            cursor.getColumnIndex(StorageHelper.COLUMN_NUMBER)
         );
         Date termStart = new Date(cursor.getLong(cursor.getColumnIndex(StorageHelper.COLUMN_START)));
         Date termEnd = new Date(cursor.getLong(cursor.getColumnIndex(StorageHelper.COLUMN_END)));
@@ -52,7 +52,7 @@ public class TermCursorAdapter extends CursorAdapter{
         TextView endTV = (TextView) view.findViewById(R.id.termEndTextView);
 
         nameTV.setText(termName);
-        numberTV.setText(String.format(Locale.getDefault(), "%d", termId));
+        numberTV.setText(String.format(Locale.getDefault(), "%d", termNumber));
         startTV.setText(dateFormat.format(termStart));
         endTV.setText(dateFormat.format(termEnd));
     }
