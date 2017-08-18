@@ -1,6 +1,7 @@
 package com.example.clement.studentplanner;
 
 import android.app.LoaderManager;
+import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.CursorLoader;
 import android.content.Intent;
@@ -26,6 +27,10 @@ import com.example.clement.studentplanner.database.EventProvider;
 import com.example.clement.studentplanner.database.StorageHelper;
 import com.example.clement.studentplanner.database.TermCursorAdapter;
 import com.example.clement.studentplanner.database.TermProvider;
+
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
 
 public class MainActivity extends AppCompatActivity
     implements TermListingFragment.OnTermListFragmentInteractionListener {
@@ -88,31 +93,39 @@ public class MainActivity extends AppCompatActivity
             case R.id.delete_sample_data:
                 getContentResolver().delete(TermProvider.CONTENT_URI, null, null);
                 getContentResolver().delete(CourseProvider.CONTENT_URI, null, null);
-                restartLoader();
+                restartEventLoader();
+                restartTermLoader();
                 Toast.makeText(this, "KABOOM!", Toast.LENGTH_SHORT).show();
         }
         return false;
     }
 
     private void insertSampleData() {
-        long startYear = 2017L-1970L;
-        long startLeaps = (2017L-1968L)/4L;
-        long startDays = startYear * 365L + startLeaps;
-        long endDays = startDays + 180L;
-        long startSeconds = startDays * 3600L * 24L + 3600L * 12L;
-        long endSeconds = endDays * 3600L * 24L + 3600L * 12L;
-        long startMillis = startSeconds * 1000L;
-        long endMillis = endSeconds * 1000L;
-        insertTerm(new Term("Sample Term", startMillis, endMillis, 1));
-        insertCourse(new Course("Course Name Goes Here", startMillis, endMillis, 1, 1, Course.Status.IN_PROGRESS));
+        int term = 1;
+        Cursor maxCursor = getContentResolver().query(TermProvider.MAX_TERM_URI, null, null, null, null);
+        if (maxCursor != null) {
+            if (maxCursor.moveToFirst()) {
+                term += maxCursor.getInt(0);
+            }
+            maxCursor.close();
+        }
+        Calendar termStart = new GregorianCalendar(2015, Calendar.APRIL, 1);
+        termStart.add(Calendar.MONTH, 6 * (term - 1));
+        Calendar termEnd = new GregorianCalendar(2015, Calendar.OCTOBER, 1);
+        termEnd.add(Calendar.MONTH, 6 * (term - 1));
+        insertTerm(new Term("Term "+term, termStart.getTimeInMillis(), termEnd.getTimeInMillis(), term));
+        termEnd.add(Calendar.MONTH, -5);
+        insertCourse(new Course("Course "+term, termStart.getTimeInMillis(), termEnd.getTimeInMillis(), 1, 1, Course.Status.IN_PROGRESS));
     }
 
     private void insertTerm(Term term) {
         //Uri termUri =
         Uri inserted = getContentResolver().insert(TermProvider.CONTENT_URI, TermProvider.termToValues(term));
         if (inserted != null) {
-            getContentResolver().notifyChange(TermProvider.CONTENT_URI, null);
-            restartLoader();
+//            getContentResolver().notifyChange(TermProvider.CONTENT_URI, null);
+            Toast.makeText(this, "Term "+ ContentUris.parseId(inserted)+" inserted!", Toast.LENGTH_SHORT).show();
+//            restartTermLoader();
+//            restartEventLoader();
         }
     }
     private void insertCourse(Course course) {
@@ -124,15 +137,19 @@ public class MainActivity extends AppCompatActivity
         values.put(StorageHelper.COLUMN_TERM_ID, course.getTerm());
         Uri inserted = getContentResolver().insert(CourseProvider.CONTENT_URI, values);
         if (inserted != null) {
-            getContentResolver().notifyChange(EventProvider.CONTENT_URI, null);
-            restartLoader();
+//            getContentResolver().notifyChange(EventProvider.CONTENT_URI, null);
+            Toast.makeText(this, "Course "+ ContentUris.parseId(inserted)+" inserted!", Toast.LENGTH_SHORT).show();
+//            restartEventLoader();
         }
 
     }
-    private void restartLoader() {
+    private void restartTermLoader() {
         getLoaderManager().restartLoader(TERM_LOADER_ID, null, termLoaderListener);
+    }
+    private void restartEventLoader() {
         getLoaderManager().restartLoader(EVENT_LOADER_ID, null, eventLoaderListener);
     }
+
     private class TermLoaderListener implements LoaderManager.LoaderCallbacks<Cursor> {
         @Override
         public Loader<Cursor> onCreateLoader(int id, Bundle args) {

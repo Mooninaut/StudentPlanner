@@ -8,15 +8,13 @@ import android.util.Log;
 
 import java.util.ArrayList;
 
-import static com.example.clement.studentplanner.database.StorageHelper.COLUMN_FILE_NAME;
-
 /**
  * Created by Clement on 8/6/2017.
  */
 
 public class StorageHelper extends SQLiteOpenHelper {
 
-    public static final int DATABASE_VERSION = 10;
+    public static final int DATABASE_VERSION = 13;
     public static final String TABLE_TERM = "term";
     public static final String COLUMN_ID = "_id";
     public static final String COLUMN_NAME = "name";
@@ -24,6 +22,7 @@ public class StorageHelper extends SQLiteOpenHelper {
     public static final String COLUMN_NUMBER = "number";
     public static final String COLUMN_START = "start";
     public static final String COLUMN_END = "end";
+    public static final String COLUMN_TIME = "time";
     public static final String[] COLUMNS_TERM = {
         COLUMN_ID, COLUMN_NAME, COLUMN_START, COLUMN_END, COLUMN_NUMBER
 };
@@ -47,14 +46,20 @@ public class StorageHelper extends SQLiteOpenHelper {
     public static final String COLUMN_FILE_NAME = "file_name";
 
     public static final String[] COLUMNS_EVENT = {
-        COLUMN_ID, COLUMN_NAME, COLUMN_START, COLUMN_END
+        COLUMN_ID, COLUMN_NAME, COLUMN_TIME, COLUMN_TYPE
     };
+    public static final String VIEW_EVENT = "eventView";
+    private static final String SELECT_EVENT_START = "SELECT "+COLUMN_ID+"*2 AS "+COLUMN_ID+", "
+        +COLUMN_NAME+", "+COLUMN_START+" AS "+COLUMN_TIME+", '"+COLUMN_START+"' AS "+COLUMN_TYPE+" FROM ";
+    private static final String SELECT_EVENT_END = "SELECT "+COLUMN_ID+"*2+1 AS "+COLUMN_ID+", "
+        +COLUMN_NAME+", "+COLUMN_END+" AS "+COLUMN_TIME+", '"+COLUMN_END+"' AS "+COLUMN_TYPE+" FROM ";
+    public static final int TERM_ID_OFFSET = 10_000_000;
+    public static final int COURSE_ID_OFFSET = 20_000_000;
+    public static final int ASSESSMENT_ID_OFFSET = 30_000_000;
     private static final String[] CREATE_DATABASE;
     static {
         ArrayList<String> schema = new ArrayList<String>(20);
-        schema.add("DROP VIEW IF EXISTS termView");
-        schema.add("DROP VIEW IF EXISTS courseView");
-        schema.add("DROP VIEW IF EXISTS assessmentView");
+        schema.add("DROP VIEW IF EXISTS "+VIEW_EVENT);
         schema.add("DROP TABLE IF EXISTS "+TABLE_PHOTO);
         schema.add("DROP TABLE IF EXISTS "+TABLE_ASSESSMENT);
         schema.add("DROP TABLE IF EXISTS "+TABLE_COURSE);
@@ -66,7 +71,7 @@ public class StorageHelper extends SQLiteOpenHelper {
         schema.add("CREATE TABLE "+TABLE_TERM+" ("+COLUMN_ID+" INTEGER PRIMARY KEY AUTOINCREMENT, "+
             COLUMN_NAME+" TEXT, "+COLUMN_START+" INTEGER, "+COLUMN_END+" INTEGER, "+COLUMN_NUMBER+" INTEGER)");
         schema.add("INSERT INTO "+TABLE_TERM+" ("+COLUMN_ID+", "+COLUMN_NAME+", "+COLUMN_START+", "+
-            COLUMN_END+", "+COLUMN_NUMBER+") VALUES (1000000, 'A', 1, 1, 1);");
+            COLUMN_END+", "+COLUMN_NUMBER+") VALUES ("+ TERM_ID_OFFSET +", 'A', 1, 1, 1);");
 //        schema.add("CREATE TABLE course (_id INTEGER PRIMARY KEY, event_id INTEGER REFERENCES event(_id), term_id INTEGER REFERENCES term(_id), status INTEGER)");
 
         schema.add("CREATE TABLE "+TABLE_COURSE+ "("+COLUMN_ID+" INTEGER PRIMARY KEY AUTOINCREMENT, "+
@@ -74,7 +79,7 @@ public class StorageHelper extends SQLiteOpenHelper {
             COLUMN_TERM_ID+" INTEGER REFERENCES "+TABLE_TERM+"("+COLUMN_ID+"), "+
             COLUMN_STATUS+" INTEGER)");
         schema.add("INSERT INTO "+TABLE_COURSE+" ("+COLUMN_ID+", "+COLUMN_NAME+", "+COLUMN_START+", "+
-            COLUMN_END+", "+COLUMN_TERM_ID+", "+COLUMN_STATUS+") VALUES (2000000, 'B', 2, 2, 1000000, 2);");
+            COLUMN_END+", "+COLUMN_TERM_ID+", "+COLUMN_STATUS+") VALUES ("+ COURSE_ID_OFFSET +", 'B', 2, 2, "+TERM_ID_OFFSET+", 2);");
 
 //        schema.add("CREATE TABLE assessment(_id INTEGER PRIMARY KEY, event_id INTEGER REFERENCES event(_id), course_id INTEGER REFERENCES course(_id), type INTEGER, notes TEXT)");
 
@@ -83,13 +88,18 @@ public class StorageHelper extends SQLiteOpenHelper {
             COLUMN_COURSE_ID+" INTEGER REFERENCES "+TABLE_COURSE+"("+COLUMN_ID+"), "+
             COLUMN_TYPE+" INTEGER, "+COLUMN_NOTES+" TEXT)");
         schema.add("INSERT INTO "+TABLE_ASSESSMENT+" ("+COLUMN_ID+", "+COLUMN_NAME+", "+COLUMN_START+", "+
-            COLUMN_END+", "+COLUMN_COURSE_ID+", "+COLUMN_TYPE+", "+COLUMN_NOTES+") VALUES (3000000, 'C', 3, 3, 2000000, 3, 'C');");
+            COLUMN_END+", "+COLUMN_COURSE_ID+", "+COLUMN_TYPE+", "+COLUMN_NOTES+") VALUES ("+ ASSESSMENT_ID_OFFSET +", 'C', 3, 3, "+COURSE_ID_OFFSET+", 3, 'C');");
         schema.add("CREATE TABLE "+TABLE_PHOTO+"("+COLUMN_ID+" INTEGER PRIMARY KEY AUTOINCREMENT, "+
             COLUMN_ASSESSMENT_ID+" INTEGER REFERENCES "+TABLE_ASSESSMENT+"("+COLUMN_ID+"), "+
             COLUMN_FILE_NAME+" TEXT)");
-        schema.add("DELETE FROM "+TABLE_ASSESSMENT+" WHERE "+COLUMN_ID+" = 3000000;");
-        schema.add("DELETE FROM "+TABLE_COURSE+" WHERE "+COLUMN_ID+" = 2000000;");
-        schema.add("DELETE FROM "+TABLE_TERM+" WHERE "+COLUMN_ID+" = 1000000;");
+        schema.add("DELETE FROM "+TABLE_ASSESSMENT+" WHERE "+COLUMN_ID+" = "+ASSESSMENT_ID_OFFSET+";");
+        schema.add("DELETE FROM "+TABLE_COURSE+" WHERE "+COLUMN_ID+" = "+COURSE_ID_OFFSET+";");
+        schema.add("DELETE FROM "+TABLE_TERM+" WHERE "+COLUMN_ID+" = "+TERM_ID_OFFSET+";");
+        schema.add("CREATE VIEW "+VIEW_EVENT+" AS "+
+            SELECT_EVENT_START + TABLE_TERM+" UNION "+SELECT_EVENT_END + TABLE_TERM+" UNION "+
+            SELECT_EVENT_START + TABLE_COURSE+" UNION "+SELECT_EVENT_END + TABLE_COURSE + " UNION "+
+            SELECT_EVENT_START + TABLE_ASSESSMENT+" UNION "+SELECT_EVENT_END + TABLE_ASSESSMENT+" ORDER BY "+COLUMN_TIME+" ASC;"
+        );
 
         CREATE_DATABASE = schema.toArray(new String[schema.size()]);
     }

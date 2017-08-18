@@ -1,12 +1,10 @@
 package com.example.clement.studentplanner.database;
 
-import android.content.ContentProvider;
+import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.ContentValues;
-import android.content.Context;
 import android.content.UriMatcher;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -20,88 +18,83 @@ import static android.content.ContentResolver.SCHEME_CONTENT;
  * Created by Clement on 8/6/2017.
  */
 
-public class TermProvider extends ContentProvider {
+public class TermProvider extends StudentContentProviderBase {
     public static final String AUTHORITY = "com.example.clement.studentplanner.termprovider";
-    public static final String BASE_PATH = "term";
+    public static final String PATH_BASE = "term";
+    public static final String PATH_EVENT = "event";
+    public static final String PATH_MAX = "max";
     public static final Uri CONTENT_URI;
     public static final Uri EVENT_URI;
+    public static final Uri MAX_TERM_URI;
     private static final int TERM_ALL = 1;
     private static final int TERM_ID = 2;
     private static final int TERM_EVENT = 3;
+    private static final int TERM_MAX = 4;
     private static final UriMatcher uriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
     public static final String CONTENT_ITEM_TYPE = "Term";
     static {
         Uri.Builder builder = new Uri.Builder()
             .scheme(SCHEME_CONTENT)
-            .authority(AUTHORITY)
-            .path(BASE_PATH);
-        CONTENT_URI = builder.build();
-        builder = builder.appendPath("event");
-        EVENT_URI = builder.build();
+            .authority(AUTHORITY);
+        CONTENT_URI = builder.path(PATH_BASE).build();
+        EVENT_URI = builder.path(PATH_EVENT).build();
+        MAX_TERM_URI = builder.path(PATH_MAX).build();
         Log.i(TermProvider.class.getSimpleName(), EVENT_URI.getPath());
-        uriMatcher.addURI(AUTHORITY, BASE_PATH, TERM_ALL);
-        uriMatcher.addURI(AUTHORITY, BASE_PATH + "/#", TERM_ID);
-        uriMatcher.addURI(AUTHORITY, BASE_PATH + "/event", TERM_EVENT);
+        uriMatcher.addURI(AUTHORITY, PATH_BASE, TERM_ALL);
+        uriMatcher.addURI(AUTHORITY, PATH_BASE + "/#", TERM_ID);
+        uriMatcher.addURI(AUTHORITY, PATH_EVENT, TERM_EVENT);
+        uriMatcher.addURI(AUTHORITY, PATH_MAX, TERM_MAX);
     }
-    private SQLiteDatabase database;
-    private StorageHelper helper;
     @Override
     public boolean onCreate() {
         return true;
     }
 
-    /**
-     * Lazily initialize the database object
-     */
-    @NonNull
-    private synchronized SQLiteDatabase getDatabase() {
-        if (database == null) {
-            database = getStorageHelper().getWritableDatabase();
-        }
-        return database;
-    }
-    @NonNull
-    private synchronized StorageHelper getStorageHelper() {
-        if (helper == null) {
-            Context context = getContext();
-            if (context == null) {
-                throw new NullPointerException();
-            }
-            helper = new StorageHelper(context);
-        }
-        return helper;
-    }
+
     @Nullable
     @Override
-    public Cursor query(@NonNull Uri uri, @Nullable String[] projection, @Nullable String selection, @Nullable String[] selectionArgs, @Nullable String sortOrder) {
-        int match = uriMatcher.match(uri);
-        switch(match) {
+    public Cursor query(@NonNull Uri uri, @Nullable String[] projection, @Nullable String selection,
+                        @Nullable String[] selectionArgs, @Nullable String sortOrder) {
+        Cursor cursor;
+        ContentResolver resolver = getContext().getContentResolver();
+        switch(uriMatcher.match(uri)) {
             case TERM_ID:
-                selection = StorageHelper.COLUMN_ID + " = " + uri.getLastPathSegment();
+                selection = StorageHelper.COLUMN_ID + " = " + ContentUris.parseId(uri);
                 // deliberate fallthrough, not a bug
             case TERM_ALL:
-                return getDatabase().query(
+                cursor = getDatabase().query(
                     StorageHelper.TABLE_TERM,
                     StorageHelper.COLUMNS_TERM,
                     selection,
-                    null,
+                    selectionArgs,
                     null,
                     null,
                     StorageHelper.COLUMN_ID + " ASC"
                 );
+                cursor.setNotificationUri(resolver, CONTENT_URI);
+                break;
             case TERM_EVENT:
-                return getDatabase().query(
+                cursor = getDatabase().query(
                     StorageHelper.TABLE_TERM,
                     StorageHelper.COLUMNS_EVENT,
                     selection,
-                    null,
+                    selectionArgs,
                     null,
                     null,
                     StorageHelper.COLUMN_ID + " ASC"
                 );
+                cursor.setNotificationUri(resolver, CONTENT_URI);
+                break;
+            case TERM_MAX:
+                cursor = getDatabase().rawQuery(
+                    "SELECT MAX("+StorageHelper.COLUMN_NUMBER+") FROM "+StorageHelper.TABLE_TERM,
+                    null
+                );
+                break;
             default:
-                return null;
+                cursor = null;
         }
+        return cursor;
     }
 
     @Nullable
@@ -117,7 +110,9 @@ public class TermProvider extends ContentProvider {
             null,
             values
         );
-        return ContentUris.withAppendedId(CONTENT_URI, id);
+        Uri changeUri = ContentUris.withAppendedId(CONTENT_URI, id);
+        notifyChange(changeUri);
+        return changeUri;
     }
 
     @NonNull
@@ -127,7 +122,6 @@ public class TermProvider extends ContentProvider {
         values.put(StorageHelper.COLUMN_NAME, term.getName());
         values.put(StorageHelper.COLUMN_START, term.getStartMillis());
         values.put(StorageHelper.COLUMN_END, term.getEndMillis());
-
         return values;
     }
 
@@ -136,19 +130,26 @@ public class TermProvider extends ContentProvider {
         if (uriMatcher.match(uri) == TERM_ID) {
             selection = StorageHelper.COLUMN_ID + " = " + ContentUris.parseId(uri);
         }
-        Log.i(this.getClass().getSimpleName(), "About to request database instance");
-        return getDatabase().delete(
+        int rowsAffected = getDatabase().delete(
             StorageHelper.TABLE_TERM,
             selection,
             null
         );
+        if (rowsAffected > 0) {
+            notifyChange(CONTENT_URI);
+        }
+        return rowsAffected;
     }
 
     @Override
     public int update(@NonNull Uri uri, @Nullable ContentValues values, @Nullable String selection, @Nullable String[] selectionArgs) {
-        return getDatabase().update(StorageHelper.TABLE_TERM, values, selection, selectionArgs);
+        int rowsAffected = getDatabase().update(StorageHelper.TABLE_TERM, values, selection, selectionArgs);
+        if (rowsAffected > 0) {
+            notifyChange(CONTENT_URI);
+        }
+        return rowsAffected;
     }
     public void erase() {
-        getStorageHelper().erase(getDatabase());
+        getHelper().erase(getDatabase());
     }
 }

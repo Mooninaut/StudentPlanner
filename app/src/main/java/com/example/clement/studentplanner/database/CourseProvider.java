@@ -1,6 +1,7 @@
 package com.example.clement.studentplanner.database;
 
 import android.content.ContentProvider;
+import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.UriMatcher;
@@ -15,7 +16,7 @@ import static android.content.ContentResolver.SCHEME_CONTENT;
  * Created by Clement on 8/12/2017.
  */
 
-public class CourseProvider extends ContentProvider {
+public class CourseProvider extends StudentContentProviderBase {
     public static final String AUTHORITY = "com.example.clement.studentplanner.courseprovider";
     public static final String BASE_PATH = "course";
     public static final Uri CONTENT_URI;
@@ -31,40 +32,18 @@ public class CourseProvider extends ContentProvider {
             .authority(AUTHORITY)
             .path(BASE_PATH);
         CONTENT_URI = builder.build();
-        builder = builder.appendPath("event");
+        builder = builder.path("event");
         EVENT_URI = builder.build();
         uriMatcher.addURI(AUTHORITY, BASE_PATH, COURSE_ALL);
         uriMatcher.addURI(AUTHORITY, BASE_PATH + "/#", COURSE_ID);
-        uriMatcher.addURI(AUTHORITY, BASE_PATH + "/event", COURSE_EVENT);
+        uriMatcher.addURI(AUTHORITY, "event", COURSE_EVENT);
     }
-    private SQLiteDatabase database;
-    private StorageHelper helper;
+
     @Override
     public boolean onCreate() {
         return true;
     }
 
-    /**
-     * Lazily initialize the database object
-     */
-    @NonNull
-    private synchronized StorageHelper getHelper() {
-        if (helper == null) {
-            Context context = getContext();
-            if (context == null) {
-                throw new NullPointerException();
-            }
-            helper = new StorageHelper(context);
-        }
-        return helper;
-    }
-    @NonNull
-    private synchronized SQLiteDatabase getDatabase() {
-        if (database == null) {
-            database = getHelper().getWritableDatabase();
-        }
-        return database;
-    }
     @Nullable
     @Override
     public Cursor query(@NonNull Uri uri, @Nullable String[] projection, @Nullable String selection, @Nullable String[] selectionArgs, @Nullable String sortOrder) {
@@ -112,7 +91,8 @@ public class CourseProvider extends ContentProvider {
             null,
             values
         );
-        return Uri.parse(BASE_PATH + '/' + id);
+        getContext().getContentResolver().notifyChange(CONTENT_URI, null);
+        return ContentUris.withAppendedId(CONTENT_URI, id);
     }
     @Override
     public int delete(@NonNull Uri uri, @Nullable String selection, @Nullable String[] selectionArgs) {
@@ -127,6 +107,6 @@ public class CourseProvider extends ContentProvider {
      * Erases all data in the database, not just Courses.
      */
     public void erase() {
-        helper.erase(getDatabase());
+        getHelper().erase(getDatabase());
     }
 }

@@ -1,9 +1,13 @@
 package com.example.clement.studentplanner.database;
 
 import android.content.ContentProvider;
+import android.content.ContentResolver;
+import android.content.ContentUris;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.UriMatcher;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -15,7 +19,7 @@ import static android.content.ContentResolver.SCHEME_CONTENT;
  * Created by Clement on 8/13/2017.
  */
 
-public class AssessmentProvider extends ContentProvider {
+public class AssessmentProvider extends StudentContentProviderBase {
     public static final String AUTHORITY = "com.example.clement.studentplanner.assessmentprovider";
     public static final String BASE_PATH = "assessment";
     public static final Uri CONTENT_URI;
@@ -31,12 +35,12 @@ public class AssessmentProvider extends ContentProvider {
             .authority(AUTHORITY)
             .path(BASE_PATH);
         CONTENT_URI = builder.build();
-        builder = builder.appendPath("event");
+        builder = builder.path("event");
         EVENT_URI = builder.build();
         Log.i(AssessmentProvider.class.getSimpleName(), EVENT_URI.getPath());
         uriMatcher.addURI(AUTHORITY, BASE_PATH, ASSESSMENT_ALL);
         uriMatcher.addURI(AUTHORITY, BASE_PATH + "/#", ASSESSMENT_ID);
-        uriMatcher.addURI(AUTHORITY, BASE_PATH + "/event", ASSESSMENT_EVENT);
+        uriMatcher.addURI(AUTHORITY, "event", ASSESSMENT_EVENT);
     }
 
     @Override
@@ -46,8 +50,42 @@ public class AssessmentProvider extends ContentProvider {
 
     @Nullable
     @Override
-    public Cursor query(@NonNull Uri uri, @Nullable String[] projection, @Nullable String selection, @Nullable String[] selectionArgs, @Nullable String sortOrder) {
-        return null;
+    public Cursor query(@NonNull Uri uri, @Nullable String[] projection, @Nullable String selection,
+                        @Nullable String[] selectionArgs, @Nullable String sortOrder) {
+        Cursor cursor;
+        ContentResolver resolver = getContext().getContentResolver();
+        switch(uriMatcher.match(uri)) {
+            case ASSESSMENT_ID:
+                selection = StorageHelper.COLUMN_ID + "=" + ContentUris.parseId(uri);
+                // deliberate fallthrough, not a bug
+            case ASSESSMENT_ALL:
+                cursor = getDatabase().query(
+                    StorageHelper.TABLE_ASSESSMENT,
+                    StorageHelper.COLUMNS_ASSESSMENT,
+                    selection,
+                    null,
+                    null,
+                    null,
+                    StorageHelper.COLUMN_ID + " ASC"
+                );
+                cursor.setNotificationUri(resolver, CONTENT_URI);
+                break;
+            case ASSESSMENT_EVENT:
+                cursor = getDatabase().query(
+                    StorageHelper.TABLE_ASSESSMENT,
+                    StorageHelper.COLUMNS_EVENT,
+                    selection,
+                    null,
+                    null,
+                    null,
+                    StorageHelper.COLUMN_ID + " ASC"
+                );
+                cursor.setNotificationUri(resolver, CONTENT_URI);
+                break;
+            default:
+                cursor = null;
+        }
+        return cursor;
     }
 
     @Nullable

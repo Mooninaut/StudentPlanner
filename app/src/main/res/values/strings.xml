@@ -4,4 +4,6 @@
     <string name="title_activity_term">Term List</string>
     <string name="title_course_list">Courses</string>
     <string name="title_course_detail">Course Detail</string>
+    <string name="start">Start</string>
+    <string name="end">End</string>
 </resources>
