@@ -29,8 +29,10 @@ import com.example.clement.studentplanner.database.TermCursorAdapter;
 import com.example.clement.studentplanner.database.TermProvider;
 
 import java.util.Calendar;
-import java.util.Date;
 import java.util.GregorianCalendar;
+
+import static com.example.clement.studentplanner.database.StorageHelper.COLUMN_ID;
+import static com.example.clement.studentplanner.database.StorageHelper.TERM_ID_OFFSET;
 
 public class MainActivity extends AppCompatActivity
     implements TermListingFragment.OnTermListFragmentInteractionListener {
@@ -57,16 +59,28 @@ public class MainActivity extends AppCompatActivity
         termList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Intent intent = new Intent(MainActivity.this, TermActivity.class);
-                Uri uri = Uri.parse(TermProvider.CONTENT_URI + "/" + id);
-                intent.putExtra(TermProvider.CONTENT_ITEM_TYPE, uri);
-                startActivity(intent);
+                launchTermListingActivity(id);
             }
         });
 
         eventCursorAdapter = new EventCursorAdapter(this, null, 0);
         ListView eventList = (ListView) findViewById(R.id.main_event_list);
         eventList.setAdapter(eventCursorAdapter);
+        eventList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Long sourceId = id / 2L; // Event IDs are original id * 2 or 1 + original id * 2
+                if (sourceId < StorageHelper.COURSE_ID_OFFSET) {// term
+                    launchTermListingActivity(sourceId);
+                }
+                else if (sourceId < StorageHelper.ASSESSMENT_ID_OFFSET) { // course
+                    launchCourseListingActivity(sourceId);
+                }
+                else {
+                    launchAssessmentListingActivity(sourceId);
+                }
+            }
+        });
 
 //        courseCursorAdapter = new CourseCursorAdapter()
 
@@ -74,8 +88,27 @@ public class MainActivity extends AppCompatActivity
         getLoaderManager().initLoader(EVENT_LOADER_ID, null, eventLoaderListener);
 //        getLoaderManager().initLoader(COURSE_LOADER_ID, null, courseLoaderListener);
     }
-
-    @Override
+    private void launchTermListingActivity(long id) {
+        Intent intent = new Intent(MainActivity.this, TermListingActivity.class);
+        Uri uri = ContentUris.withAppendedId(TermProvider.CONTENT_URI, id);
+        intent.putExtra(TermProvider.CONTENT_ITEM_TYPE, uri);
+//        intent.putExtra("position", position);
+        startActivity(intent);
+    }
+    private void launchCourseListingActivity(long id) {
+        Intent intent = new Intent(MainActivity.this, CourseListingActivity.class);
+        Uri uri = ContentUris.withAppendedId(CourseProvider.CONTENT_URI, id);
+        intent.putExtra(TermProvider.CONTENT_ITEM_TYPE, uri);
+//        intent.putExtra("position", position);
+        startActivity(intent);
+    }
+    private void launchAssessmentListingActivity(long id) {
+/*        Intent intent = new Intent(MainActivity.this, AssessmentListingActivity.class);
+        Uri uri = ContentUris.withAppendedId(AssessmentProvider.CONTENT_URI, id);
+        intent.putExtra(TermProvider.CONTENT_ITEM_TYPE, uri);
+//        intent.putExtra("position", position);
+        startActivity(intent);*/
+    }    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.options_menu, menu);
@@ -105,7 +138,9 @@ public class MainActivity extends AppCompatActivity
         Cursor maxCursor = getContentResolver().query(TermProvider.MAX_TERM_URI, null, null, null, null);
         if (maxCursor != null) {
             if (maxCursor.moveToFirst()) {
-                term += maxCursor.getInt(0);
+                if (maxCursor.getColumnIndex(COLUMN_ID) >= 0) {
+                    term += maxCursor.getInt(maxCursor.getColumnIndex(COLUMN_ID)) - TERM_ID_OFFSET;
+                }
             }
             maxCursor.close();
         }
@@ -113,12 +148,13 @@ public class MainActivity extends AppCompatActivity
         termStart.add(Calendar.MONTH, 6 * (term - 1));
         Calendar termEnd = new GregorianCalendar(2015, Calendar.OCTOBER, 1);
         termEnd.add(Calendar.MONTH, 6 * (term - 1));
-        insertTerm(new Term("Term "+term, termStart.getTimeInMillis(), termEnd.getTimeInMillis(), term));
+        Uri termUri = insertTerm(new Term("Term "+term, termStart.getTimeInMillis(), termEnd.getTimeInMillis(), term, term));
+        long termId = ContentUris.parseId(termUri);
         termEnd.add(Calendar.MONTH, -5);
-        insertCourse(new Course("Course "+term, termStart.getTimeInMillis(), termEnd.getTimeInMillis(), 1, 1, Course.Status.IN_PROGRESS));
+        insertCourse(new Course("Course "+term, termStart.getTimeInMillis(), termEnd.getTimeInMillis(), termId, term, Course.Status.IN_PROGRESS));
     }
 
-    private void insertTerm(Term term) {
+    private Uri insertTerm(Term term) {
         //Uri termUri =
         Uri inserted = getContentResolver().insert(TermProvider.CONTENT_URI, TermProvider.termToValues(term));
         if (inserted != null) {
@@ -127,21 +163,22 @@ public class MainActivity extends AppCompatActivity
 //            restartTermLoader();
 //            restartEventLoader();
         }
+        return inserted;
     }
-    private void insertCourse(Course course) {
+    private Uri insertCourse(Course course) {
         ContentValues values = new ContentValues();
         values.put(StorageHelper.COLUMN_NAME, course.getName());
         values.put(StorageHelper.COLUMN_START, course.getStartMillis());
         values.put(StorageHelper.COLUMN_END, course.getEndMillis());
         values.put(StorageHelper.COLUMN_STATUS, course.getStatus().getValue());
-        values.put(StorageHelper.COLUMN_TERM_ID, course.getTerm());
+        values.put(StorageHelper.COLUMN_TERM_ID, course.getTermId() + StorageHelper.TERM_ID_OFFSET);
         Uri inserted = getContentResolver().insert(CourseProvider.CONTENT_URI, values);
         if (inserted != null) {
 //            getContentResolver().notifyChange(EventProvider.CONTENT_URI, null);
             Toast.makeText(this, "Course "+ ContentUris.parseId(inserted)+" inserted!", Toast.LENGTH_SHORT).show();
 //            restartEventLoader();
         }
-
+        return inserted;
     }
     private void restartTermLoader() {
         getLoaderManager().restartLoader(TERM_LOADER_ID, null, termLoaderListener);

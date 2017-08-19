@@ -40,7 +40,7 @@
             android:exported="false"/>
 
         <activity
-            android:name=".TermActivity"
+            android:name=".TermListingActivity"
             android:label="@string/title_activity_term"
             android:parentActivityName=".MainActivity"
             android:theme="@style/AppTheme.NoActionBar">
@@ -49,22 +49,31 @@
                 android:value="com.example.clement.studentplanner.MainActivity"/>
         </activity>
         <activity
-            android:name=".CourseListActivity"
+            android:name=".CourseListingActivity"
             android:label="@string/title_course_list"
-            android:parentActivityName=".TermActivity"
+            android:parentActivityName=".TermDetailActivity"
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.example.clement.studentplanner.TermActivity"/>
+                android:value="com.example.clement.studentplanner.TermListingActivity"/>
         </activity>
         <activity
             android:name=".CourseDetailActivity"
             android:label="@string/title_course_detail"
-            android:parentActivityName=".CourseListActivity"
+            android:parentActivityName=".CourseListingActivity"
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.example.clement.studentplanner.CourseListActivity"/>
+                android:value="com.example.clement.studentplanner.CourseListingActivity"/>
+        </activity>
+        <activity
+            android:name=".TermDetailActivity"
+            android:label="Term Detail"
+            android:parentActivityName=".TermListingActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.example.clement.studentplanner.TermListingActivity"/>
         </activity>
     </application>
 

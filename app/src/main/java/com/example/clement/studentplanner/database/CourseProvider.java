@@ -1,6 +1,7 @@
 package com.example.clement.studentplanner.database;
 
 import android.content.ContentProvider;
+import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Context;
@@ -12,6 +13,11 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import static android.content.ContentResolver.SCHEME_CONTENT;
+import static com.example.clement.studentplanner.database.StorageHelper.COLUMNS_COURSE;
+import static com.example.clement.studentplanner.database.StorageHelper.COLUMNS_EVENT;
+import static com.example.clement.studentplanner.database.StorageHelper.COLUMN_ID;
+import static com.example.clement.studentplanner.database.StorageHelper.TABLE_COURSE;
+
 /**
  * Created by Clement on 8/12/2017.
  */
@@ -34,9 +40,9 @@ public class CourseProvider extends StudentContentProviderBase {
         CONTENT_URI = builder.build();
         builder = builder.path("event");
         EVENT_URI = builder.build();
-        uriMatcher.addURI(AUTHORITY, BASE_PATH, COURSE_ALL);
         uriMatcher.addURI(AUTHORITY, BASE_PATH + "/#", COURSE_ID);
         uriMatcher.addURI(AUTHORITY, "event", COURSE_EVENT);
+        uriMatcher.addURI(AUTHORITY, BASE_PATH, COURSE_ALL);
     }
 
     @Override
@@ -47,34 +53,32 @@ public class CourseProvider extends StudentContentProviderBase {
     @Nullable
     @Override
     public Cursor query(@NonNull Uri uri, @Nullable String[] projection, @Nullable String selection, @Nullable String[] selectionArgs, @Nullable String sortOrder) {
-        int match = uriMatcher.match(uri);
-        switch(match) {
+        Cursor cursor;
+        ContentResolver resolver = getContext().getContentResolver();
+        projection = COLUMNS_EVENT;
+        switch(uriMatcher.match(uri)) {
             case COURSE_ID:
-                selection = StorageHelper.COLUMN_ID + "=" + uri.getLastPathSegment();
+                selection = COLUMN_ID + "=" + uri.getLastPathSegment();
                 // deliberate fallthrough, not a bug
             case COURSE_ALL:
-                return getDatabase().query(
-                    StorageHelper.TABLE_COURSE,
-                    StorageHelper.COLUMNS_COURSE,
-                    selection,
-                    null,
-                    null,
-                    null,
-                    StorageHelper.COLUMN_ID + " ASC"
-                );
+                projection = COLUMNS_COURSE;
+                // deliberate fallthrough, not a bug
             case COURSE_EVENT:
-                return getDatabase().query(
-                    StorageHelper.TABLE_COURSE,
-                    StorageHelper.COLUMNS_EVENT,
+                cursor = getDatabase().query(
+                    TABLE_COURSE,
+                    projection, // COLUMNS_EVENT if COURSE_EVENT, otherwise COLUMNS_COURSE
                     selection,
                     null,
                     null,
                     null,
-                    StorageHelper.COLUMN_ID + " ASC"
+                    COLUMN_ID + " ASC"
                 );
+                cursor.setNotificationUri(resolver, CONTENT_URI);
+                break;
             default:
-                return null;
+                cursor = null;
         }
+        return cursor;
     }
 
     @Nullable
@@ -87,7 +91,7 @@ public class CourseProvider extends StudentContentProviderBase {
     @Override
     public Uri insert(@NonNull Uri uri, @Nullable ContentValues values) {
         long id = getDatabase().insert(
-            StorageHelper.TABLE_COURSE,
+            TABLE_COURSE,
             null,
             values
         );
@@ -96,11 +100,11 @@ public class CourseProvider extends StudentContentProviderBase {
     }
     @Override
     public int delete(@NonNull Uri uri, @Nullable String selection, @Nullable String[] selectionArgs) {
-        return getDatabase().delete(StorageHelper.TABLE_COURSE, selection, selectionArgs);
+        return getDatabase().delete(TABLE_COURSE, selection, selectionArgs);
     }
     @Override
     public int update(@NonNull Uri uri, @Nullable ContentValues values, @Nullable String selection, @Nullable String[] selectionArgs) {
-        return getDatabase().update(StorageHelper.TABLE_COURSE, values, selection, selectionArgs);
+        return getDatabase().update(TABLE_COURSE, values, selection, selectionArgs);
     }
 
     /**

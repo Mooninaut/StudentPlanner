@@ -13,13 +13,14 @@ import java.util.Locale;
 public class Term extends AcademicEvent {
 //    private final String name;
     private int number;
+    private int id;
 //    private final long startMillis;
 //    private final long endMillis;
     @NonNull
     private final List<Course> courseList;
 //    private final int number;
 
-    public Term(@NonNull String name, long startMillis, long endMillis, int number) {
+    public Term(@NonNull String name, long startMillis, long endMillis, long id, int number) {
         super(name, startMillis, endMillis);
         this.number = number;
         this.courseList = new ArrayList<>();
@@ -33,7 +34,8 @@ public class Term extends AcademicEvent {
 //    public String getName() {
 //        return name;
 //    }
-
+    public int getId() {return id;}
+    public void setId(int id) { this.id = id;}
     public int getNumber() {
         return number;
     }

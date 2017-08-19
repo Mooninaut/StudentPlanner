@@ -19,29 +19,43 @@ public class Course extends AcademicEvent {
             this.value = value;
         }
         public int getValue() { return value; }
+        public static Status ofValue(int value) {
+            switch (value) {
+                case 1:
+                    return IN_PROGRESS;
+                case 2:
+                    return COMPLETED;
+                case 3:
+                    return DROPPED;
+                case 4:
+                    return PLANNED;
+                default:
+                    throw new IllegalArgumentException(Status.class.getCanonicalName()+" has no enum for value "+value);
+            }
+        }
     }
 //    private String name;
-    private int id;
+    private long id;
 //    private long startMillis;
 //    private long endMillis;
     @NonNull
     private final List<Assessment> assessmentList;
-    private int term;
+    private long termId;
     @NonNull
     private Status status;
 
-    public Course(@NonNull String name, long startMillis, long endMillis, int id, int term, @NonNull Status status) {
+    public Course(@NonNull String name, long startMillis, long endMillis, long id, long termId, @NonNull Status status) {
         super(name, startMillis, endMillis);
         this.id = id;
         this.assessmentList = new ArrayList<>();
-        this.term = term;
+        this.termId = termId;
         this.status = status;
 }
     public Course(@NonNull Course other) {
         super(other);
         this.id = other.getId();
         this.assessmentList = new ArrayList<>(other.getAssessmentList());
-        this.term = other.getTerm();
+        this.termId = other.getTermId();
         this.status = other.getStatus();
     }
 
@@ -49,7 +63,7 @@ public class Course extends AcademicEvent {
 //        return name;
 //    }
 
-    public final int getId() {
+    public final long getId() {
         return id;
     }
 
@@ -74,8 +88,8 @@ public class Course extends AcademicEvent {
         return assessmentList;
     }
 
-    public final int getTerm() {
-        return term;
+    public final long getTermId() {
+        return termId;
     }
 
     @NonNull
@@ -86,7 +100,7 @@ public class Course extends AcademicEvent {
 //        this.name = name;
 //    }
 
-    public final void setId(int id) {
+    public final void setId(long id) {
         this.id = id;
     }
 
@@ -98,8 +112,8 @@ public class Course extends AcademicEvent {
 //        this.endMillis = endMillis;
 //    }
 
-    public final void setTerm(int term) {
-        this.term = term;
+    public final void setTermId(long term) {
+        this.termId = term;
     }
 
     public final void setStatus(@NonNull Status status) {
@@ -109,7 +123,7 @@ public class Course extends AcademicEvent {
     @Override
     public String toString() {
         return String.format(Locale.US, "Course: name '%s', id '%d', startMillis '%d', endMillis '%d', term '%d', status '%s'",
-            getName(), id, getStartMillis(), getEndMillis(), term, status.toString());
+            getName(), getId(), getStartMillis(), getEndMillis(), getTermId(), getStatus().toString());
     }
 
 }

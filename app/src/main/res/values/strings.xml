@@ -6,4 +6,6 @@
     <string name="title_course_detail">Course Detail</string>
     <string name="start">Start</string>
     <string name="end">End</string>
+    <string name="go">GO</string>
+    <string name="stop">STOP</string>
 </resources>

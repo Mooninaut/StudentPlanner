@@ -13,6 +13,11 @@ import android.util.Log;
 import com.example.clement.studentplanner.data.Term;
 
 import static android.content.ContentResolver.SCHEME_CONTENT;
+import static com.example.clement.studentplanner.database.StorageHelper.COLUMNS_EVENT;
+import static com.example.clement.studentplanner.database.StorageHelper.COLUMNS_TERM;
+import static com.example.clement.studentplanner.database.StorageHelper.COLUMN_ID;
+import static com.example.clement.studentplanner.database.StorageHelper.COLUMN_NUMBER;
+import static com.example.clement.studentplanner.database.StorageHelper.TABLE_TERM;
 
 /**
  * Created by Clement on 8/6/2017.
@@ -50,44 +55,35 @@ public class TermProvider extends StudentContentProviderBase {
         return true;
     }
 
-
     @Nullable
     @Override
     public Cursor query(@NonNull Uri uri, @Nullable String[] projection, @Nullable String selection,
                         @Nullable String[] selectionArgs, @Nullable String sortOrder) {
         Cursor cursor;
         ContentResolver resolver = getContext().getContentResolver();
+        projection = COLUMNS_EVENT;
         switch(uriMatcher.match(uri)) {
             case TERM_ID:
-                selection = StorageHelper.COLUMN_ID + " = " + ContentUris.parseId(uri);
+                selection = COLUMN_ID + " = " + ContentUris.parseId(uri);
                 // deliberate fallthrough, not a bug
             case TERM_ALL:
-                cursor = getDatabase().query(
-                    StorageHelper.TABLE_TERM,
-                    StorageHelper.COLUMNS_TERM,
-                    selection,
-                    selectionArgs,
-                    null,
-                    null,
-                    StorageHelper.COLUMN_ID + " ASC"
-                );
-                cursor.setNotificationUri(resolver, CONTENT_URI);
-                break;
+                projection = COLUMNS_TERM;
+                // deliberate fallthrough, not a bug
             case TERM_EVENT:
                 cursor = getDatabase().query(
-                    StorageHelper.TABLE_TERM,
-                    StorageHelper.COLUMNS_EVENT,
+                    TABLE_TERM,
+                    projection,
                     selection,
                     selectionArgs,
                     null,
                     null,
-                    StorageHelper.COLUMN_ID + " ASC"
+                    COLUMN_ID + " ASC"
                 );
                 cursor.setNotificationUri(resolver, CONTENT_URI);
                 break;
             case TERM_MAX:
                 cursor = getDatabase().rawQuery(
-                    "SELECT MAX("+StorageHelper.COLUMN_NUMBER+") FROM "+StorageHelper.TABLE_TERM,
+                    "SELECT MAX("+COLUMN_NUMBER+") FROM "+TABLE_TERM,
                     null
                 );
                 break;
@@ -106,7 +102,7 @@ public class TermProvider extends StudentContentProviderBase {
     @Override
     public Uri insert(@NonNull Uri uri, @Nullable ContentValues values) {
         long id = getDatabase().insert(
-            StorageHelper.TABLE_TERM,
+            TABLE_TERM,
             null,
             values
         );
@@ -118,20 +114,21 @@ public class TermProvider extends StudentContentProviderBase {
     @NonNull
     public static ContentValues termToValues(@NonNull Term term) {
         ContentValues values = new ContentValues();
-        values.put(StorageHelper.COLUMN_NUMBER, term.getNumber());
+        values.put(COLUMN_NUMBER, term.getNumber());
         values.put(StorageHelper.COLUMN_NAME, term.getName());
         values.put(StorageHelper.COLUMN_START, term.getStartMillis());
         values.put(StorageHelper.COLUMN_END, term.getEndMillis());
+//        values.put(StorageHelper.COLUMN_ID, term.getId());
         return values;
     }
 
     @Override
     public int delete(@NonNull Uri uri, @Nullable String selection, @Nullable String[] selectionArgs) {
         if (uriMatcher.match(uri) == TERM_ID) {
-            selection = StorageHelper.COLUMN_ID + " = " + ContentUris.parseId(uri);
+            selection = COLUMN_ID + " = " + ContentUris.parseId(uri);
         }
         int rowsAffected = getDatabase().delete(
-            StorageHelper.TABLE_TERM,
+            TABLE_TERM,
             selection,
             null
         );
@@ -143,7 +140,7 @@ public class TermProvider extends StudentContentProviderBase {
 
     @Override
     public int update(@NonNull Uri uri, @Nullable ContentValues values, @Nullable String selection, @Nullable String[] selectionArgs) {
-        int rowsAffected = getDatabase().update(StorageHelper.TABLE_TERM, values, selection, selectionArgs);
+        int rowsAffected = getDatabase().update(TABLE_TERM, values, selection, selectionArgs);
         if (rowsAffected > 0) {
             notifyChange(CONTENT_URI);
         }

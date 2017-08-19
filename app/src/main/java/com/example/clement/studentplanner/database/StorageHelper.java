@@ -14,7 +14,7 @@ import java.util.ArrayList;
 
 public class StorageHelper extends SQLiteOpenHelper {
 
-    public static final int DATABASE_VERSION = 13;
+    public static final int DATABASE_VERSION = 14;
     public static final String TABLE_TERM = "term";
     public static final String COLUMN_ID = "_id";
     public static final String COLUMN_NAME = "name";

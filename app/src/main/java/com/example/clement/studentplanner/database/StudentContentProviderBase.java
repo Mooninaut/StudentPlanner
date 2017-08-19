@@ -2,6 +2,7 @@ package com.example.clement.studentplanner.database;
 
 import android.content.ContentProvider;
 import android.content.Context;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.support.annotation.NonNull;

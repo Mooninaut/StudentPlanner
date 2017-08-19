@@ -1,10 +1,12 @@
 package com.example.clement.studentplanner;
 
 import android.app.LoaderManager;
+import android.content.ContentUris;
 import android.content.CursorLoader;
 import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -19,7 +21,7 @@ import com.example.clement.studentplanner.data.Term;
 import com.example.clement.studentplanner.database.TermCursorAdapter;
 import com.example.clement.studentplanner.database.TermProvider;
 
-public class TermActivity extends AppCompatActivity
+public class TermListingActivity extends AppCompatActivity
     implements LoaderManager.LoaderCallbacks<Cursor>,
         TermListingFragment.OnTermListFragmentInteractionListener {
 
@@ -35,11 +37,18 @@ public class TermActivity extends AppCompatActivity
         termCursorAdapter = new TermCursorAdapter(this, null, 0);
         ListView termList = (ListView) findViewById(R.id.term_listing);
         termList.setAdapter(termCursorAdapter);
+//        Uri selected = getIntent().getParcelableExtra(TermProvider.CONTENT_ITEM_TYPE);
+//        int position = getIntent().getIntExtra("position", 0);
+//        termList.setItemChecked(position, true);
+//        termList.setSelection(position);
 
         termList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Intent intent = new Intent();
+                Intent intent = new Intent(TermListingActivity.this, TermDetailActivity.class);
+                Uri uri = ContentUris.withAppendedId(TermProvider.CONTENT_URI, id);
+                intent.putExtra(TermProvider.CONTENT_ITEM_TYPE, uri);
+                startActivity(intent);
             }
         });
         getLoaderManager().initLoader(0, null, this);

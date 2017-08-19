@@ -15,7 +15,7 @@ import android.view.MenuItem;
  * An activity representing a single Course detail screen. This
  * activity is only used narrow width devices. On tablet-size devices,
  * item details are presented side-by-side with a list of items
- * in a {@link CourseListActivity}.
+ * in a {@link CourseListingActivity}.
  */
 public class CourseDetailActivity extends AppCompatActivity {
 
@@ -54,8 +54,8 @@ public class CourseDetailActivity extends AppCompatActivity {
             // Create the detail fragment and add it to the activity
             // using a fragment transaction.
             Bundle arguments = new Bundle();
-            arguments.putString(CourseDetailFragment.ARG_ITEM_ID,
-                getIntent().getStringExtra(CourseDetailFragment.ARG_ITEM_ID));
+            arguments.putInt(CourseDetailFragment.ARG_ITEM_ID,
+                getIntent().getIntExtra(CourseDetailFragment.ARG_ITEM_ID, 0));
             CourseDetailFragment fragment = new CourseDetailFragment();
             fragment.setArguments(arguments);
             getSupportFragmentManager().beginTransaction()
@@ -75,7 +75,7 @@ public class CourseDetailActivity extends AppCompatActivity {
             //
             // http://developer.android.com/design/patterns/navigation.html#up-vs-back
             //
-            NavUtils.navigateUpTo(this, new Intent(this, CourseListActivity.class));
+            NavUtils.navigateUpTo(this, new Intent(this, CourseListingActivity.class));
             return true;
         }
         return super.onOptionsItemSelected(item);
