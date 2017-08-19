@@ -25,7 +25,7 @@ import static com.example.clement.studentplanner.database.StorageHelper.TABLE_TE
 
 public class TermProvider extends StudentContentProviderBase {
     public static final String AUTHORITY = "com.example.clement.studentplanner.termprovider";
-    public static final String PATH_BASE = "term";
+    public static final String BASE_PATH = "term";
     public static final String PATH_EVENT = "event";
     public static final String PATH_MAX = "max";
     public static final Uri CONTENT_URI;
@@ -41,12 +41,12 @@ public class TermProvider extends StudentContentProviderBase {
         Uri.Builder builder = new Uri.Builder()
             .scheme(SCHEME_CONTENT)
             .authority(AUTHORITY);
-        CONTENT_URI = builder.path(PATH_BASE).build();
+        CONTENT_URI = builder.path(BASE_PATH).build();
         EVENT_URI = builder.path(PATH_EVENT).build();
         MAX_TERM_URI = builder.path(PATH_MAX).build();
         Log.i(TermProvider.class.getSimpleName(), EVENT_URI.getPath());
-        uriMatcher.addURI(AUTHORITY, PATH_BASE, TERM_ALL);
-        uriMatcher.addURI(AUTHORITY, PATH_BASE + "/#", TERM_ID);
+        uriMatcher.addURI(AUTHORITY, BASE_PATH, TERM_ALL);
+        uriMatcher.addURI(AUTHORITY, BASE_PATH + "/#", TERM_ID);
         uriMatcher.addURI(AUTHORITY, PATH_EVENT, TERM_EVENT);
         uriMatcher.addURI(AUTHORITY, PATH_MAX, TERM_MAX);
     }

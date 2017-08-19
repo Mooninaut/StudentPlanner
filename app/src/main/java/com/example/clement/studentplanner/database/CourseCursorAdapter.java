@@ -71,7 +71,6 @@ public class CourseCursorAdapter extends CursorAdapter{
         Cursor cursor = getCursor();
         Course course = null;
         if (cursor.moveToPosition(position)) {
-            Log.d("this", cursor.getColumnName(0)+cursor.getColumnName(1)+cursor.getColumnName(2)+cursor.getColumnName(3)+cursor.getColumnName(4));
             String name = cursor.getString(cursor.getColumnIndex(COLUMN_NAME));
             long start = cursor.getLong(cursor.getColumnIndex(COLUMN_START));
             long end = cursor.getLong(cursor.getColumnIndex(COLUMN_END));

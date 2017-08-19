@@ -7,7 +7,6 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 
 import com.example.clement.studentplanner.data.Term;
@@ -26,12 +25,15 @@ public class TermDetailActivity extends AppCompatActivity {
     private Term term;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
-        Uri contentUri = getIntent().getParcelableExtra(TermProvider.CONTENT_ITEM_TYPE);
-        long term_id = ContentUris.parseId(contentUri);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.term_detail_activity);
+
+        Uri termContentUri = getIntent().getParcelableExtra(TermProvider.CONTENT_ITEM_TYPE);
+        long termId = ContentUris.parseId(termContentUri);
+
         setTerm();
-        Cursor courseCursor = getContentResolver().query(ContentUris.withAppendedId(CourseProvider.CONTENT_URI,term_id), null, null, null, null);
+
+        Cursor courseCursor = getContentResolver().query(ContentUris.withAppendedId(CourseProvider.CONTENT_URI,termId), null, null, null, null);
         courseAdapter = new CourseCursorAdapter(this, courseCursor, 0);
         CourseRecyclerAdapter courseRecyclerAdapter = new CourseRecyclerAdapter(courseAdapter, this, false);
         RecyclerView recyclerView = (RecyclerView) findViewById(R.id.course_listing_list);
@@ -45,12 +47,6 @@ public class TermDetailActivity extends AppCompatActivity {
         try {
             cursor = getContentResolver().query(termUri, null, null, null, null);
             if (cursor != null && cursor.moveToFirst()) {
-//                int id = cursor.getInt(cursor.getColumnIndex(COLUMN_ID));
-//                String name = cursor.getString(cursor.getColumnIndex(COLUMN_NAME));
-//                long startMillis = cursor.getLong(cursor.getColumnIndex(COLUMN_START));
-//                long endMillis = cursor.getLong(cursor.getColumnIndex(COLUMN_END));
-//                int number = cursor.getInt(cursor.getColumnIndex(COLUMN_NUMBER));
-//                Term term = new Term(name, startMillis, endMillis, number);
                 TermCursorAdapter termAdapter = new TermCursorAdapter(this, cursor, 0);
                 termAdapter.bindView(findViewById(R.id.term_list_item), this, cursor);
                 term = termAdapter.getItem(0);
@@ -64,8 +60,5 @@ public class TermDetailActivity extends AppCompatActivity {
     }
     private void setupRecyclerView(@NonNull RecyclerView recyclerView) {
         recyclerView.setAdapter(new CourseRecyclerAdapter(courseAdapter, this, false));
-        LinearLayoutManager llm = new LinearLayoutManager(this);
-        llm.setOrientation(LinearLayoutManager.VERTICAL);
-        recyclerView.setLayoutManager(llm);
     }
 }

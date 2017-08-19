@@ -54,8 +54,8 @@ public class CourseDetailActivity extends AppCompatActivity {
             // Create the detail fragment and add it to the activity
             // using a fragment transaction.
             Bundle arguments = new Bundle();
-            arguments.putInt(CourseDetailFragment.ARG_ITEM_ID,
-                getIntent().getIntExtra(CourseDetailFragment.ARG_ITEM_ID, 0));
+            arguments.putLong(CourseDetailFragment.ARG_ITEM_ID,
+                getIntent().getLongExtra(CourseDetailFragment.ARG_ITEM_ID, 0));
             CourseDetailFragment fragment = new CourseDetailFragment();
             fragment.setArguments(arguments);
             getSupportFragmentManager().beginTransaction()

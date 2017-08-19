@@ -35,14 +35,14 @@ public class CourseRecyclerAdapter
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext())
+        View itemView = LayoutInflater.from(context)
             .inflate(R.layout.course_list_item, parent, false);
-        return new ViewHolder(view);
+        return new ViewHolder(itemView);
     }
 
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
-        Course course = (Course) courseCursorAdapter.getItem(position);
+        Course course = courseCursorAdapter.getItem(position);
         holder.course = course;
         holder.courseNumberTV.setText(Long.toString(course.getId()));
         holder.courseNameTV.setText(course.getName());

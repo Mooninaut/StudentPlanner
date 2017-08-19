@@ -1,22 +1,21 @@
 package com.example.clement.studentplanner;
 
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
-import android.view.View;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.ActionBar;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
-
-//import com.example.clement.studentplanner.dummy.DummyContent;
+import android.view.View;
 
 import com.example.clement.studentplanner.database.CourseCursorAdapter;
+import com.example.clement.studentplanner.database.CourseLoaderListener;
 import com.example.clement.studentplanner.database.CourseRecyclerAdapter;
+
+//import com.example.clement.studentplanner.dummy.DummyContent;
 
 /**
  * An activity representing a list of Courses. This activity
@@ -33,8 +32,9 @@ public class CourseListingActivity extends AppCompatActivity {
      * device.
      */
     private boolean mTwoPane;
-    private CourseCursorAdapter courseAdapter;
-
+    private CourseCursorAdapter courseCursorAdapter;
+    private CourseLoaderListener courseLoaderListener;
+    public static final int COURSE_LOADER_ID = 3;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -57,11 +57,9 @@ public class CourseListingActivity extends AppCompatActivity {
         if (actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
-        courseAdapter = new CourseCursorAdapter(this, null, 0);
-
-        View recyclerView = findViewById(R.id.course_listing_list);
-        assert recyclerView != null;
-        setupRecyclerView((RecyclerView) recyclerView);
+        courseCursorAdapter = new CourseCursorAdapter(this, null, 0);
+        courseLoaderListener = new CourseLoaderListener(this, courseCursorAdapter);
+        getLoaderManager().initLoader(COURSE_LOADER_ID, null, courseLoaderListener);
 
         if (findViewById(R.id.course_detail_container) != null) {
             // The detail container view will be present only in the
@@ -70,6 +68,8 @@ public class CourseListingActivity extends AppCompatActivity {
             // activity should be in two-pane mode.
             mTwoPane = true;
         }
+        RecyclerView recyclerView = (RecyclerView) findViewById(R.id.course_listing_list);
+        recyclerView.setAdapter(new CourseRecyclerAdapter(courseCursorAdapter, this, mTwoPane));
     }
 
     @Override
@@ -88,11 +88,4 @@ public class CourseListingActivity extends AppCompatActivity {
         }
         return super.onOptionsItemSelected(item);
     }
-    private void setupRecyclerView(@NonNull RecyclerView recyclerView) {
-        recyclerView.setAdapter(new CourseRecyclerAdapter(courseAdapter, this, mTwoPane));
-        LinearLayoutManager llm = new LinearLayoutManager(this);
-        llm.setOrientation(LinearLayoutManager.VERTICAL);
-        recyclerView.setLayoutManager(llm);
-    }
-
 }

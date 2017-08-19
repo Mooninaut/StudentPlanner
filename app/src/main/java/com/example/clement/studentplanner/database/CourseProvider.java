@@ -1,13 +1,10 @@
 package com.example.clement.studentplanner.database;
 
-import android.content.ContentProvider;
 import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.ContentValues;
-import android.content.Context;
 import android.content.UriMatcher;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -16,6 +13,7 @@ import static android.content.ContentResolver.SCHEME_CONTENT;
 import static com.example.clement.studentplanner.database.StorageHelper.COLUMNS_COURSE;
 import static com.example.clement.studentplanner.database.StorageHelper.COLUMNS_EVENT;
 import static com.example.clement.studentplanner.database.StorageHelper.COLUMN_ID;
+import static com.example.clement.studentplanner.database.StorageHelper.COLUMN_TERM_ID;
 import static com.example.clement.studentplanner.database.StorageHelper.TABLE_COURSE;
 
 /**
@@ -30,6 +28,7 @@ public class CourseProvider extends StudentContentProviderBase {
     private static final int COURSE_ALL = 1;
     private static final int COURSE_ID = 2;
     private static final int COURSE_EVENT = 3;
+    private static final int COURSE_TERM = 4;
     private static final UriMatcher uriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
     public static final String CONTENT_ITEM_TYPE = "Course";
     static {
@@ -38,10 +37,11 @@ public class CourseProvider extends StudentContentProviderBase {
             .authority(AUTHORITY)
             .path(BASE_PATH);
         CONTENT_URI = builder.build();
-        builder = builder.path("event");
+        builder = builder.path(EventProvider.BASE_PATH);
         EVENT_URI = builder.build();
         uriMatcher.addURI(AUTHORITY, BASE_PATH + "/#", COURSE_ID);
-        uriMatcher.addURI(AUTHORITY, "event", COURSE_EVENT);
+        uriMatcher.addURI(AUTHORITY, EventProvider.BASE_PATH, COURSE_EVENT);
+        uriMatcher.addURI(AUTHORITY, TermProvider.BASE_PATH, COURSE_TERM);
         uriMatcher.addURI(AUTHORITY, BASE_PATH, COURSE_ALL);
     }
 
@@ -55,29 +55,33 @@ public class CourseProvider extends StudentContentProviderBase {
     public Cursor query(@NonNull Uri uri, @Nullable String[] projection, @Nullable String selection, @Nullable String[] selectionArgs, @Nullable String sortOrder) {
         Cursor cursor;
         ContentResolver resolver = getContext().getContentResolver();
-        projection = COLUMNS_EVENT;
-        switch(uriMatcher.match(uri)) {
-            case COURSE_ID:
-                selection = COLUMN_ID + "=" + uri.getLastPathSegment();
-                // deliberate fallthrough, not a bug
-            case COURSE_ALL:
-                projection = COLUMNS_COURSE;
-                // deliberate fallthrough, not a bug
+        int match = uriMatcher.match(uri);
+        projection = COLUMNS_COURSE;
+        switch (match) {
             case COURSE_EVENT:
-                cursor = getDatabase().query(
-                    TABLE_COURSE,
-                    projection, // COLUMNS_EVENT if COURSE_EVENT, otherwise COLUMNS_COURSE
-                    selection,
-                    null,
-                    null,
-                    null,
-                    COLUMN_ID + " ASC"
-                );
-                cursor.setNotificationUri(resolver, CONTENT_URI);
+                projection = COLUMNS_EVENT;
+                break;
+            case COURSE_ID:
+                selection = COLUMN_ID + "=" + ContentUris.parseId(uri);
+                break;
+            case COURSE_ALL:
+                break;
+            case COURSE_TERM:
+                selection = COLUMN_TERM_ID + "=" + ContentUris.parseId(uri);
                 break;
             default:
-                cursor = null;
+                return null;
         }
+        cursor = getDatabase().query(
+            TABLE_COURSE,
+            projection,
+            selection,
+            null,
+            null,
+            null,
+            COLUMN_ID + " ASC"
+        );
+        cursor.setNotificationUri(resolver, CONTENT_URI);
         return cursor;
     }
 

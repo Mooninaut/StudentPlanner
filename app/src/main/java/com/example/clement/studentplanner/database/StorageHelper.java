@@ -64,7 +64,7 @@ public class StorageHelper extends SQLiteOpenHelper {
         schema.add("DROP TABLE IF EXISTS "+TABLE_ASSESSMENT);
         schema.add("DROP TABLE IF EXISTS "+TABLE_COURSE);
         schema.add("DROP TABLE IF EXISTS "+TABLE_TERM);
-        schema.add("DROP TABLE IF EXISTS event");
+//        schema.add("DROP TABLE IF EXISTS event");
 //        schema.add("CREATE TABLE event (_id INTEGER PRIMARY KEY, name TEXT, start INTEGER, end INTEGER)");
 //        schema.add("CREATE TABLE term (_id INTEGER PRIMARY KEY, event_id INTEGER REFERENCES event(_id))");
 

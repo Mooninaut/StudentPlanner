@@ -48,7 +48,7 @@ public class CourseDetailFragment extends Fragment {
             // arguments. In a real-world scenario, use a Loader
             // to load content from a content provider.
 //            course = DummyContent.ITEM_MAP.get(getArguments().getString(ARG_ITEM_ID));
-
+//            course = getContext().getContentResolver().query
             Activity activity = this.getActivity();
             CollapsingToolbarLayout appBarLayout = (CollapsingToolbarLayout) activity.findViewById(R.id.toolbar_layout);
             if (appBarLayout != null) {
