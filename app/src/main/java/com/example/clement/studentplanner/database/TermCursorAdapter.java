@@ -70,13 +70,16 @@ public class TermCursorAdapter extends CursorAdapter{
         Term term = null;
         if (cursor.moveToPosition(position)) {
             term = new Term(
+                cursor.getLong(cursor.getColumnIndex(COLUMN_ID)),
                 cursor.getString(cursor.getColumnIndex(COLUMN_NAME)),
                 cursor.getLong(cursor.getColumnIndex(COLUMN_START)),
                 cursor.getLong(cursor.getColumnIndex(COLUMN_END)),
-                cursor.getInt(cursor.getColumnIndex(COLUMN_ID)),
                 cursor.getInt(cursor.getColumnIndex(COLUMN_NUMBER))
             );
         }
-        return term;
+        if (term != null) {
+            term.id();
+        }
+        return null;
     }
 }

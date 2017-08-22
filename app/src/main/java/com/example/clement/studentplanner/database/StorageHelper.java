@@ -3,6 +3,7 @@ package com.example.clement.studentplanner.database;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.provider.BaseColumns;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
@@ -16,7 +17,7 @@ public class StorageHelper extends SQLiteOpenHelper {
 
     public static final int DATABASE_VERSION = 14;
     public static final String TABLE_TERM = "term";
-    public static final String COLUMN_ID = "_id";
+    public static final String COLUMN_ID = BaseColumns._ID;
     public static final String COLUMN_NAME = "name";
 //    public static final String COLUMN_EVENT_ID = "event_id";
     public static final String COLUMN_NUMBER = "number";
@@ -28,13 +29,13 @@ public class StorageHelper extends SQLiteOpenHelper {
 };
     public static final String TABLE_COURSE = "course";
 
-    public static final String COLUMN_TERM_ID = "term_id";
+    public static final String COLUMN_TERM_ID = TABLE_TERM + BaseColumns._ID;
     public static final String COLUMN_STATUS = "status";
     public static final String[] COLUMNS_COURSE = {
         COLUMN_ID, COLUMN_NAME, COLUMN_START, COLUMN_END, COLUMN_TERM_ID, COLUMN_STATUS
     };
     public static final String TABLE_ASSESSMENT = "assessment";
-    public static final String COLUMN_COURSE_ID = "course_id";
+    public static final String COLUMN_COURSE_ID = TABLE_COURSE + BaseColumns._ID;
     public static final String COLUMN_TYPE = "type";
     public static final String COLUMN_NOTES = "notes";
 
@@ -42,7 +43,7 @@ public class StorageHelper extends SQLiteOpenHelper {
         COLUMN_ID, COLUMN_NAME, COLUMN_START, COLUMN_END, COLUMN_COURSE_ID, COLUMN_TYPE, COLUMN_NOTES
     };
     public static final String TABLE_PHOTO = "photo";
-    public static final String COLUMN_ASSESSMENT_ID = "assessment_id";
+    public static final String COLUMN_ASSESSMENT_ID = TABLE_ASSESSMENT + BaseColumns._ID;
     public static final String COLUMN_FILE_NAME = "file_name";
 
     public static final String[] COLUMNS_EVENT = {
@@ -57,6 +58,9 @@ public class StorageHelper extends SQLiteOpenHelper {
     public static final int COURSE_ID_OFFSET = 20_000_000;
     public static final int ASSESSMENT_ID_OFFSET = 30_000_000;
     private static final String[] CREATE_DATABASE;
+
+    public static final String DATABASE_FILE_NAME = "studentplanner.sqlite3";
+
     static {
         ArrayList<String> schema = new ArrayList<String>(20);
         schema.add("DROP VIEW IF EXISTS "+VIEW_EVENT);
@@ -115,7 +119,7 @@ public class StorageHelper extends SQLiteOpenHelper {
         Log.i(StorageHelper.class.getSimpleName(), "Database created!");
     }
     public StorageHelper(@NonNull Context context) {
-        super(context, "schedule", null, DATABASE_VERSION);
+        super(context, DATABASE_FILE_NAME, null, DATABASE_VERSION);
     }
 
     @Override

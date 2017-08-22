@@ -8,4 +8,8 @@
     <string name="end">End</string>
     <string name="go">GO</string>
     <string name="stop">STOP</string>
+    <string name="title_home">Home</string>
+    <string name="title_terms">Terms</string>
+    <string name="title_courses">Courses</string>
+    <string name="title_assessments">Assessments</string>
 </resources>

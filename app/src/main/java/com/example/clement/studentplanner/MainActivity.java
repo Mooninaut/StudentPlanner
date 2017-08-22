@@ -22,6 +22,7 @@ import android.widget.Toast;
 import com.example.clement.studentplanner.data.Course;
 import com.example.clement.studentplanner.data.Term;
 import com.example.clement.studentplanner.database.CourseProvider;
+import com.example.clement.studentplanner.database.DataWrapper;
 import com.example.clement.studentplanner.database.EventCursorAdapter;
 import com.example.clement.studentplanner.database.EventProvider;
 import com.example.clement.studentplanner.database.StorageHelper;
@@ -31,6 +32,7 @@ import com.example.clement.studentplanner.database.TermProvider;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 
+import static com.example.clement.studentplanner.database.EventProvider.eventToSource;
 import static com.example.clement.studentplanner.database.StorageHelper.COLUMN_ID;
 import static com.example.clement.studentplanner.database.StorageHelper.TERM_ID_OFFSET;
 
@@ -69,7 +71,7 @@ public class MainActivity extends AppCompatActivity
         eventList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Long sourceId = id / 2L; // Event IDs are original id * 2 or 1 + original id * 2
+                Long sourceId = eventToSource(id);
                 if (sourceId < StorageHelper.COURSE_ID_OFFSET) {// term
                     launchTermListingActivity(sourceId);
                 }
@@ -134,24 +136,26 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void insertSampleData() {
-        int term = 1;
+        int termNumber = 1;
         Cursor maxCursor = getContentResolver().query(TermProvider.MAX_TERM_URI, null, null, null, null);
         if (maxCursor != null) {
             if (maxCursor.moveToFirst()) {
                 if (maxCursor.getColumnIndex(COLUMN_ID) >= 0) {
-                    term += maxCursor.getInt(maxCursor.getColumnIndex(COLUMN_ID)) - TERM_ID_OFFSET;
+                    termNumber += maxCursor.getInt(maxCursor.getColumnIndex(COLUMN_ID)) - TERM_ID_OFFSET;
                 }
             }
             maxCursor.close();
         }
         Calendar termStart = new GregorianCalendar(2015, Calendar.APRIL, 1);
-        termStart.add(Calendar.MONTH, 6 * (term - 1));
+        termStart.add(Calendar.MONTH, 6 * (termNumber - 1));
         Calendar termEnd = new GregorianCalendar(2015, Calendar.OCTOBER, 1);
-        termEnd.add(Calendar.MONTH, 6 * (term - 1));
-        Uri termUri = insertTerm(new Term("Term "+term, termStart.getTimeInMillis(), termEnd.getTimeInMillis(), term, term));
+        termEnd.add(Calendar.MONTH, 6 * (termNumber - 1));
+        Term term = new Term("Term "+termNumber, termStart.getTimeInMillis(), termEnd.getTimeInMillis(), termNumber);
+        Uri termUri = insertTerm(term);
         long termId = ContentUris.parseId(termUri);
+        DataWrapper<Term> termWrapper = new DataWrapper<>(term, termId);
         termEnd.add(Calendar.MONTH, -5);
-        insertCourse(new Course("Course "+term, termStart.getTimeInMillis(), termEnd.getTimeInMillis(), termId, term, Course.Status.IN_PROGRESS));
+        insertCourse(new Course("Course "+term, termStart.getTimeInMillis(), termEnd.getTimeInMillis(), termId, Course.Status.IN_PROGRESS));
     }
 
     private Uri insertTerm(Term term) {
@@ -167,11 +171,11 @@ public class MainActivity extends AppCompatActivity
     }
     private Uri insertCourse(Course course) {
         ContentValues values = new ContentValues();
-        values.put(StorageHelper.COLUMN_NAME, course.getName());
-        values.put(StorageHelper.COLUMN_START, course.getStartMillis());
-        values.put(StorageHelper.COLUMN_END, course.getEndMillis());
-        values.put(StorageHelper.COLUMN_STATUS, course.getStatus().getValue());
-        values.put(StorageHelper.COLUMN_TERM_ID, course.getTermId() + StorageHelper.TERM_ID_OFFSET);
+        values.put(StorageHelper.COLUMN_NAME, course.name());
+        values.put(StorageHelper.COLUMN_START, course.startMillis());
+        values.put(StorageHelper.COLUMN_END, course.endMillis());
+        values.put(StorageHelper.COLUMN_STATUS, course.status().value());
+        values.put(StorageHelper.COLUMN_TERM_ID, course.termId() + StorageHelper.TERM_ID_OFFSET);
         Uri inserted = getContentResolver().insert(CourseProvider.CONTENT_URI, values);
         if (inserted != null) {
 //            getContentResolver().notifyChange(EventProvider.CONTENT_URI, null);

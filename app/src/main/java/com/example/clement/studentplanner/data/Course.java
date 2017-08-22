@@ -18,8 +18,8 @@ public class Course extends AcademicEvent {
         Status(int value) {
             this.value = value;
         }
-        public int getValue() { return value; }
-        public static Status ofValue(int value) {
+        public int value() { return value; }
+        public static Status of(int value) {
             switch (value) {
                 case 1:
                     return IN_PROGRESS;
@@ -35,74 +35,54 @@ public class Course extends AcademicEvent {
         }
     }
 //    private String name;
-    private long id;
+    private long id = -1;
 //    private long startMillis;
 //    private long endMillis;
-    @NonNull
-    private final List<Assessment> assessmentList;
-    private long termId;
+//    @NonNull
+//    private final List<Assessment> assessmentList;
+    private long termId = -1;
     @NonNull
     private Status status;
-
-    public Course(@NonNull String name, long startMillis, long endMillis, long id, long termId, @NonNull Status status) {
-        super(name, startMillis, endMillis);
-        this.id = id;
-        this.assessmentList = new ArrayList<>();
+    public Course() {}
+    public Course(long id, @NonNull String name, long startMillis, long endMillis, long termId, @NonNull Status status) {
+        super(id, name, startMillis, endMillis);
+//        this.id = id;
+//        this.assessmentList = new ArrayList<>();
         this.termId = termId;
         this.status = status;
-}
+    }
+    public Course (@NonNull String name, long startMillis, long endMillis, long termId, @NonNull Status status) {
+        this(-1, name, startMillis, endMillis, termId, status);
+    }
+    public Course(long id, @NonNull String name, long startMillis, long endMillis, Term term, @NonNull Status status) {
+        super(id, name, startMillis, endMillis);
+        this.termId = term.id();
+        this.status = status;
+    }
+    public Course(@NonNull String name, long startMillis, long endMillis, Term term, @NonNull Status status) {
+        this(-1, name, startMillis, endMillis, term.id(), status);
+    }
     public Course(@NonNull Course other) {
         super(other);
-        this.id = other.getId();
-        this.assessmentList = new ArrayList<>(other.getAssessmentList());
-        this.termId = other.getTermId();
-        this.status = other.getStatus();
+        this.termId = other.termId();
+        this.status = other.status();
     }
 
-//    public String getName() {
-//        return name;
-//    }
-
-    public final long getId() {
-        return id;
-    }
-
-//    public long getStartMillis() {
-//        return startMillis;
-//    }
-
-//    public Date getStartDate() {
-//        return new Date(startMillis);
-//    }
-
-//    public long getEndMillis() {
-//        return endMillis;
-//    }
-
-//    public Date getEndDate() {
-//        return new Date(endMillis);
-//    }
-
-    @NonNull
-    public final List<Assessment> getAssessmentList() {
-        return assessmentList;
-    }
-
-    public final long getTermId() {
+    public long termId() {
         return termId;
     }
 
     @NonNull
-    public final Status getStatus() {
+    public Status status() {
         return status;
     }
 //    public void setName(String name) {
 //        this.name = name;
 //    }
 
-    public final void setId(long id) {
-        this.id = id;
-    }
+//    public final void setId(long id) {
+//        this.id = id;
+//    }
 
 //    public void setStartMillis(long startMillis) {
 //        this.startMillis = startMillis;
@@ -112,18 +92,18 @@ public class Course extends AcademicEvent {
 //        this.endMillis = endMillis;
 //    }
 
-    public final void setTermId(long term) {
+    public void termId(long term) {
         this.termId = term;
     }
 
-    public final void setStatus(@NonNull Status status) {
+    public void status(@NonNull Status status) {
         this.status = status;
     }
 
     @Override
     public String toString() {
-        return String.format(Locale.US, "Course: name '%s', id '%d', startMillis '%d', endMillis '%d', term '%d', status '%s'",
-            getName(), getId(), getStartMillis(), getEndMillis(), getTermId(), getStatus().toString());
+        return String.format(Locale.US, "Course: name '%s', startMillis '%d', endMillis '%d', term '%d', status '%s'",
+            name(), startMillis(), endMillis(), termId(), status().toString());
     }
 
 }

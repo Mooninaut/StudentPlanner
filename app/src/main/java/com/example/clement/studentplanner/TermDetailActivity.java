@@ -8,11 +8,14 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
+import android.view.Menu;
 
 import com.example.clement.studentplanner.data.Term;
 import com.example.clement.studentplanner.database.CourseCursorAdapter;
 import com.example.clement.studentplanner.database.CourseProvider;
 import com.example.clement.studentplanner.database.CourseRecyclerAdapter;
+import com.example.clement.studentplanner.database.DataWrapper;
 import com.example.clement.studentplanner.database.TermCursorAdapter;
 import com.example.clement.studentplanner.database.TermProvider;
 
@@ -22,18 +25,21 @@ import com.example.clement.studentplanner.database.TermProvider;
 
 public class TermDetailActivity extends AppCompatActivity {
     private CourseCursorAdapter courseAdapter;
-    private Term term;
+//    private Term term;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.term_detail_activity);
+
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
 
         Uri termContentUri = getIntent().getParcelableExtra(TermProvider.CONTENT_ITEM_TYPE);
         long termId = ContentUris.parseId(termContentUri);
 
         setTerm();
 
-        Cursor courseCursor = getContentResolver().query(ContentUris.withAppendedId(CourseProvider.CONTENT_URI,termId), null, null, null, null);
+        Cursor courseCursor = getContentResolver().query(ContentUris.withAppendedId(CourseProvider.TERM_URI, termId), null, null, null, null);
         courseAdapter = new CourseCursorAdapter(this, courseCursor, 0);
         CourseRecyclerAdapter courseRecyclerAdapter = new CourseRecyclerAdapter(courseAdapter, this, false);
         RecyclerView recyclerView = (RecyclerView) findViewById(R.id.course_listing_list);
@@ -49,7 +55,7 @@ public class TermDetailActivity extends AppCompatActivity {
             if (cursor != null && cursor.moveToFirst()) {
                 TermCursorAdapter termAdapter = new TermCursorAdapter(this, cursor, 0);
                 termAdapter.bindView(findViewById(R.id.term_list_item), this, cursor);
-                term = termAdapter.getItem(0);
+//                term = termAdapter.getItem(0);
             }
         } finally {
             if (cursor != null) {
@@ -60,5 +66,10 @@ public class TermDetailActivity extends AppCompatActivity {
     }
     private void setupRecyclerView(@NonNull RecyclerView recyclerView) {
         recyclerView.setAdapter(new CourseRecyclerAdapter(courseAdapter, this, false));
+    }
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.options_menu, menu);
+        return true;
     }
 }

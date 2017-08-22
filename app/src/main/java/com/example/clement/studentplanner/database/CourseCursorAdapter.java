@@ -2,7 +2,6 @@ package com.example.clement.studentplanner.database;
 
 import android.content.Context;
 import android.database.Cursor;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -76,12 +75,12 @@ public class CourseCursorAdapter extends CursorAdapter{
             long end = cursor.getLong(cursor.getColumnIndex(COLUMN_END));
             int id = cursor.getInt(cursor.getColumnIndex(COLUMN_ID));
             int term = cursor.getInt(cursor.getColumnIndex(COLUMN_TERM_ID));
-            Course.Status status = Course.Status.ofValue(cursor.getInt(cursor.getColumnIndex(COLUMN_STATUS)));
+            Course.Status status = Course.Status.of(cursor.getInt(cursor.getColumnIndex(COLUMN_STATUS)));
             course = new Course(
+                id,
                 name,
                 start,
                 end,
-                id,
                 term,
                 status
             );

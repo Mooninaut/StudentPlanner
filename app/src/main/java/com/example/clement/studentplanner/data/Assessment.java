@@ -18,43 +18,58 @@ public class Assessment extends AcademicEvent {
         public int getValue() { return value; }
     }
     //private String name;
+    private long courseId = AcademicEvent.NO_ID;
     @NonNull
     private Type type;
     //private long startMillis;
     @NonNull
     private String notes;
 
-    public Assessment(@NonNull String name, long startMillis, long endMillis, @NonNull Type type, @NonNull String notes) {
-        super(name, startMillis, endMillis);
+    public Assessment(long id, @NonNull String name, long startMillis, long endMillis, long courseId, @NonNull Type type, @NonNull String notes) {
+        super(id, name, startMillis, endMillis);
         this.type = type;
         this.notes = notes;
+        this.courseId = courseId;
+    }
+    public Assessment() {}
+    public Assessment(@NonNull String name, long startMillis, long endMillis, long courseId, @NonNull Type type, @NonNull String notes) {
+        super(AcademicEvent.NO_ID, name, startMillis, endMillis);
+        this.type = type;
+        this.notes = notes;
+        this.courseId = courseId;
     }
     public Assessment(@NonNull Assessment other) {
         super(other);
-        this.type = other.getType();
-        this.notes = other.getNotes();
+        this.type = other.type();
+        this.notes = other.notes();
     }
 
     @NonNull
-    public final Type getType() {
+    public Type type() {
         return type;
     }
 
     @NonNull
-    public final String getNotes() {
+    public String notes() {
         return notes;
     }
 
-    public final void setType(@NonNull Type type) {
+    public long courseId() {
+        return courseId;
+    }
+    public void type(@NonNull Type type) {
         this.type = type;
     }
-    public final void setNotes(@NonNull String notes) {
+    public void notes(@NonNull String notes) {
         this.notes = notes;
     }
-
-    @Override @NonNull
+    public void courseId(long courseId) {
+        this.courseId = courseId;
+    }
+    @Override
+    @NonNull
     public String toString() {
         return String.format(Locale.US, "Assessment: name '%s', startMillis '%d', endMillis '%d', type '%s', notes '%s'",
-            getName(), getStartMillis(), getEndMillis(), type.toString(), notes);
+            name(), startMillis(), endMillis(), type().toString(), notes());
     }
 }

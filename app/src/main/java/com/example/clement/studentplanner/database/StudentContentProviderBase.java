@@ -2,7 +2,6 @@ package com.example.clement.studentplanner.database;
 
 import android.content.ContentProvider;
 import android.content.Context;
-import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.support.annotation.NonNull;
@@ -12,10 +11,11 @@ import android.support.annotation.NonNull;
  */
 
 abstract class StudentContentProviderBase extends ContentProvider {
-    private SQLiteDatabase database;
+    private SQLiteDatabase writableDatabase;
+    private SQLiteDatabase readableDatabase;
     private StorageHelper helper;
     /**
-     * Lazily initialize the database object
+     * Lazily initialize the writableDatabase object
      */
     @NonNull
     protected final synchronized StorageHelper getHelper() {
@@ -29,11 +29,18 @@ abstract class StudentContentProviderBase extends ContentProvider {
         return helper;
     }
     @NonNull
-    protected final synchronized SQLiteDatabase getDatabase() {
-        if (database == null) {
-            database = getHelper().getWritableDatabase();
+    protected final synchronized SQLiteDatabase getWritableDatabase() {
+        if (writableDatabase == null) {
+            writableDatabase = getHelper().getWritableDatabase();
         }
-        return database;
+        return writableDatabase;
+    }
+    @NonNull
+    protected final synchronized SQLiteDatabase getReadableDatabase() {
+        if (readableDatabase == null) {
+            readableDatabase = getHelper().getReadableDatabase();
+        }
+        return readableDatabase;
     }
     protected void notifyChange(@NonNull Uri uri) {
         getContext().getContentResolver().notifyChange(uri, null);

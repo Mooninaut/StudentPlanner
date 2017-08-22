@@ -15,6 +15,8 @@ import com.example.clement.studentplanner.CourseDetailFragment;
 import com.example.clement.studentplanner.R;
 import com.example.clement.studentplanner.data.Course;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
 /**
@@ -26,6 +28,7 @@ public class CourseRecyclerAdapter
     private final CourseCursorAdapter courseCursorAdapter;
     private final boolean isTwoPane;
     private final AppCompatActivity context;
+    private final DateFormat dateFormat = DateFormat.getDateInstance();
 
     public CourseRecyclerAdapter(CourseCursorAdapter adapter, AppCompatActivity context, boolean isTwoPane) {
         courseCursorAdapter = adapter;
@@ -44,20 +47,20 @@ public class CourseRecyclerAdapter
     public void onBindViewHolder(final ViewHolder holder, int position) {
         Course course = courseCursorAdapter.getItem(position);
         holder.course = course;
-        holder.courseNumberTV.setText(Long.toString(course.getId()));
-        holder.courseNameTV.setText(course.getName());
+        holder.courseNumberTV.setText(Long.toString(course.id()));
+        holder.courseNameTV.setText(course.name());
         Calendar calendar = Calendar.getInstance();
-        calendar.setTimeInMillis(course.getStartMillis());
-        holder.courseStartTextView.setText(calendar.getTime().toString()); // FIXME TODO
-        calendar.setTimeInMillis(course.getEndMillis());
-        holder.courseEndTextView.setText(calendar.getTime().toString()); // FIXME TODO
+        calendar.setTimeInMillis(course.startMillis());
+        holder.courseStartTextView.setText(dateFormat.format(calendar.getTime())); // FIXME TODO
+        calendar.setTimeInMillis(course.endMillis());
+        holder.courseEndTextView.setText(dateFormat.format(calendar.getTime())); // FIXME TODO
 
         holder.view.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (isTwoPane) {
                     Bundle arguments = new Bundle();
-                    arguments.putLong(CourseDetailFragment.ARG_ITEM_ID, holder.course.getId());
+                    arguments.putLong(CourseDetailFragment.ARG_ITEM_ID, holder.course.id());
                     CourseDetailFragment fragment = new CourseDetailFragment();
                     fragment.setArguments(arguments);
                     context.getSupportFragmentManager().beginTransaction()
@@ -66,7 +69,7 @@ public class CourseRecyclerAdapter
                 } else {
                     Context context = v.getContext();
                     Intent intent = new Intent(context, CourseDetailActivity.class);
-                    intent.putExtra(CourseDetailFragment.ARG_ITEM_ID, holder.course.getId());
+                    intent.putExtra(CourseDetailFragment.ARG_ITEM_ID, holder.course.id());
 
                     context.startActivity(intent);
                 }
@@ -98,7 +101,7 @@ public class CourseRecyclerAdapter
 
         @Override
         public String toString() {
-            return super.toString() + " '" + courseNameTV.getText() + "'";
+            return super.toString()+" '"+courseNameTV.getText()+"'";
         }
     }
 }

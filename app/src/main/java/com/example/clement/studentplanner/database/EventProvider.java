@@ -6,8 +6,8 @@ import android.content.ContentValues;
 import android.content.UriMatcher;
 import android.database.ContentObserver;
 import android.database.Cursor;
-import android.database.MergeCursor;
 import android.net.Uri;
+import android.provider.BaseColumns;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
@@ -19,9 +19,6 @@ import static com.example.clement.studentplanner.database.StorageHelper.COLUMN_I
 import static com.example.clement.studentplanner.database.StorageHelper.COLUMN_NAME;
 import static com.example.clement.studentplanner.database.StorageHelper.COLUMN_TIME;
 import static com.example.clement.studentplanner.database.StorageHelper.COLUMN_TYPE;
-import static com.example.clement.studentplanner.database.StorageHelper.TABLE_ASSESSMENT;
-import static com.example.clement.studentplanner.database.StorageHelper.TABLE_COURSE;
-import static com.example.clement.studentplanner.database.StorageHelper.TABLE_TERM;
 import static com.example.clement.studentplanner.database.StorageHelper.VIEW_EVENT;
 
 /**
@@ -34,10 +31,10 @@ public class EventProvider extends StudentContentProviderBase {
     public static final String COURSE_PATH = "course";
     public static final String ASSESSMENT_PATH = "assessment";
     public static final String TERM_PATH = "term";
-    public static final String EVENT_ID = "_id";
-    public static final String EVENT_START = "start";
-    public static final String EVENT_END = "end";
-    public static final String EVENT_NAME = "name";
+//    public static final String EVENT_ID = BaseColumns._ID;
+//    public static final String EVENT_START = "start";
+//    public static final String EVENT_END = "end";
+//    public static final String EVENT_NAME = "name";
     public static final Uri CONTENT_URI = new Uri.Builder()
         .scheme(SCHEME_CONTENT)
         .authority(AUTHORITY)
@@ -53,16 +50,30 @@ public class EventProvider extends StudentContentProviderBase {
 //        EVENT_ID, EVENT_NAME, EVENT_START, EVENT_END
 //    };
     static {
-        uriMatcher.addURI(AUTHORITY, BASE_PATH, EVENT_ALL);
         uriMatcher.addURI(AUTHORITY, BASE_PATH + "/" + COURSE_PATH + "/#", EVENT_COURSE_ID);
         uriMatcher.addURI(AUTHORITY, BASE_PATH + "/" + TERM_PATH + "/#", EVENT_TERM_ID);
         uriMatcher.addURI(AUTHORITY, BASE_PATH + "/" + ASSESSMENT_PATH + "/#", EVENT_ASSESSMENT_ID);
+        uriMatcher.addURI(AUTHORITY, BASE_PATH, EVENT_ALL);
     }
-    private static final String SELECT_EVENT_START = "SELECT "+COLUMN_ID+"*2 AS "+COLUMN_ID+", "
-        +COLUMN_NAME+", "+COLUMN_START+" AS "+COLUMN_TIME+", '"+COLUMN_START+"' AS "+COLUMN_TYPE+" FROM ";
-    private static final String SELECT_EVENT_END = "SELECT "+COLUMN_ID+"*2+1 AS "+COLUMN_ID+", "
-        +COLUMN_NAME+", "+COLUMN_END+" AS "+COLUMN_TIME+", '"+COLUMN_END+"' AS "+COLUMN_TYPE+" FROM ";
+//    private static final String SELECT_EVENT_START = "SELECT "+COLUMN_ID+"*2 AS "+COLUMN_ID+", "
+//        +COLUMN_NAME+", "+COLUMN_START+" AS "+COLUMN_TIME+", '"+COLUMN_START+"' AS "+COLUMN_TYPE+" FROM ";
+//    private static final String SELECT_EVENT_END = "SELECT "+COLUMN_ID+"*2+1 AS "+COLUMN_ID+", "
+//        +COLUMN_NAME+", "+COLUMN_END+" AS "+COLUMN_TIME+", '"+COLUMN_END+"' AS "+COLUMN_TYPE+" FROM ";
 
+    /**
+     * Map an event ID back to the source object ID
+     * @param eventId The event ID
+     * @return The source object ID
+     */
+    public static long eventToSource(long eventId) {
+        return eventId >> 1L;
+    }
+    public static long startToEvent(long startId) {
+        return startId << 1L;
+    }
+    public static long endToEvent(long endId) {
+        return (endId << 1L) | 1L;
+    }
     @Override
     public boolean onCreate() {
         ContentObserver observer = new ContentObserver(null) {
@@ -102,19 +113,19 @@ public class EventProvider extends StudentContentProviderBase {
                 break;
             case EVENT_ALL:
 /*//                Cursor termCursor = resolver.query(TermProvider.EVENT_URI, COLUMNS_EVENT, selection, selectionArgs, sortOrder);
-                Cursor termCursor = getDatabase().rawQuery(SELECT_EVENT_START + TABLE_TERM +" UNION "+SELECT_EVENT_END + TABLE_TERM, null);
+                Cursor termCursor = getReadableDatabase().rawQuery(SELECT_EVENT_START + TABLE_TERM +" UNION "+SELECT_EVENT_END + TABLE_TERM, null);
                 termCursor.setNotificationUri(resolver, TermProvider.CONTENT_URI);
 //                Cursor courseCursor = resolver.query(CourseProvider.EVENT_URI, COLUMNS_EVENT, selection, selectionArgs, sortOrder);
-                Cursor courseCursor = getDatabase().rawQuery(SELECT_EVENT_START + TABLE_COURSE +" UNION "+SELECT_EVENT_END + TABLE_COURSE, null);
+                Cursor courseCursor = getReadableDatabase().rawQuery(SELECT_EVENT_START + TABLE_COURSE +" UNION "+SELECT_EVENT_END + TABLE_COURSE, null);
                 courseCursor.setNotificationUri(resolver, CourseProvider.CONTENT_URI);
 //                Cursor assessmentCursor = resolver.query(AssessmentProvider.EVENT_URI, COLUMNS_EVENT, selection, selectionArgs, sortOrder);
-                Cursor assessmentCursor = getDatabase().rawQuery(SELECT_EVENT_START + TABLE_ASSESSMENT +" UNION "+SELECT_EVENT_END + TABLE_ASSESSMENT, null);
+                Cursor assessmentCursor = getReadableDatabase().rawQuery(SELECT_EVENT_START + TABLE_ASSESSMENT +" UNION "+SELECT_EVENT_END + TABLE_ASSESSMENT, null);
                 assessmentCursor.setNotificationUri(resolver, AssessmentProvider.CONTENT_URI);
                 cursor = new MergeCursor(new Cursor[]{
                     termCursor, courseCursor, assessmentCursor
                 });
 //                cursor.setNotificationUri(resolver, CONTENT_URI);*/
-                cursor = getDatabase().query(
+                cursor = getReadableDatabase().query(
                     VIEW_EVENT,
                     COLUMNS_EVENT,
                     selection,

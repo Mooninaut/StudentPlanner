@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/navigation_home"
+        android:icon="@drawable/calendar_today"
+        android:title="@string/title_home"/>
+
+    <item
+        android:id="@+id/navigation_terms"
+        android:icon="@drawable/timetable"
+        android:title="@string/title_terms"/>
+
+    <item
+        android:id="@+id/navigation_courses"
+        android:icon="@drawable/school"
+        android:title="@string/title_courses"/>
+    <item
+        android:id="@+id/navigation_assessments"
+        android:icon="@drawable/chair_school"
+        android:title="@string/title_assessments"/>
+</menu>

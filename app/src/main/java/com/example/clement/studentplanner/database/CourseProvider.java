@@ -25,6 +25,7 @@ public class CourseProvider extends StudentContentProviderBase {
     public static final String BASE_PATH = "course";
     public static final Uri CONTENT_URI;
     public static final Uri EVENT_URI;
+    public static final Uri TERM_URI;
     private static final int COURSE_ALL = 1;
     private static final int COURSE_ID = 2;
     private static final int COURSE_EVENT = 3;
@@ -37,11 +38,11 @@ public class CourseProvider extends StudentContentProviderBase {
             .authority(AUTHORITY)
             .path(BASE_PATH);
         CONTENT_URI = builder.build();
-        builder = builder.path(EventProvider.BASE_PATH);
-        EVENT_URI = builder.build();
+        EVENT_URI = builder.path(EventProvider.BASE_PATH).build();
+        TERM_URI = builder.path(TermProvider.BASE_PATH).build();
         uriMatcher.addURI(AUTHORITY, BASE_PATH + "/#", COURSE_ID);
         uriMatcher.addURI(AUTHORITY, EventProvider.BASE_PATH, COURSE_EVENT);
-        uriMatcher.addURI(AUTHORITY, TermProvider.BASE_PATH, COURSE_TERM);
+        uriMatcher.addURI(AUTHORITY, TermProvider.BASE_PATH + "/#", COURSE_TERM);
         uriMatcher.addURI(AUTHORITY, BASE_PATH, COURSE_ALL);
     }
 
@@ -72,7 +73,7 @@ public class CourseProvider extends StudentContentProviderBase {
             default:
                 return null;
         }
-        cursor = getDatabase().query(
+        cursor = getWritableDatabase().query(
             TABLE_COURSE,
             projection,
             selection,
@@ -94,7 +95,7 @@ public class CourseProvider extends StudentContentProviderBase {
     @Nullable
     @Override
     public Uri insert(@NonNull Uri uri, @Nullable ContentValues values) {
-        long id = getDatabase().insert(
+        long id = getWritableDatabase().insert(
             TABLE_COURSE,
             null,
             values
@@ -104,17 +105,17 @@ public class CourseProvider extends StudentContentProviderBase {
     }
     @Override
     public int delete(@NonNull Uri uri, @Nullable String selection, @Nullable String[] selectionArgs) {
-        return getDatabase().delete(TABLE_COURSE, selection, selectionArgs);
+        return getWritableDatabase().delete(TABLE_COURSE, selection, selectionArgs);
     }
     @Override
     public int update(@NonNull Uri uri, @Nullable ContentValues values, @Nullable String selection, @Nullable String[] selectionArgs) {
-        return getDatabase().update(TABLE_COURSE, values, selection, selectionArgs);
+        return getWritableDatabase().update(TABLE_COURSE, values, selection, selectionArgs);
     }
 
     /**
      * Erases all data in the database, not just Courses.
      */
     public void erase() {
-        getHelper().erase(getDatabase());
+        getHelper().erase(getWritableDatabase());
     }
 }
