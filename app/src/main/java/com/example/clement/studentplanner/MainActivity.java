@@ -1,5 +1,8 @@
 package com.example.clement.studentplanner;
 
+import android.app.Fragment;
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.app.LoaderManager;
 import android.content.ContentUris;
 import android.content.ContentValues;
@@ -9,14 +12,12 @@ import android.content.Loader;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.design.widget.BottomNavigationView;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.AdapterView;
 import android.widget.CursorAdapter;
-import android.widget.ListView;
 import android.widget.Toast;
 
 import com.example.clement.studentplanner.data.Course;
@@ -26,85 +27,59 @@ import com.example.clement.studentplanner.database.DataWrapper;
 import com.example.clement.studentplanner.database.EventCursorAdapter;
 import com.example.clement.studentplanner.database.EventProvider;
 import com.example.clement.studentplanner.database.StorageHelper;
-import com.example.clement.studentplanner.database.TermCursorAdapter;
 import com.example.clement.studentplanner.database.TermProvider;
 
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 
-import static com.example.clement.studentplanner.database.EventProvider.eventToSource;
 import static com.example.clement.studentplanner.database.StorageHelper.COLUMN_ID;
 import static com.example.clement.studentplanner.database.StorageHelper.TERM_ID_OFFSET;
 
 public class MainActivity extends AppCompatActivity
     implements TermListingFragment.OnTermListFragmentInteractionListener {
-    public static final int EVENT_LOADER_ID = 1;
-    public static final int TERM_LOADER_ID = 2;
-    public static final int COURSE_LOADER_ID = 3;
-//    public static final int ASSESSMENT_LOADER_ID = 4;
-    private final TermLoaderListener termLoaderListener = new TermLoaderListener();
-    private CursorAdapter termCursorAdapter;
-//    private CursorAdapter courseCursorAdapter;
-    private CursorAdapter eventCursorAdapter;
-    private final EventLoaderListener eventLoaderListener = new EventLoaderListener();
-//    private final CourseLoaderListener courseLoaderListener = new CourseLoaderListener();
 
+
+
+    private final BottomNavigationListener bottomNavigationListener = new BottomNavigationListener(this);
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main_activity);
 
-        termCursorAdapter = new TermCursorAdapter(this, null, 0);
-        ListView termList = (ListView) findViewById(R.id.main_term_list);
-        termList.setAdapter(termCursorAdapter);
+        BottomNavigationView navigationView = (BottomNavigationView) findViewById(R.id.navigation);
+        navigationView.setOnNavigationItemSelectedListener(bottomNavigationListener);
 
-        termList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                launchTermListingActivity(id);
-            }
-        });
+        Fragment fragment = new EventListingFragment();
+        FragmentManager fragmentManager = getFragmentManager();
+        FragmentTransaction transaction = fragmentManager.beginTransaction();
+        transaction.replace(R.id.contentFragment, fragment);
+        transaction.commit();
 
-        eventCursorAdapter = new EventCursorAdapter(this, null, 0);
-        ListView eventList = (ListView) findViewById(R.id.main_event_list);
-        eventList.setAdapter(eventCursorAdapter);
-        eventList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Long sourceId = eventToSource(id);
-                if (sourceId < StorageHelper.COURSE_ID_OFFSET) {// term
-                    launchTermListingActivity(sourceId);
-                }
-                else if (sourceId < StorageHelper.ASSESSMENT_ID_OFFSET) { // course
-                    launchCourseListingActivity(sourceId);
-                }
-                else {
-                    launchAssessmentListingActivity(sourceId);
-                }
-            }
-        });
+
 
 //        courseCursorAdapter = new CourseCursorAdapter()
 
-        getLoaderManager().initLoader(TERM_LOADER_ID, null, termLoaderListener);
-        getLoaderManager().initLoader(EVENT_LOADER_ID, null, eventLoaderListener);
+//        getLoaderManager().initLoader(TERM_LOADER_ID, null, termLoaderListener);
+
 //        getLoaderManager().initLoader(COURSE_LOADER_ID, null, courseLoaderListener);
     }
-    private void launchTermListingActivity(long id) {
+
+    public void launchTermListingActivity(long id) {
         Intent intent = new Intent(MainActivity.this, TermListingActivity.class);
         Uri uri = ContentUris.withAppendedId(TermProvider.CONTENT_URI, id);
         intent.putExtra(TermProvider.CONTENT_ITEM_TYPE, uri);
 //        intent.putExtra("position", position);
         startActivity(intent);
     }
-    private void launchCourseListingActivity(long id) {
+
+    public void launchCourseListingActivity(long id) {
         Intent intent = new Intent(MainActivity.this, CourseListingActivity.class);
         Uri uri = ContentUris.withAppendedId(CourseProvider.CONTENT_URI, id);
         intent.putExtra(TermProvider.CONTENT_ITEM_TYPE, uri);
 //        intent.putExtra("position", position);
         startActivity(intent);
     }
-    private void launchAssessmentListingActivity(long id) {
+    public void launchAssessmentListingActivity(long id) {
 /*        Intent intent = new Intent(MainActivity.this, AssessmentListingActivity.class);
         Uri uri = ContentUris.withAppendedId(AssessmentProvider.CONTENT_URI, id);
         intent.putExtra(TermProvider.CONTENT_ITEM_TYPE, uri);
@@ -126,10 +101,10 @@ public class MainActivity extends AppCompatActivity
                 insertSampleData();
                 return true;
             case R.id.delete_sample_data:
-                getContentResolver().delete(TermProvider.CONTENT_URI, null, null);
+//                getContentResolver().delete(TermProvider.CONTENT_URI, null, null);
                 getContentResolver().delete(CourseProvider.CONTENT_URI, null, null);
-                restartEventLoader();
-                restartTermLoader();
+//                restartEventLoader();
+//                restartTermLoader();
                 Toast.makeText(this, "KABOOM!", Toast.LENGTH_SHORT).show();
         }
         return false;
@@ -184,13 +159,14 @@ public class MainActivity extends AppCompatActivity
         }
         return inserted;
     }
+/*
     private void restartTermLoader() {
         getLoaderManager().restartLoader(TERM_LOADER_ID, null, termLoaderListener);
     }
-    private void restartEventLoader() {
-        getLoaderManager().restartLoader(EVENT_LOADER_ID, null, eventLoaderListener);
-    }
+*/
 
+
+/*
     private class TermLoaderListener implements LoaderManager.LoaderCallbacks<Cursor> {
         @Override
         public Loader<Cursor> onCreateLoader(int id, Bundle args) {
@@ -208,22 +184,9 @@ public class MainActivity extends AppCompatActivity
             termCursorAdapter.swapCursor(null);
         }
     }
+*/
 
-    private class EventLoaderListener implements LoaderManager.LoaderCallbacks<Cursor> {
-        @Override
-        public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-            return new CursorLoader(MainActivity.this, EventProvider.CONTENT_URI,
-                null, null, null, null);
-        }
-        @Override
-        public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-            eventCursorAdapter.swapCursor(data);
-        }
-        @Override
-        public void onLoaderReset(Loader<Cursor> loader) {
-            eventCursorAdapter.swapCursor(null);
-        }
-    }
+
 /*    private class CourseLoaderListener implements LoaderManager.LoaderCallbacks<Cursor> {
         @Override
         public Loader<Cursor> onCreateLoader(int id, Bundle args) {
@@ -239,8 +202,10 @@ public class MainActivity extends AppCompatActivity
             eventCursorAdapter.swapCursor(null);
         }
     }*/
+
     @Override
     public void onTermListFragmentInteraction(Term term) {
 
     }
+
 }

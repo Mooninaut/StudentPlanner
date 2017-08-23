@@ -1,8 +1,8 @@
 package com.example.clement.studentplanner;
 
+import android.app.Fragment;
 import android.content.Context;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,10 +20,10 @@ import com.example.clement.studentplanner.database.TermCursorAdapter;
 public class TermListingFragment extends Fragment {
 
     // TODO: Customize parameter argument names
-    private static final String ARG_COLUMN_COUNT = "column-count";
+//    private static final String ARG_COLUMN_COUNT = "column-count";
     // TODO: Customize parameters
-    private int mColumnCount = 1;
-    private OnTermListFragmentInteractionListener mListener;
+//    private int mColumnCount = 1;
+    private OnTermListFragmentInteractionListener listener;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -32,7 +32,7 @@ public class TermListingFragment extends Fragment {
     public TermListingFragment() {
     }
 
-    // TODO: Customize parameter initialization
+/*    // TODO: Customize parameter initialization
     @SuppressWarnings("unused")
     public static TermListingFragment newInstance(int columnCount) {
         TermListingFragment fragment = new TermListingFragment();
@@ -49,7 +49,7 @@ public class TermListingFragment extends Fragment {
         if (getArguments() != null) {
             mColumnCount = getArguments().getInt(ARG_COLUMN_COUNT);
         }
-    }
+    }*/
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -67,7 +67,7 @@ public class TermListingFragment extends Fragment {
     public void onAttach(Context context) {
         super.onAttach(context);
         if (context instanceof OnTermListFragmentInteractionListener) {
-            mListener = (OnTermListFragmentInteractionListener) context;
+            listener = (OnTermListFragmentInteractionListener) context;
         } else {
             throw new RuntimeException(context.toString()
                 + " must implement OnListFragmentInteractionListener");
@@ -77,7 +77,7 @@ public class TermListingFragment extends Fragment {
     @Override
     public void onDetach() {
         super.onDetach();
-        mListener = null;
+        listener = null;
     }
 
     /**
