@@ -1,24 +1,25 @@
 package com.example.clement.studentplanner;
 
-import android.app.Fragment;
-import android.app.LoaderManager;
+
+
+
 import android.content.Context;
-import android.content.CursorLoader;
-import android.content.Loader;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.util.Log;
+import android.app.Fragment;
+import android.app.LoaderManager;
+import android.content.CursorLoader;
+import android.content.Loader;
+import android.widget.CursorAdapter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.CursorAdapter;
 import android.widget.ListView;
 
 import com.example.clement.studentplanner.database.EventCursorAdapter;
 import com.example.clement.studentplanner.database.EventProvider;
-import com.example.clement.studentplanner.database.StorageHelper;
 
 import static com.example.clement.studentplanner.database.EventProvider.eventToSource;
 
@@ -26,15 +27,19 @@ import static com.example.clement.studentplanner.database.EventProvider.eventToS
  * Created by Clement on 8/22/2017.
  */
 
-public class EventListingFragment extends Fragment {
-    private EventLoaderListener eventLoaderListener;
+public class EventListingFragment extends StupidWorkaroundFragment {
+    private EventLoaderListener eventLoaderListener = new EventLoaderListener();
+    private HostActivity hostActivity;
     public static final int EVENT_LOADER_ID = 1;
     private CursorAdapter eventCursorAdapter;
+
+
     @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-        eventLoaderListener = new EventLoaderListener();
-        eventCursorAdapter = new EventCursorAdapter(getActivity(), null, 0);
+    public void onAttachToContext(Context context) {
+        if (context instanceof HostActivity) {
+            hostActivity = (HostActivity) context;
+            eventCursorAdapter = hostActivity.getEventCursorAdapter();
+        }
         getLoaderManager().initLoader(EVENT_LOADER_ID, null, eventLoaderListener);
     }
 
@@ -44,25 +49,23 @@ public class EventListingFragment extends Fragment {
         ListView eventList = (ListView) inflater.inflate(R.layout.event_list_fragment, container, false);
 //        ListView eventList = (ListView) getActivity().findViewById(R.id.event_list_fragment);
 //        Log.i("EventListingFragment", eventList.getId() + " " + R.id.event_list_view);
+        if (eventCursorAdapter == null) { throw new NullPointerException(); }
         eventList.setAdapter(eventCursorAdapter);
-        final MainActivity activity = (MainActivity) getActivity();
         eventList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Long sourceId = eventToSource(id);
-                if (sourceId < StorageHelper.COURSE_ID_OFFSET) {// term
-                    activity.launchTermListingActivity(sourceId);
-                }
-                else if (sourceId < StorageHelper.ASSESSMENT_ID_OFFSET) { // course
-                    activity.launchCourseListingActivity(sourceId);
-                }
-                else {
-                    activity.launchAssessmentListingActivity(sourceId);
+                if (hostActivity != null) {
+                    hostActivity.onEventSelected(eventToSource(id));
                 }
             }
         });
         return eventList;
     }
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+    }
+
 
     private class EventLoaderListener implements LoaderManager.LoaderCallbacks<Cursor> {
         @Override
@@ -81,5 +84,10 @@ public class EventListingFragment extends Fragment {
     }
     private void restartEventLoader() {
         getLoaderManager().restartLoader(EVENT_LOADER_ID, null, eventLoaderListener);
+    }
+
+    public interface HostActivity {
+        void onEventSelected(long sourceId);
+        EventCursorAdapter getEventCursorAdapter();
     }
 }

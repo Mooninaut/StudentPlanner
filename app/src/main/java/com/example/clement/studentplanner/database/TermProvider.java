@@ -83,7 +83,7 @@ public class TermProvider extends StudentContentProviderBase {
                 break;
             case TERM_MAX:
                 cursor = getWritableDatabase().rawQuery(
-                    "SELECT MAX("+COLUMN_NUMBER+") FROM "+TABLE_TERM,
+                    "SELECT MAX("+COLUMN_NUMBER+") AS "+COLUMN_NUMBER+" FROM "+TABLE_TERM,
                     null
                 );
                 break;
@@ -122,7 +122,7 @@ public class TermProvider extends StudentContentProviderBase {
         return values;
     }
 
-    @Override
+/*    @Override
     public int delete(@NonNull Uri uri, @Nullable String selection, @Nullable String[] selectionArgs) {
         if (uriMatcher.match(uri) == TERM_ID) {
             selection = COLUMN_ID + " = " + ContentUris.parseId(uri);
@@ -136,17 +136,40 @@ public class TermProvider extends StudentContentProviderBase {
             notifyChange(CONTENT_URI);
         }
         return rowsAffected;
+    }*/
+
+    @NonNull
+    @Override
+    protected String getTableName() {
+        return TABLE_TERM;
+    }
+
+    @NonNull
+    @Override
+    protected Uri getContentUri() {
+        return CONTENT_URI;
+    }
+
+    @NonNull
+    @Override
+    protected UriMatcher getUriMatcher() {
+        return uriMatcher;
     }
 
     @Override
+    protected int getSingleRowMatchConstant() {
+        return TERM_ID;
+    }
+
+/*    @Override
     public int update(@NonNull Uri uri, @Nullable ContentValues values, @Nullable String selection, @Nullable String[] selectionArgs) {
         int rowsAffected = getWritableDatabase().update(TABLE_TERM, values, selection, selectionArgs);
         if (rowsAffected > 0) {
             notifyChange(CONTENT_URI);
         }
         return rowsAffected;
-    }
-    public void erase() {
+    }*/
+/*    public void erase() {
         getHelper().erase(getWritableDatabase());
-    }
+    }*/
 }

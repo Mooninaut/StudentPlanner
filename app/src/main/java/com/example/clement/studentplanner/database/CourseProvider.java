@@ -10,6 +10,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import static android.content.ContentResolver.SCHEME_CONTENT;
+import static android.content.ContentResolver.getCurrentSyncs;
 import static com.example.clement.studentplanner.database.StorageHelper.COLUMNS_COURSE;
 import static com.example.clement.studentplanner.database.StorageHelper.COLUMNS_EVENT;
 import static com.example.clement.studentplanner.database.StorageHelper.COLUMN_ID;
@@ -92,7 +93,7 @@ public class CourseProvider extends StudentContentProviderBase {
         return null;
     }
 
-    @Nullable
+/*    @Nullable
     @Override
     public Uri insert(@NonNull Uri uri, @Nullable ContentValues values) {
         long id = getWritableDatabase().insert(
@@ -102,20 +103,51 @@ public class CourseProvider extends StudentContentProviderBase {
         );
         getContext().getContentResolver().notifyChange(CONTENT_URI, null);
         return ContentUris.withAppendedId(CONTENT_URI, id);
-    }
-    @Override
+    }*/
+/*    @Override
     public int delete(@NonNull Uri uri, @Nullable String selection, @Nullable String[] selectionArgs) {
-        return getWritableDatabase().delete(TABLE_COURSE, selection, selectionArgs);
-    }
+        int rowsDeleted = getWritableDatabase().delete(TABLE_COURSE, selection, selectionArgs);
+        if (rowsDeleted > 0) {
+            getContext().getContentResolver().notifyChange(CONTENT_URI, null);
+        }
+        return rowsDeleted;
+    }*/
+
+    @NonNull
     @Override
-    public int update(@NonNull Uri uri, @Nullable ContentValues values, @Nullable String selection, @Nullable String[] selectionArgs) {
-        return getWritableDatabase().update(TABLE_COURSE, values, selection, selectionArgs);
+    protected String getTableName() {
+        return TABLE_COURSE;
     }
+
+    @NonNull
+    @Override
+    protected Uri getContentUri() {
+        return CONTENT_URI;
+    }
+
+    @NonNull
+    @Override
+    public UriMatcher getUriMatcher() {
+        return uriMatcher;
+    }
+
+    @Override
+    protected int getSingleRowMatchConstant() {
+        return COURSE_ID;
+    }
+    /*    @Override
+    public int update(@NonNull Uri uri, @Nullable ContentValues values, @Nullable String selection, @Nullable String[] selectionArgs) {
+        int rowsUpdated = getWritableDatabase().update(TABLE_COURSE, values, selection, selectionArgs);
+        if (rowsUpdated > 0) {
+            getContext().getContentResolver().notifyChange(CONTENT_URI, null);
+        }
+        return rowsUpdated;
+    }*/
 
     /**
      * Erases all data in the database, not just Courses.
      */
-    public void erase() {
+/*    public void erase() {
         getHelper().erase(getWritableDatabase());
-    }
+    }*/
 }

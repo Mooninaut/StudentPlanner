@@ -23,9 +23,9 @@ import com.example.clement.studentplanner.database.TermProvider;
 
 public class TermListingActivity extends AppCompatActivity
     implements LoaderManager.LoaderCallbacks<Cursor>,
-        TermListingFragment.OnTermListFragmentInteractionListener {
+    TermListingFragment.HostActivity {
 
-    private CursorAdapter termCursorAdapter;
+    private TermCursorAdapter termCursorAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -81,7 +81,12 @@ public class TermListingActivity extends AppCompatActivity
     }
 
     @Override
-    public void onTermListFragmentInteraction(Term term) {
+    public void onTermListFragmentInteraction(long termId) {
 
+    }
+
+    @Override
+    public TermCursorAdapter getTermCursorAdapter() {
+        return termCursorAdapter;
     }
 }

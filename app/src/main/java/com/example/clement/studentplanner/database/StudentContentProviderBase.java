@@ -1,10 +1,16 @@
 package com.example.clement.studentplanner.database;
 
 import android.content.ContentProvider;
+import android.content.ContentUris;
+import android.content.ContentValues;
 import android.content.Context;
+import android.content.UriMatcher;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+
+import static com.example.clement.studentplanner.database.StorageHelper.COLUMN_ID;
 
 /**
  * Created by Clement on 8/17/2017.
@@ -14,6 +20,10 @@ abstract class StudentContentProviderBase extends ContentProvider {
     private SQLiteDatabase writableDatabase;
     private SQLiteDatabase readableDatabase;
     private StorageHelper helper;
+    protected abstract @NonNull String getTableName();
+    protected abstract @NonNull Uri getContentUri();
+    protected abstract @NonNull UriMatcher getUriMatcher();
+    protected abstract int getSingleRowMatchConstant();
     /**
      * Lazily initialize the writableDatabase object
      */
@@ -44,5 +54,44 @@ abstract class StudentContentProviderBase extends ContentProvider {
     }
     protected void notifyChange(@NonNull Uri uri) {
         getContext().getContentResolver().notifyChange(uri, null);
+    }
+    @Override
+    public int update(@NonNull Uri uri, @Nullable ContentValues values, @Nullable String selection, @Nullable String[] selectionArgs) {
+        int rowsUpdated = getWritableDatabase().update(getTableName(), values, selection, selectionArgs);
+        if (rowsUpdated > 0) {
+            getContext().getContentResolver().notifyChange(getContentUri(), null);
+        }
+        return rowsUpdated;
+    }
+    @Override
+    public int delete(@NonNull Uri uri, @Nullable String selection, @Nullable String[] selectionArgs) {
+        if (getUriMatcher().match(uri) == getSingleRowMatchConstant()) {
+                selection = COLUMN_ID + " = " + ContentUris.parseId(uri);
+            }
+            int rowsAffected = getWritableDatabase().delete(
+                getTableName(),
+                selection,
+                null
+            );
+            if (rowsAffected > 0) {
+                notifyChange(getContentUri());
+            }
+
+        int rowsDeleted = getWritableDatabase().delete(getTableName(), selection, selectionArgs);
+        if (rowsDeleted > 0) {
+            getContext().getContentResolver().notifyChange(getContentUri(), null);
+        }
+        return rowsDeleted;
+    }
+    @Nullable
+    @Override
+    public Uri insert(@NonNull Uri uri, @Nullable ContentValues values) {
+        long id = getWritableDatabase().insert(
+            getTableName(),
+            null,
+            values
+        );
+        getContext().getContentResolver().notifyChange(getContentUri(), null);
+        return ContentUris.withAppendedId(getContentUri(), id);
     }
 }

@@ -26,7 +26,7 @@ import static com.example.clement.studentplanner.database.StorageHelper.COLUMN_T
  * Created by Clement on 8/6/2017.
  */
 
-public class CourseCursorAdapter extends CursorAdapter{
+public class CourseCursorAdapter extends CursorAdapter {
 
     private static DateFormat dateFormat = DateFormat.getDateInstance();
 

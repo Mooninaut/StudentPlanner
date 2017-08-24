@@ -14,6 +14,9 @@ import java.util.ArrayList;
  */
 
 public class StorageHelper extends SQLiteOpenHelper {
+    public enum Type {
+        TERM, COURSE, ASSESSMENT, NONE
+    }
 
     public static final int DATABASE_VERSION = 14;
     public static final String TABLE_TERM = "term";
@@ -135,7 +138,20 @@ public class StorageHelper extends SQLiteOpenHelper {
     public void onDowngrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         createDatabase(db);
     }
-    public void erase(SQLiteDatabase db) {
+    /*public void erase(SQLiteDatabase db) {
         createDatabase(db);
+    }*/
+    @NonNull
+    public static Type classify(long id) {
+        if (id >= ASSESSMENT_ID_OFFSET) {
+            return Type.ASSESSMENT;
+        }
+        if (id >= COURSE_ID_OFFSET) {
+            return Type.COURSE;
+        }
+        if (id >= TERM_ID_OFFSET) {
+            return Type.TERM;
+        }
+        return Type.NONE;
     }
 }

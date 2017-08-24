@@ -11,68 +11,67 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
 
-import com.example.clement.studentplanner.data.Term;
-import com.example.clement.studentplanner.database.TermCursorAdapter;
-import com.example.clement.studentplanner.database.TermProvider;
-
-/**
- * A fragment representing a list of Terms.
- * <p/>
- * Activities containing this fragment MUST implement the {@link HostActivity}
- * interface.
- */
-public class TermListingFragment extends StupidWorkaroundFragment {
+import com.example.clement.studentplanner.data.Course;
+import com.example.clement.studentplanner.database.CourseCursorAdapter;
+import com.example.clement.studentplanner.database.CourseProvider;
+    /**
+     * A fragment representing a list of Courses.
+     * <p/>
+     * Activities containing this fragment MUST implement the {@link HostActivity}
+     * interface.
+     */
+public class CourseListingFragment extends StupidWorkaroundFragment {
 
     // TODO: Customize parameter argument names
 //    private static final String ARG_COLUMN_COUNT = "column-count";
     // TODO: Customize parameters
 //    private int mColumnCount = 1;
-    private TermLoaderListener termLoaderListener = new TermLoaderListener();
+    private CourseLoaderListener courseLoaderListener = new CourseLoaderListener();
     private HostActivity hostActivity;
-    public static final int TERM_LOADER_ID = 1;
-    private TermCursorAdapter termCursorAdapter;
+    public static final int COURSE_LOADER_ID = 1;
+    private CourseCursorAdapter courseCursorAdapter;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
      * fragment (e.g. upon screen orientation changes).
      */
-    public TermListingFragment() {
+    public CourseListingFragment() {
     }
 
-/*    // TODO: Customize parameter initialization
-    @SuppressWarnings("unused")
-    public static TermListingFragment newInstance(int columnCount) {
-        TermListingFragment fragment = new TermListingFragment();
-        Bundle args = new Bundle();
-        args.putInt(ARG_COLUMN_COUNT, columnCount);
-        fragment.setArguments(args);
-        return fragment;
-    }
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-        if (getArguments() != null) {
-            mColumnCount = getArguments().getInt(ARG_COLUMN_COUNT);
+    /*    // TODO: Customize parameter initialization
+        @SuppressWarnings("unused")
+        public static CourseListingFragment newInstance(int columnCount) {
+            CourseListingFragment fragment = new CourseListingFragment();
+            Bundle args = new Bundle();
+            args.putInt(ARG_COLUMN_COUNT, columnCount);
+            fragment.setArguments(args);
+            return fragment;
         }
-    }*/
+
+        @Override
+        public void onCreate(Bundle savedInstanceState) {
+            super.onCreate(savedInstanceState);
+
+            if (getArguments() != null) {
+                mColumnCount = getArguments().getInt(ARG_COLUMN_COUNT);
+            }
+        }*/
     @Override
     public void onAttachToContext(Context context) {
         if (context instanceof HostActivity) {
             hostActivity = (HostActivity) context;
-            termCursorAdapter = hostActivity.getTermCursorAdapter();
+            courseCursorAdapter = hostActivity.getCourseCursorAdapter();
         }
-        getLoaderManager().initLoader(TERM_LOADER_ID, null, termLoaderListener);
+        getLoaderManager().initLoader(COURSE_LOADER_ID, null, courseLoaderListener);
     }
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.term_list_fragment, container, false);
+        View view = inflater.inflate(R.layout.course_list_fragment, container, false);
         // Set the adapter
         Context context = view.getContext();
-        ListView termView = (ListView) view;
-        termView.setAdapter(new TermCursorAdapter(context, null, 0));
+        ListView courseView = (ListView) view;
+        courseView.setAdapter(new CourseCursorAdapter(context, null, 0));
         return view;
     }
 
@@ -81,19 +80,19 @@ public class TermListingFragment extends StupidWorkaroundFragment {
         super.onDetach();
         hostActivity = null;
     }
-    private class TermLoaderListener implements LoaderManager.LoaderCallbacks<Cursor> {
+    private class CourseLoaderListener implements LoaderManager.LoaderCallbacks<Cursor> {
         @Override
         public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-            return new CursorLoader(getActivity(), TermProvider.CONTENT_URI,
+            return new CursorLoader(getActivity(), CourseProvider.CONTENT_URI,
                 null, null, null, null);
         }
         @Override
         public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-            termCursorAdapter.swapCursor(data);
+            courseCursorAdapter.swapCursor(data);
         }
         @Override
         public void onLoaderReset(Loader<Cursor> loader) {
-            termCursorAdapter.swapCursor(null);
+            courseCursorAdapter.swapCursor(null);
         }
     }
     /**
@@ -108,7 +107,7 @@ public class TermListingFragment extends StupidWorkaroundFragment {
      */
     public interface HostActivity {
         // TODO: Update argument type and name
-        void onTermListFragmentInteraction(long termId);
-        TermCursorAdapter getTermCursorAdapter();
+        void onCourseListFragmentInteraction(long courseId);
+        CourseCursorAdapter getCourseCursorAdapter();
     }
 }
