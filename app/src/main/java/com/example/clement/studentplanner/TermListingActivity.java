@@ -25,7 +25,7 @@ public class TermListingActivity extends AppCompatActivity
     implements LoaderManager.LoaderCallbacks<Cursor>,
     TermListingFragment.HostActivity {
 
-    private TermCursorAdapter termCursorAdapter;
+    private TermCursorAdapter termCursorAdapter = new TermCursorAdapter(this, null, 0);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

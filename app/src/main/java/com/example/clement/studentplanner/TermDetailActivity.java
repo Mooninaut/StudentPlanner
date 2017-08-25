@@ -37,18 +37,22 @@ public class TermDetailActivity extends AppCompatActivity {
         Uri termContentUri = getIntent().getParcelableExtra(TermProvider.CONTENT_ITEM_TYPE);
         long termId = ContentUris.parseId(termContentUri);
 
-        setTerm();
+        setTerm(termContentUri);
 
+        // Course list below
         Cursor courseCursor = getContentResolver().query(ContentUris.withAppendedId(CourseProvider.TERM_URI, termId), null, null, null, null);
         courseAdapter = new CourseCursorAdapter(this, courseCursor, 0);
         CourseRecyclerAdapter courseRecyclerAdapter = new CourseRecyclerAdapter(courseAdapter, this, false);
         RecyclerView recyclerView = (RecyclerView) findViewById(R.id.course_listing_list);
         assert recyclerView != null;
-        setupRecyclerView(recyclerView);
         recyclerView.setAdapter(courseRecyclerAdapter);
     }
-    protected void setTerm() {
-        Uri termUri = getIntent().getParcelableExtra(TermProvider.CONTENT_ITEM_TYPE);
+
+    /**
+     * Single Term item at top
+     */
+    protected void setTerm(Uri termUri) {
+//        Uri termUri = getIntent().getParcelableExtra(TermProvider.CONTENT_ITEM_TYPE);
         Cursor cursor = null;
         try {
             cursor = getContentResolver().query(termUri, null, null, null, null);
@@ -63,9 +67,6 @@ public class TermDetailActivity extends AppCompatActivity {
             }
         }
 
-    }
-    private void setupRecyclerView(@NonNull RecyclerView recyclerView) {
-        recyclerView.setAdapter(new CourseRecyclerAdapter(courseAdapter, this, false));
     }
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

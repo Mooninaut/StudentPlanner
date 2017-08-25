@@ -5,13 +5,13 @@ import android.content.Context;
 import android.content.CursorLoader;
 import android.content.Loader;
 import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
 
-import com.example.clement.studentplanner.data.Course;
 import com.example.clement.studentplanner.database.CourseCursorAdapter;
 import com.example.clement.studentplanner.database.CourseProvider;
     /**
@@ -23,10 +23,9 @@ import com.example.clement.studentplanner.database.CourseProvider;
 public class CourseListingFragment extends StupidWorkaroundFragment {
 
     // TODO: Customize parameter argument names
-//    private static final String ARG_COLUMN_COUNT = "column-count";
+    private static final String ARG_CONTENT_URI = "content-uri";
     // TODO: Customize parameters
-//    private int mColumnCount = 1;
-    private CourseLoaderListener courseLoaderListener = new CourseLoaderListener();
+    private CourseLoaderListener courseLoaderListener;
     private HostActivity hostActivity;
     public static final int COURSE_LOADER_ID = 1;
     private CourseCursorAdapter courseCursorAdapter;
@@ -38,12 +37,12 @@ public class CourseListingFragment extends StupidWorkaroundFragment {
     public CourseListingFragment() {
     }
 
-    /*    // TODO: Customize parameter initialization
+        // TODO: Customize parameter initialization
         @SuppressWarnings("unused")
-        public static CourseListingFragment newInstance(int columnCount) {
+        public static CourseListingFragment newInstance(Uri contentUri) {
             CourseListingFragment fragment = new CourseListingFragment();
             Bundle args = new Bundle();
-            args.putInt(ARG_COLUMN_COUNT, columnCount);
+            args.putParcelable(ARG_CONTENT_URI, contentUri);
             fragment.setArguments(args);
             return fragment;
         }
@@ -51,28 +50,22 @@ public class CourseListingFragment extends StupidWorkaroundFragment {
         @Override
         public void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
-
-            if (getArguments() != null) {
-                mColumnCount = getArguments().getInt(ARG_COLUMN_COUNT);
-            }
-        }*/
+        }
     @Override
     public void onAttachToContext(Context context) {
         if (context instanceof HostActivity) {
             hostActivity = (HostActivity) context;
             courseCursorAdapter = hostActivity.getCourseCursorAdapter();
         }
-        getLoaderManager().initLoader(COURSE_LOADER_ID, null, courseLoaderListener);
+        getLoaderManager().initLoader(COURSE_LOADER_ID, null, getCourseLoaderListener());
     }
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.course_list_fragment, container, false);
+        ListView courseView = (ListView) inflater.inflate(R.layout.course_list_fragment, container, false);
         // Set the adapter
-        Context context = view.getContext();
-        ListView courseView = (ListView) view;
-        courseView.setAdapter(new CourseCursorAdapter(context, null, 0));
-        return view;
+        courseView.setAdapter(courseCursorAdapter);
+        return courseView;
     }
 
     @Override
@@ -80,10 +73,26 @@ public class CourseListingFragment extends StupidWorkaroundFragment {
         super.onDetach();
         hostActivity = null;
     }
+    private synchronized CourseLoaderListener getCourseLoaderListener() {
+        if (courseLoaderListener == null) {
+            courseLoaderListener = new CourseLoaderListener();
+        }
+        return courseLoaderListener;
+    }
+    private synchronized Uri getContentUri() {
+        Bundle arguments = getArguments();
+        if (arguments == null) {
+            return CourseProvider.CONTENT_URI;
+        }
+        else {
+            return arguments.getParcelable(ARG_CONTENT_URI);
+        }
+
+    }
     private class CourseLoaderListener implements LoaderManager.LoaderCallbacks<Cursor> {
         @Override
         public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-            return new CursorLoader(getActivity(), CourseProvider.CONTENT_URI,
+            return new CursorLoader(getActivity(), getContentUri(),
                 null, null, null, null);
         }
         @Override

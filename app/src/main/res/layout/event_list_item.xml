@@ -47,7 +47,7 @@
         android:layout_marginEnd="@dimen/margin_small"
         android:layout_marginRight="@dimen/margin_small"
         android:gravity="end"
-        android:text="eventStart"
+        android:text="eventType"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toTopOf="@+id/eventTimeTextView"
@@ -55,12 +55,12 @@
 
     <TextView
         android:id="@+id/eventTimeTextView"
-        android:layout_width="100dp"
+        android:layout_width="200dp"
         android:layout_height="wrap_content"
         android:layout_marginEnd="@dimen/margin_small"
         android:layout_marginRight="@dimen/margin_small"
         android:gravity="end"
-        android:text="eventEnd"
+        android:text="eventTime"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/eventTypeTextView"
         app:layout_constraintBottom_toBottomOf="parent"

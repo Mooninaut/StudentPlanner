@@ -15,6 +15,7 @@ import java.text.DateFormat;
 import java.util.Date;
 
 import static com.example.clement.studentplanner.database.StorageHelper.COLUMN_END;
+import static com.example.clement.studentplanner.database.StorageHelper.COLUMN_ID;
 import static com.example.clement.studentplanner.database.StorageHelper.COLUMN_NAME;
 import static com.example.clement.studentplanner.database.StorageHelper.COLUMN_START;
 import static com.example.clement.studentplanner.database.StorageHelper.COLUMN_TIME;
@@ -26,6 +27,7 @@ import static com.example.clement.studentplanner.database.StorageHelper.COLUMN_T
 
 public class EventCursorAdapter extends CursorAdapter {
     private static DateFormat dateFormat = DateFormat.getDateInstance();
+    private static DateFormat dateTimeFormat = DateFormat.getDateTimeInstance();
     public EventCursorAdapter(Context context, Cursor cursor, int flags) {
         super(context, cursor, flags);
     }
@@ -75,11 +77,18 @@ public class EventCursorAdapter extends CursorAdapter {
             default:
                 throw new RuntimeException("EventCursorAdapter.bindView: Unexpected event type encountered");
         }
-        Date  eventTime = new Date(cursor.getLong(cursor.getColumnIndex(COLUMN_TIME)));
+        Date eventTime = new Date(cursor.getLong(cursor.getColumnIndex(COLUMN_TIME)));
 
         nameTV.setText(eventName);
         eventTV.setText(eventTypeIcon);
         typeTV.setText(eventType);
-        timeTV.setText(dateFormat.format(eventTime));
+        long eventId = cursor.getLong(cursor.getColumnIndex(COLUMN_ID));
+        long sourceId = EventProvider.eventToSource(eventId);
+        if (StorageHelper.classify(sourceId) == StorageHelper.Type.ASSESSMENT) {
+            timeTV.setText(dateTimeFormat.format(eventTime));
+        }
+        else {
+            timeTV.setText(dateFormat.format(eventTime));
+        }
     }
 }

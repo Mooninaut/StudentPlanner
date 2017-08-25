@@ -1,31 +1,30 @@
 package com.example.clement.studentplanner;
 
 
+import android.app.Fragment;
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.content.ContentUris;
 import android.content.ContentValues;
-import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
-import android.app.Fragment;
-import android.app.FragmentManager;
-import android.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.Toast;
 
+import com.example.clement.studentplanner.data.Assessment;
 import com.example.clement.studentplanner.data.Course;
 import com.example.clement.studentplanner.data.Term;
 import com.example.clement.studentplanner.database.AssessmentCursorAdapter;
 import com.example.clement.studentplanner.database.AssessmentProvider;
 import com.example.clement.studentplanner.database.CourseCursorAdapter;
 import com.example.clement.studentplanner.database.CourseProvider;
-import com.example.clement.studentplanner.database.DataWrapper;
 import com.example.clement.studentplanner.database.EventCursorAdapter;
 import com.example.clement.studentplanner.database.StorageHelper;
 import com.example.clement.studentplanner.database.TermCursorAdapter;
@@ -34,7 +33,6 @@ import com.example.clement.studentplanner.database.TermProvider;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 
-import static com.example.clement.studentplanner.database.StorageHelper.COLUMN_ID;
 import static com.example.clement.studentplanner.database.StorageHelper.COLUMN_NUMBER;
 
 public class MainActivity extends AppCompatActivity
@@ -78,28 +76,37 @@ public class MainActivity extends AppCompatActivity
         transaction.replace(R.id.contentFragment, fragment);
         transaction.commit();
     }
-    /*private void launchTermListingActivity(long id) {
-        Intent intent = new Intent(MainActivity.this, TermListingActivity.class);
-        Uri uri = ContentUris.withAppendedId(TermProvider.CONTENT_URI, id);
-        intent.putExtra(TermProvider.CONTENT_ITEM_TYPE, uri);
-//        intent.putExtra("position", position);
-        startActivity(intent);
-    }*/
+    private void launchTermDetailActivity(long id) {
+        launchDetailActivity(
+            TermProvider.CONTENT_URI,
+            TermProvider.CONTENT_ITEM_TYPE,
+            TermDetailActivity.class,
+            id
+        );
+    }
 
-    /*private void launchCourseListingActivity(long id) {
-        Intent intent = new Intent(MainActivity.this, CourseListingActivity.class);
-        Uri uri = ContentUris.withAppendedId(CourseProvider.CONTENT_URI, id);
-        intent.putExtra(TermProvider.CONTENT_ITEM_TYPE, uri);
-//        intent.putExtra("position", position);
+    private void launchCourseDetailActivity(long id) {
+        launchDetailActivity(
+            CourseProvider.CONTENT_URI,
+            CourseProvider.CONTENT_ITEM_TYPE,
+            CourseDetailActivity.class,
+            id
+        );
+    }
+    private void launchAssessmentDetailActivity(long id) {
+//        launchDetailActivity(
+//            AssessmentProvider.CONTENT_URI,
+//            AssessmentProvider.CONTENT_ITEM_TYPE,
+//            AssessmentDetailActivity.class,
+//            id
+//        );
+    }
+    private void launchDetailActivity(Uri contentUri, String itemType, Class activity, long id) {
+        Intent intent = new Intent(this, activity);
+        Uri uri = ContentUris.withAppendedId(contentUri, id);
+        intent.putExtra(itemType, uri);
         startActivity(intent);
-    }*/
-/*    private void launchAssessmentListingActivity(long id) {
-        Intent intent = new Intent(MainActivity.this, AssessmentListingActivity.class);
-        Uri uri = ContentUris.withAppendedId(AssessmentProvider.CONTENT_URI, id);
-        intent.putExtra(TermProvider.CONTENT_ITEM_TYPE, uri);
-//        intent.putExtra("position", position);
-        startActivity(intent);
-    }*/
+    }
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
@@ -148,28 +155,28 @@ public class MainActivity extends AppCompatActivity
         end.add(Calendar.MONTH, 6 * (termNumber - 1));
         end.add(Calendar.DATE, -1);
         Term term = new Term("Term "+termNumber, start.getTimeInMillis(), end.getTimeInMillis(), termNumber);
+        insertTerm(term);
         end.add(Calendar.DATE, 1);
-        Uri termUri = insertTerm(term);
-        long termId = ContentUris.parseId(termUri);
-        DataWrapper<Term> termWrapper = new DataWrapper<>(term, termId);
         end.add(Calendar.MONTH, -5);
         end.add(Calendar.DATE, -1);
-        insertCourse(new Course("Course "+termNumber+".1", start.getTimeInMillis(), end.getTimeInMillis(), termId, Course.Status.IN_PROGRESS));
+        Course course1 = new Course("Course "+termNumber+".1", start.getTimeInMillis(), end.getTimeInMillis(), term, Course.Status.IN_PROGRESS);
+        insertCourse(course1);
+        long assessmentStart = end.getTimeInMillis() - 3_600_000 * 8;
+        long assessmentEnd = assessmentStart + 3_600_000;
+        insertAssessment(new Assessment("Assessment "+termNumber+".1", assessmentStart, assessmentEnd, course1, Assessment.Type.OBJECTIVE, "notes"));
         end.add(Calendar.DATE, 1);
         start.add(Calendar.MONTH, 1);
         end.add(Calendar.MONTH, 1);
         end.add(Calendar.DATE, -1);
-        insertCourse(new Course("Course "+termNumber+".2", start.getTimeInMillis(), end.getTimeInMillis(), termId, Course.Status.PLANNED));
+        insertCourse(new Course("Course "+termNumber+".2", start.getTimeInMillis(), end.getTimeInMillis(), term, Course.Status.PLANNED));
+
     }
 
     private Uri insertTerm(Term term) {
         //Uri termUri =
         Uri inserted = getContentResolver().insert(TermProvider.CONTENT_URI, TermProvider.termToValues(term));
         if (inserted != null) {
-//            getContentResolver().notifyChange(TermProvider.CONTENT_URI, null);
             Toast.makeText(this, "Term "+ ContentUris.parseId(inserted)+" inserted!", Toast.LENGTH_SHORT).show();
-//            restartTermLoader();
-//            restartEventLoader();
         }
         return inserted;
     }
@@ -182,55 +189,27 @@ public class MainActivity extends AppCompatActivity
         values.put(StorageHelper.COLUMN_TERM_ID, course.termId() + StorageHelper.TERM_ID_OFFSET);
         Uri inserted = getContentResolver().insert(CourseProvider.CONTENT_URI, values);
         if (inserted != null) {
-//            getContentResolver().notifyChange(EventProvider.CONTENT_URI, null);
-            Toast.makeText(this, "Course "+ ContentUris.parseId(inserted)+" inserted!", Toast.LENGTH_SHORT).show();
-//            restartEventLoader();
+            long id = ContentUris.parseId(inserted);
+            course.id(id);
+            Toast.makeText(this, "Course "+id+" inserted!", Toast.LENGTH_SHORT).show();
         }
         return inserted;
     }
-/*
-    private void restartTermLoader() {
-        getLoaderManager().restartLoader(TERM_LOADER_ID, null, termLoaderListener);
+    private Uri insertAssessment(Assessment assessment) {
+        ContentValues values = new ContentValues();
+        values.put(StorageHelper.COLUMN_NAME, assessment.name());
+        values.put(StorageHelper.COLUMN_START, assessment.startMillis());
+        values.put(StorageHelper.COLUMN_END, assessment.endMillis());
+        values.put(StorageHelper.COLUMN_COURSE_ID, assessment.courseId());
+        values.put(StorageHelper.COLUMN_TYPE, assessment.type().value());
+        Uri inserted = getContentResolver().insert(AssessmentProvider.CONTENT_URI, values);
+        if (inserted != null) {
+            long id = ContentUris.parseId(inserted);
+            assessment.id(id);
+            Toast.makeText(this, "Assessment "+id+" inserted!", Toast.LENGTH_SHORT).show();
+        }
+        return inserted;
     }
-*/
-
-
-/*
-    private class TermLoaderListener implements LoaderManager.LoaderCallbacks<Cursor> {
-        @Override
-        public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-            return new CursorLoader(MainActivity.this, TermProvider.CONTENT_URI,
-                null, null, null, null);
-        }
-
-        @Override
-        public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-            termCursorAdapter.swapCursor(data);
-        }
-
-        @Override
-        public void onLoaderReset(Loader<Cursor> loader) {
-            termCursorAdapter.swapCursor(null);
-        }
-    }
-*/
-
-
-/*    private class CourseLoaderListener implements LoaderManager.LoaderCallbacks<Cursor> {
-        @Override
-        public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-            return new CursorLoader(MainActivity.this, CourseProvider.CONTENT_URI,
-                null, null, null, null);
-        }
-        @Override
-        public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-            eventCursorAdapter.swapCursor(data);
-        }
-        @Override
-        public void onLoaderReset(Loader<Cursor> loader) {
-            eventCursorAdapter.swapCursor(null);
-        }
-    }*/
 
     @Override
     public void onTermListFragmentInteraction(long termId) {
@@ -239,30 +218,16 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public synchronized void onEventSelected(long sourceId) {
-        Bundle bundle = new Bundle();
-        bundle.putLong(COLUMN_ID, sourceId);
         switch (StorageHelper.classify(sourceId)) {
             case TERM:
-                if (termListingFragment == null) {
-                    termListingFragment = new TermListingFragment();
-                }
-//                termListingFragment.setArguments(bundle);
-                switchToFragment(termListingFragment);
+                launchTermDetailActivity(sourceId);
                 break;
             case COURSE:
-                if (courseListingFragment == null) {
-                    courseListingFragment = new CourseListingFragment();
-                }
-//                courseListingFragment.setArguments(bundle);
-                switchToFragment(courseListingFragment);
+                launchCourseDetailActivity(sourceId);
                 break;
             case ASSESSMENT:
-                if (assessmentListingFragment == null) {
-                    assessmentListingFragment = new AssessmentListingFragment();
-                }
-//                assessmentListingFragment.setArguments(bundle);
-                switchToFragment(assessmentListingFragment);
-                break;
+                launchAssessmentDetailActivity(sourceId);
+                return;
             case NONE:
             default:
                 throw new IllegalArgumentException("Bad ID '"+sourceId+"' in MainActivity.onEventSelected()");
@@ -271,7 +236,7 @@ public class MainActivity extends AppCompatActivity
     private class BottomNavigationListener implements BottomNavigationView.OnNavigationItemSelectedListener {
         @Override
         public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-//            Class activity;
+
             switch (item.getItemId()) {
                 case R.id.navigation_home:
 //                    activity = MainActivity.class;

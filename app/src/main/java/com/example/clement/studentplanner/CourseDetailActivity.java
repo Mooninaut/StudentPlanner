@@ -11,6 +11,8 @@ import android.support.v7.app.ActionBar;
 import android.support.v4.app.NavUtils;
 import android.view.MenuItem;
 
+import static com.example.clement.studentplanner.database.StorageHelper.COLUMN_ID;
+
 /**
  * An activity representing a single Course detail screen. This
  * activity is only used narrow width devices. On tablet-size devices,
@@ -22,6 +24,7 @@ public class CourseDetailActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.course_detail_activity);
         Toolbar toolbar = (Toolbar) findViewById(R.id.detail_toolbar);
         setSupportActionBar(toolbar);

@@ -7,9 +7,7 @@
     android:name="com.example.clement.studentplanner.TermListingFragment"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_marginLeft="16dp"
     android:background="#FFFF"
-    android:layout_marginRight="16dp"
     app:layoutManager="LinearLayoutManager"
     tools:context="com.example.clement.studentplanner.TermListingFragment"
     tools:listitem="@layout/term_list_item"/>

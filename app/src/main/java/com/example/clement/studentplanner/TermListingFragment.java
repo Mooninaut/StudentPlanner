@@ -5,13 +5,13 @@ import android.content.Context;
 import android.content.CursorLoader;
 import android.content.Loader;
 import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
 
-import com.example.clement.studentplanner.data.Term;
 import com.example.clement.studentplanner.database.TermCursorAdapter;
 import com.example.clement.studentplanner.database.TermProvider;
 
@@ -24,14 +24,13 @@ import com.example.clement.studentplanner.database.TermProvider;
 public class TermListingFragment extends StupidWorkaroundFragment {
 
     // TODO: Customize parameter argument names
-//    private static final String ARG_COLUMN_COUNT = "column-count";
+    private static final String ARG_CONTENT_URI = "content-uri";
     // TODO: Customize parameters
 //    private int mColumnCount = 1;
     private TermLoaderListener termLoaderListener = new TermLoaderListener();
     private HostActivity hostActivity;
     public static final int TERM_LOADER_ID = 1;
     private TermCursorAdapter termCursorAdapter;
-
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
      * fragment (e.g. upon screen orientation changes).
@@ -39,12 +38,12 @@ public class TermListingFragment extends StupidWorkaroundFragment {
     public TermListingFragment() {
     }
 
-/*    // TODO: Customize parameter initialization
+    // TODO: Customize parameter initialization
     @SuppressWarnings("unused")
-    public static TermListingFragment newInstance(int columnCount) {
+    public static TermListingFragment newInstance(Uri contentUri) {
         TermListingFragment fragment = new TermListingFragment();
         Bundle args = new Bundle();
-        args.putInt(ARG_COLUMN_COUNT, columnCount);
+        args.putParcelable(ARG_CONTENT_URI, contentUri);
         fragment.setArguments(args);
         return fragment;
     }
@@ -52,11 +51,7 @@ public class TermListingFragment extends StupidWorkaroundFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        if (getArguments() != null) {
-            mColumnCount = getArguments().getInt(ARG_COLUMN_COUNT);
-        }
-    }*/
+    }
     @Override
     public void onAttachToContext(Context context) {
         if (context instanceof HostActivity) {
@@ -68,12 +63,10 @@ public class TermListingFragment extends StupidWorkaroundFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.term_list_fragment, container, false);
+        ListView termView = (ListView) inflater.inflate(R.layout.term_list_fragment, container, false);
         // Set the adapter
-        Context context = view.getContext();
-        ListView termView = (ListView) view;
-        termView.setAdapter(new TermCursorAdapter(context, null, 0));
-        return view;
+        termView.setAdapter(termCursorAdapter);
+        return termView;
     }
 
     @Override
@@ -81,10 +74,20 @@ public class TermListingFragment extends StupidWorkaroundFragment {
         super.onDetach();
         hostActivity = null;
     }
+    private Uri getContentUri() {
+        Bundle arguments = getArguments();
+        if (arguments == null) {
+            return TermProvider.CONTENT_URI;
+        }
+        else {
+            return arguments.getParcelable(ARG_CONTENT_URI);
+        }
+
+    }
     private class TermLoaderListener implements LoaderManager.LoaderCallbacks<Cursor> {
         @Override
         public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-            return new CursorLoader(getActivity(), TermProvider.CONTENT_URI,
+            return new CursorLoader(getActivity(), getContentUri(),
                 null, null, null, null);
         }
         @Override
