@@ -1,18 +1,20 @@
 package com.example.clement.studentplanner;
 
 
-import android.app.LoaderManager;
+
 import android.content.Context;
-import android.content.CursorLoader;
-import android.content.Loader;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.CursorLoader;
+import android.support.v4.content.Loader;
+import android.support.v4.widget.CursorAdapter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.CursorAdapter;
 import android.widget.ListView;
 
 import com.example.clement.studentplanner.database.EventCursorAdapter;
@@ -24,7 +26,7 @@ import static com.example.clement.studentplanner.database.EventProvider.eventToS
  * Created by Clement on 8/22/2017.
  */
 
-public class EventListingFragment extends StupidWorkaroundFragment {
+public class EventListingFragment extends Fragment {
     private EventLoaderListener eventLoaderListener = new EventLoaderListener();
     private HostActivity hostActivity;
     public static final int EVENT_LOADER_ID = 1;
@@ -32,7 +34,8 @@ public class EventListingFragment extends StupidWorkaroundFragment {
 
 
     @Override
-    public void onAttachToContext(Context context) {
+    public void onAttach(Context context) {
+        super.onAttach(context);
         if (context instanceof HostActivity) {
             hostActivity = (HostActivity) context;
             eventCursorAdapter = hostActivity.getEventCursorAdapter();

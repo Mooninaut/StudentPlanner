@@ -1,15 +1,18 @@
 package com.example.clement.studentplanner;
 
-import android.app.LoaderManager;
+
 import android.content.Context;
-import android.content.CursorLoader;
-import android.content.Loader;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.CursorLoader;
+import android.support.v4.content.Loader;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ListView;
 
 import com.example.clement.studentplanner.database.TermCursorAdapter;
@@ -21,12 +24,10 @@ import com.example.clement.studentplanner.database.TermProvider;
  * Activities containing this fragment MUST implement the {@link HostActivity}
  * interface.
  */
-public class TermListingFragment extends StupidWorkaroundFragment {
+public class TermListingFragment extends Fragment {
 
-    // TODO: Customize parameter argument names
     private static final String ARG_CONTENT_URI = "content-uri";
-    // TODO: Customize parameters
-//    private int mColumnCount = 1;
+
     private TermLoaderListener termLoaderListener = new TermLoaderListener();
     private HostActivity hostActivity;
     public static final int TERM_LOADER_ID = 1;
@@ -38,8 +39,6 @@ public class TermListingFragment extends StupidWorkaroundFragment {
     public TermListingFragment() {
     }
 
-    // TODO: Customize parameter initialization
-    @SuppressWarnings("unused")
     public static TermListingFragment newInstance(Uri contentUri) {
         TermListingFragment fragment = new TermListingFragment();
         Bundle args = new Bundle();
@@ -53,7 +52,8 @@ public class TermListingFragment extends StupidWorkaroundFragment {
         super.onCreate(savedInstanceState);
     }
     @Override
-    public void onAttachToContext(Context context) {
+    public void onAttach(Context context) {
+        super.onAttach(context);
         if (context instanceof HostActivity) {
             hostActivity = (HostActivity) context;
             termCursorAdapter = hostActivity.getTermCursorAdapter();
@@ -66,6 +66,12 @@ public class TermListingFragment extends StupidWorkaroundFragment {
         ListView termView = (ListView) inflater.inflate(R.layout.term_list_fragment, container, false);
         // Set the adapter
         termView.setAdapter(termCursorAdapter);
+        termView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                hostActivity.onTermListFragmentInteraction(id);
+            }
+        });
         return termView;
     }
 

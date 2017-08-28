@@ -1,30 +1,29 @@
 package com.example.clement.studentplanner;
 
-import android.app.LoaderManager;
 import android.content.ContentUris;
-import android.content.CursorLoader;
 import android.content.Intent;
-import android.content.Loader;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.CursorLoader;
+import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.CursorAdapter;
 import android.widget.ListView;
 
-import com.example.clement.studentplanner.data.Term;
 import com.example.clement.studentplanner.database.TermCursorAdapter;
 import com.example.clement.studentplanner.database.TermProvider;
 
 public class TermListingActivity extends AppCompatActivity
     implements LoaderManager.LoaderCallbacks<Cursor>,
     TermListingFragment.HostActivity {
-
+    private TermListingFragment fragment;
     private TermCursorAdapter termCursorAdapter = new TermCursorAdapter(this, null, 0);
 
     @Override
@@ -34,6 +33,11 @@ public class TermListingActivity extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        fragment = TermListingFragment.newInstance(TermProvider.CONTENT_URI);
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        FragmentTransaction transaction = fragmentManager.beginTransaction();
+        transaction.replace(R.id.term_listing, fragment);
+
         termCursorAdapter = new TermCursorAdapter(this, null, 0);
         ListView termList = (ListView) findViewById(R.id.term_listing);
         termList.setAdapter(termCursorAdapter);
@@ -42,7 +46,7 @@ public class TermListingActivity extends AppCompatActivity
 //        termList.setItemChecked(position, true);
 //        termList.setSelection(position);
 
-        termList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+/*        termList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Intent intent = new Intent(TermListingActivity.this, TermDetailActivity.class);
@@ -50,8 +54,8 @@ public class TermListingActivity extends AppCompatActivity
                 intent.putExtra(TermProvider.CONTENT_ITEM_TYPE, uri);
                 startActivity(intent);
             }
-        });
-        getLoaderManager().initLoader(0, null, this);
+        });*/
+        getSupportLoaderManager().initLoader(0, null, this);
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -82,7 +86,10 @@ public class TermListingActivity extends AppCompatActivity
 
     @Override
     public void onTermListFragmentInteraction(long termId) {
-
+        Intent intent = new Intent(TermListingActivity.this, TermDetailActivity.class);
+        Uri uri = ContentUris.withAppendedId(TermProvider.CONTENT_URI, termId);
+        intent.putExtra(TermProvider.CONTENT_ITEM_TYPE, uri);
+        startActivity(intent);
     }
 
     @Override

@@ -1,9 +1,6 @@
 package com.example.clement.studentplanner;
 
 
-import android.app.Fragment;
-import android.app.FragmentManager;
-import android.app.FragmentTransaction;
 import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Intent;
@@ -12,6 +9,9 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -61,7 +61,7 @@ public class MainActivity extends AppCompatActivity
         navigationView.setOnNavigationItemSelectedListener(bottomNavigationListener);
 
         eventListingFragment = new EventListingFragment();
-        fragmentManager = getFragmentManager();
+        fragmentManager = getSupportFragmentManager();
         switchToFragment(eventListingFragment);
 
 //        courseCursorAdapter = new CourseCursorAdapter()
@@ -233,6 +233,24 @@ public class MainActivity extends AppCompatActivity
                 throw new IllegalArgumentException("Bad ID '"+sourceId+"' in MainActivity.onEventSelected()");
         }
     }
+    private synchronized TermListingFragment getTermListingFragment() {
+        if (termListingFragment == null) {
+            termListingFragment = new TermListingFragment();
+        }
+        return termListingFragment;
+    }
+    private synchronized CourseListingFragment getCourseListingFragment() {
+        if (courseListingFragment == null) {
+            courseListingFragment = new CourseListingFragment();
+        }
+        return courseListingFragment;
+    }
+    private synchronized AssessmentListingFragment getAssessmentListingFragment() {
+        if (assessmentListingFragment == null) {
+            assessmentListingFragment = new AssessmentListingFragment();
+        }
+        return assessmentListingFragment;
+    }
     private class BottomNavigationListener implements BottomNavigationView.OnNavigationItemSelectedListener {
         @Override
         public boolean onNavigationItemSelected(@NonNull MenuItem item) {
@@ -243,25 +261,16 @@ public class MainActivity extends AppCompatActivity
                     switchToFragment(eventListingFragment);
                     return true;
                 case R.id.navigation_terms:
-                    if (termListingFragment == null) {
-                        termListingFragment = new TermListingFragment();
-                    }
 //                    termListingFragment.setArguments(null);
-                    switchToFragment(termListingFragment);
+                    switchToFragment(getTermListingFragment());
                     return true;
                 case R.id.navigation_courses:
-                    if (courseListingFragment == null) {
-                        courseListingFragment = new CourseListingFragment();
-                    }
 //                    courseListingFragment.setArguments(null);
-                    switchToFragment(courseListingFragment);
+                    switchToFragment(getCourseListingFragment());
                     return true;
                 case R.id.navigation_assessments:
-                    if (assessmentListingFragment == null) {
-                        assessmentListingFragment = new AssessmentListingFragment();
-                    }
 //                    assessmentListingFragment.setArguments(null);
-                    switchToFragment(assessmentListingFragment);
+                    switchToFragment(getAssessmentListingFragment());
                     return true;
                 default:
                     return false;

@@ -7,20 +7,12 @@ import android.content.UriMatcher;
 import android.database.ContentObserver;
 import android.database.Cursor;
 import android.net.Uri;
-import android.provider.BaseColumns;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import com.example.clement.studentplanner.data.Assessment;
-
 import static android.content.ContentResolver.SCHEME_CONTENT;
-import static com.example.clement.studentplanner.database.StorageHelper.COLUMN_START;
-import static com.example.clement.studentplanner.database.StorageHelper.COLUMN_END;
 import static com.example.clement.studentplanner.database.StorageHelper.COLUMNS_EVENT;
-import static com.example.clement.studentplanner.database.StorageHelper.COLUMN_ID;
-import static com.example.clement.studentplanner.database.StorageHelper.COLUMN_NAME;
 import static com.example.clement.studentplanner.database.StorageHelper.COLUMN_TIME;
-import static com.example.clement.studentplanner.database.StorageHelper.COLUMN_TYPE;
 import static com.example.clement.studentplanner.database.StorageHelper.VIEW_EVENT;
 
 /**

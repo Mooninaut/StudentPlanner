@@ -1,12 +1,13 @@
 package com.example.clement.studentplanner;
 
-import android.app.LoaderManager;
 import android.content.Context;
-import android.content.CursorLoader;
-import android.content.Loader;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.CursorLoader;
+import android.support.v4.content.Loader;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,7 +21,7 @@ import com.example.clement.studentplanner.database.CourseProvider;
      * Activities containing this fragment MUST implement the {@link HostActivity}
      * interface.
      */
-public class CourseListingFragment extends StupidWorkaroundFragment {
+public class CourseListingFragment extends Fragment {
 
     // TODO: Customize parameter argument names
     private static final String ARG_CONTENT_URI = "content-uri";
@@ -52,7 +53,8 @@ public class CourseListingFragment extends StupidWorkaroundFragment {
             super.onCreate(savedInstanceState);
         }
     @Override
-    public void onAttachToContext(Context context) {
+    public void onAttach(Context context) {
+        super.onAttach(context);
         if (context instanceof HostActivity) {
             hostActivity = (HostActivity) context;
             courseCursorAdapter = hostActivity.getCourseCursorAdapter();

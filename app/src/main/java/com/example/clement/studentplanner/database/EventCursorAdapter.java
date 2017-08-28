@@ -3,7 +3,7 @@ package com.example.clement.studentplanner.database;
 import android.content.Context;
 import android.database.Cursor;
 import android.os.Build;
-import android.widget.CursorAdapter;
+import android.support.v4.widget.CursorAdapter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;

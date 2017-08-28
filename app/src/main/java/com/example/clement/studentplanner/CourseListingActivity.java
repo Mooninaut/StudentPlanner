@@ -59,7 +59,7 @@ public class CourseListingActivity extends AppCompatActivity {
         }
         courseCursorAdapter = new CourseCursorAdapter(this, null, 0);
         courseLoaderListener = new CourseLoaderListener(this, courseCursorAdapter);
-        getLoaderManager().initLoader(COURSE_LOADER_ID, null, courseLoaderListener);
+        getSupportLoaderManager().initLoader(COURSE_LOADER_ID, null, courseLoaderListener);
 
         if (findViewById(R.id.course_detail_container) != null) {
             // The detail container view will be present only in the
