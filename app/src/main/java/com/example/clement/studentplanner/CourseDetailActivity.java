@@ -1,6 +1,9 @@
 package com.example.clement.studentplanner;
 
+import android.content.ContentUris;
 import android.content.Intent;
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -11,13 +14,14 @@ import android.support.v7.app.ActionBar;
 import android.support.v4.app.NavUtils;
 import android.view.MenuItem;
 
-import static com.example.clement.studentplanner.database.StorageHelper.COLUMN_ID;
+import com.example.clement.studentplanner.database.CourseCursorAdapter;
+import com.example.clement.studentplanner.database.CourseProvider;
 
 /**
  * An activity representing a single Course detail screen. This
  * activity is only used narrow width devices. On tablet-size devices,
  * item details are presented side-by-side with a list of items
- * in a {@link CourseListingActivity}.
+ * TODO FIXME.
  */
 public class CourseDetailActivity extends AppCompatActivity {
 
@@ -26,17 +30,34 @@ public class CourseDetailActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.course_detail_activity);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.detail_toolbar);
-        setSupportActionBar(toolbar);
+/*        Toolbar toolbar = (Toolbar) findViewById(R.id.detail_toolbar);
+        setSupportActionBar(toolbar);*/
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        Uri courseContentUri = getIntent().getParcelableExtra(CourseProvider.CONTENT_ITEM_TYPE);
+        long courseId = ContentUris.parseId(courseContentUri);
+
+        Cursor cursor = null;
+        try {
+            cursor = getContentResolver().query(courseContentUri, null, null, null, null);
+            if (cursor != null && cursor.moveToFirst()) {
+                CourseCursorAdapter courseAdapter = new CourseCursorAdapter(this, cursor, 0);
+                courseAdapter.bindView(findViewById(R.id.course_list_item), this, cursor);
+            }
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
+
+
+/*        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Snackbar.make(view, "Replace with your own detail action", Snackbar.LENGTH_LONG)
                     .setAction("Action", null).show();
             }
-        });
+        });*/
 
         // Show the Up button in the action bar.
         ActionBar actionBar = getSupportActionBar();
@@ -53,18 +74,18 @@ public class CourseDetailActivity extends AppCompatActivity {
         //
         // http://developer.android.com/guide/components/fragments.html
         //
-        if (savedInstanceState == null) {
+/*        if (savedInstanceState == null) {
             // Create the detail fragment and add it to the activity
             // using a fragment transaction.
             Bundle arguments = new Bundle();
-            arguments.putLong(CourseDetailFragment.ARG_ITEM_ID,
-                getIntent().getLongExtra(CourseDetailFragment.ARG_ITEM_ID, 0));
+            arguments.putParcelable(CourseProvider.CONTENT_ITEM_TYPE,
+                getIntent().getParcelableExtra(CourseProvider.CONTENT_ITEM_TYPE));
             CourseDetailFragment fragment = new CourseDetailFragment();
             fragment.setArguments(arguments);
             getSupportFragmentManager().beginTransaction()
-                .add(R.id.course_detail_container, fragment)
+                .add(R.id.contentFragment, fragment)
                 .commit();
-        }
+        }*/
     }
 
     @Override
@@ -78,7 +99,7 @@ public class CourseDetailActivity extends AppCompatActivity {
             //
             // http://developer.android.com/design/patterns/navigation.html#up-vs-back
             //
-            NavUtils.navigateUpTo(this, new Intent(this, CourseListingActivity.class));
+            NavUtils.navigateUpTo(this, new Intent(this, MainActivity.class));
             return true;
         }
         return super.onOptionsItemSelected(item);

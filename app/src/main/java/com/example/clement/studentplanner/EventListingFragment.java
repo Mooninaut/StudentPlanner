@@ -46,8 +46,8 @@ public class EventListingFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
-        ListView eventList = (ListView) inflater.inflate(R.layout.event_list_fragment, container, false);
-//        ListView eventList = (ListView) getActivity().findViewById(R.id.event_list_fragment);
+        ListView eventList = (ListView) inflater.inflate(R.layout.event_list_view, container, false);
+//        ListView eventList = (ListView) getActivity().findViewById(R.id.event_list_view);
 //        Log.i("EventListingFragment", eventList.getId() + " " + R.id.event_list_view);
         if (eventCursorAdapter == null) { throw new NullPointerException(); }
         eventList.setAdapter(eventCursorAdapter);

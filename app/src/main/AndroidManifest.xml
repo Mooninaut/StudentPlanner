@@ -40,24 +40,6 @@
             android:exported="false"/>
 
         <activity
-            android:name=".TermListingActivity"
-            android:label="@string/title_activity_term"
-            android:parentActivityName=".MainActivity"
-            android:theme="@style/AppTheme.NoActionBar">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.example.clement.studentplanner.MainActivity"/>
-        </activity>
-        <activity
-            android:name=".CourseListingActivity"
-            android:label="@string/title_course_list"
-            android:parentActivityName=".TermDetailActivity"
-            android:theme="@style/AppTheme.NoActionBar">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.example.clement.studentplanner.TermListingActivity"/>
-        </activity>
-        <activity
             android:name=".CourseDetailActivity"
             android:label="@string/title_course_detail"
             android:parentActivityName=".CourseListingActivity"

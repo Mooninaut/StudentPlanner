@@ -4,18 +4,13 @@ import android.content.ContentUris;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 
-import com.example.clement.studentplanner.data.Term;
-import com.example.clement.studentplanner.database.CourseCursorAdapter;
 import com.example.clement.studentplanner.database.CourseProvider;
-import com.example.clement.studentplanner.database.CourseRecyclerAdapter;
-import com.example.clement.studentplanner.database.DataWrapper;
 import com.example.clement.studentplanner.database.TermCursorAdapter;
 import com.example.clement.studentplanner.database.TermProvider;
 
@@ -23,29 +18,45 @@ import com.example.clement.studentplanner.database.TermProvider;
  * Created by Clement on 8/18/2017.
  */
 
-public class TermDetailActivity extends AppCompatActivity {
-    private CourseCursorAdapter courseAdapter;
+public class TermDetailActivity extends AppCompatActivity
+    implements CourseListingFragment.HostActivity {
+
+    private CourseListingFragment fragment;
 //    private Term term;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.term_detail_activity);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+//        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+//        setSupportActionBar(toolbar);
 
         Uri termContentUri = getIntent().getParcelableExtra(TermProvider.CONTENT_ITEM_TYPE);
         long termId = ContentUris.parseId(termContentUri);
-
+//        long termId = getIntent().getLongExtra(TermProvider.CONTENT_ITEM_TYPE, -1);
+//        if (termId == -1) {
+//            throw new IllegalStateException("Invalid Term ID");
+//        }
+//        Uri termContentUri = ContentUris.withAppendedId(TermProvider.CONTENT_URI, termId);
         setTerm(termContentUri);
+        Uri courseContentUri = ContentUris.withAppendedId(CourseProvider.TERM_URI, termId);
+
+//        Cursor courseCursor = getContentResolver().query(courseContentUri, null, null, null, null);
+//        courseCursorAdapter = new CourseCursorAdapter(this, courseCursor, 0);
+
+        fragment = CourseListingFragment.newInstance(courseContentUri);
+//        fragment = new CourseListingFragment();
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        FragmentTransaction transaction = fragmentManager.beginTransaction();
+        transaction.replace(R.id.contentFragment, fragment);
+        transaction.commit();
 
         // Course list below
-        Cursor courseCursor = getContentResolver().query(ContentUris.withAppendedId(CourseProvider.TERM_URI, termId), null, null, null, null);
-        courseAdapter = new CourseCursorAdapter(this, courseCursor, 0);
-        CourseRecyclerAdapter courseRecyclerAdapter = new CourseRecyclerAdapter(courseAdapter, this, false);
-        RecyclerView recyclerView = (RecyclerView) findViewById(R.id.course_listing_list);
-        assert recyclerView != null;
-        recyclerView.setAdapter(courseRecyclerAdapter);
+//        CourseRecyclerAdapter courseRecyclerAdapter = new CourseRecyclerAdapter(courseCursorAdapter, this, false);
+//        RecyclerView recyclerView = (RecyclerView) findViewById(R.id.course_listing_list);
+//        assert recyclerView != null;
+//        recyclerView.setAdapter(courseRecyclerAdapter);
+
     }
 
     /**
@@ -73,4 +84,14 @@ public class TermDetailActivity extends AppCompatActivity {
         getMenuInflater().inflate(R.menu.options_menu, menu);
         return true;
     }
+
+    @Override
+    public void onCourseListFragmentInteraction(long courseId) {
+
+    }
+
+//    @Override
+//    public CourseCursorAdapter getCourseCursorAdapter() {
+//        return courseCursorAdapter;
+//    }
 }

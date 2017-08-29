@@ -35,12 +35,12 @@ public class Course extends AcademicEvent {
         }
     }
 //    private String name;
-    private long id = -1;
+//    private long id = NO_ID;
 //    private long startMillis;
 //    private long endMillis;
 //    @NonNull
 //    private final List<Assessment> assessmentList;
-    private long termId = -1;
+    private long termId = NO_ID;
     @NonNull
     private Status status;
     public Course() {}
@@ -52,7 +52,7 @@ public class Course extends AcademicEvent {
         this.status = status;
     }
     public Course (@NonNull String name, long startMillis, long endMillis, long termId, @NonNull Status status) {
-        this(-1, name, startMillis, endMillis, termId, status);
+        this(NO_ID, name, startMillis, endMillis, termId, status);
     }
     public Course(long id, @NonNull String name, long startMillis, long endMillis, Term term, @NonNull Status status) {
         super(id, name, startMillis, endMillis);
@@ -60,7 +60,7 @@ public class Course extends AcademicEvent {
         this.status = status;
     }
     public Course(@NonNull String name, long startMillis, long endMillis, Term term, @NonNull Status status) {
-        this(-1, name, startMillis, endMillis, term.id(), status);
+        this(NO_ID, name, startMillis, endMillis, term.id(), status);
     }
     public Course(@NonNull Course other) {
         super(other);

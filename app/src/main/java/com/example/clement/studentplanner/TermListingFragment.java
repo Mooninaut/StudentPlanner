@@ -63,7 +63,7 @@ public class TermListingFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        ListView termView = (ListView) inflater.inflate(R.layout.term_list_fragment, container, false);
+        ListView termView = (ListView) inflater.inflate(R.layout.term_list_view, container, false);
         // Set the adapter
         termView.setAdapter(termCursorAdapter);
         termView.setOnItemClickListener(new AdapterView.OnItemClickListener() {

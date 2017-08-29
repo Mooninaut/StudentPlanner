@@ -43,7 +43,7 @@ public class MainActivity extends AppCompatActivity
 
     private final EventCursorAdapter eventCursorAdapter = new EventCursorAdapter(this, null, 0);
     private final TermCursorAdapter termCursorAdapter = new TermCursorAdapter(this, null, 0);
-    private final CourseCursorAdapter courseCursorAdapter = new CourseCursorAdapter(this, null, 0);
+//    private final CourseCursorAdapter courseCursorAdapter = new CourseCursorAdapter(this, null, 0);
     private final AssessmentCursorAdapter assessmentCursorAdapter = new AssessmentCursorAdapter(this, null, 0);
 
     private EventListingFragment eventListingFragment;
@@ -176,6 +176,8 @@ public class MainActivity extends AppCompatActivity
         //Uri termUri =
         Uri inserted = getContentResolver().insert(TermProvider.CONTENT_URI, TermProvider.termToValues(term));
         if (inserted != null) {
+            long id = ContentUris.parseId(inserted);
+            term.id(id);
             Toast.makeText(this, "Term "+ ContentUris.parseId(inserted)+" inserted!", Toast.LENGTH_SHORT).show();
         }
         return inserted;
@@ -186,7 +188,7 @@ public class MainActivity extends AppCompatActivity
         values.put(StorageHelper.COLUMN_START, course.startMillis());
         values.put(StorageHelper.COLUMN_END, course.endMillis());
         values.put(StorageHelper.COLUMN_STATUS, course.status().value());
-        values.put(StorageHelper.COLUMN_TERM_ID, course.termId() + StorageHelper.TERM_ID_OFFSET);
+        values.put(StorageHelper.COLUMN_TERM_ID, course.termId());
         Uri inserted = getContentResolver().insert(CourseProvider.CONTENT_URI, values);
         if (inserted != null) {
             long id = ContentUris.parseId(inserted);
@@ -213,7 +215,7 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onTermListFragmentInteraction(long termId) {
-
+        launchTermDetailActivity(termId);
     }
 
     @Override
@@ -292,14 +294,14 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onCourseListFragmentInteraction(long courseId) {
-
+        launchCourseDetailActivity(courseId);
     }
 
-    @Override
-    @NonNull
-    public CourseCursorAdapter getCourseCursorAdapter() {
-        return courseCursorAdapter;
-    }
+//    @Override
+//    @NonNull
+//    public CourseCursorAdapter getCourseCursorAdapter() {
+//        return courseCursorAdapter;
+//    }
     @Override
     @NonNull
     public AssessmentCursorAdapter getAssessmentCursorAdapter() {

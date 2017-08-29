@@ -2,10 +2,11 @@ package com.example.clement.studentplanner.database;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.support.v4.widget.CursorAdapter;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.support.v4.widget.CursorAdapter;
 import android.widget.TextView;
 
 import com.example.clement.studentplanner.R;
@@ -51,6 +52,7 @@ public class TermCursorAdapter extends CursorAdapter{
         int termNumber = cursor.getInt(
             cursor.getColumnIndex(COLUMN_NUMBER)
         );
+        Log.d("TermCursorAdapter", "Id: "+cursor.getLong(cursor.getColumnIndex(COLUMN_ID)));
         Date termStart = new Date(cursor.getLong(cursor.getColumnIndex(StorageHelper.COLUMN_START)));
         Date termEnd = new Date(cursor.getLong(cursor.getColumnIndex(StorageHelper.COLUMN_END)));
         TextView nameTV = (TextView) view.findViewById(R.id.termNameTextView);

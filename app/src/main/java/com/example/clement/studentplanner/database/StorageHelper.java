@@ -18,7 +18,7 @@ public class StorageHelper extends SQLiteOpenHelper {
         TERM, COURSE, ASSESSMENT, NONE
     }
 
-    public static final int DATABASE_VERSION = 14;
+    public static final int DATABASE_VERSION = 15;
     public static final String TABLE_TERM = "term";
     public static final String COLUMN_ID = BaseColumns._ID;
     public static final String COLUMN_NAME = "name";
