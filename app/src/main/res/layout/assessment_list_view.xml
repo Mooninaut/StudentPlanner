@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ListView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/assessment_list_view"
+    android:name="com.example.clement.studentplanner.AssessmentListingFragment"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#FFFF"
+    app:layoutManager="LinearLayoutManager"
+    tools:context="com.example.clement.studentplanner.AssessmentListingFragment"
+    tools:listitem="@layout/assessment_list_item"/>

@@ -21,9 +21,7 @@ import android.widget.Toast;
 import com.example.clement.studentplanner.data.Assessment;
 import com.example.clement.studentplanner.data.Course;
 import com.example.clement.studentplanner.data.Term;
-import com.example.clement.studentplanner.database.AssessmentCursorAdapter;
 import com.example.clement.studentplanner.database.AssessmentProvider;
-import com.example.clement.studentplanner.database.CourseCursorAdapter;
 import com.example.clement.studentplanner.database.CourseProvider;
 import com.example.clement.studentplanner.database.EventCursorAdapter;
 import com.example.clement.studentplanner.database.StorageHelper;
@@ -44,7 +42,7 @@ public class MainActivity extends AppCompatActivity
     private final EventCursorAdapter eventCursorAdapter = new EventCursorAdapter(this, null, 0);
     private final TermCursorAdapter termCursorAdapter = new TermCursorAdapter(this, null, 0);
 //    private final CourseCursorAdapter courseCursorAdapter = new CourseCursorAdapter(this, null, 0);
-    private final AssessmentCursorAdapter assessmentCursorAdapter = new AssessmentCursorAdapter(this, null, 0);
+//    private final AssessmentCursorAdapter assessmentCursorAdapter = new AssessmentCursorAdapter(this, null, 0);
 
     private EventListingFragment eventListingFragment;
     private TermListingFragment termListingFragment;
@@ -253,6 +251,12 @@ public class MainActivity extends AppCompatActivity
         }
         return assessmentListingFragment;
     }
+
+    @Override
+    public void onAssessmentListFragmentInteraction(long assessmentId) {
+        launchAssessmentDetailActivity(assessmentId);
+    }
+
     private class BottomNavigationListener implements BottomNavigationView.OnNavigationItemSelectedListener {
         @Override
         public boolean onNavigationItemSelected(@NonNull MenuItem item) {
@@ -302,9 +306,9 @@ public class MainActivity extends AppCompatActivity
 //    public CourseCursorAdapter getCourseCursorAdapter() {
 //        return courseCursorAdapter;
 //    }
-    @Override
+/*    @Override
     @NonNull
     public AssessmentCursorAdapter getAssessmentCursorAdapter() {
         return assessmentCursorAdapter;
-    }
+    }*/
 }

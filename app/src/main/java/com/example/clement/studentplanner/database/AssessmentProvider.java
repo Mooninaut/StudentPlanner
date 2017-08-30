@@ -11,6 +11,10 @@ import android.support.annotation.Nullable;
 import android.util.Log;
 
 import static android.content.ContentResolver.SCHEME_CONTENT;
+import static com.example.clement.studentplanner.database.StorageHelper.COLUMNS_ASSESSMENT;
+import static com.example.clement.studentplanner.database.StorageHelper.COLUMNS_EVENT;
+import static com.example.clement.studentplanner.database.StorageHelper.COLUMN_COURSE_ID;
+import static com.example.clement.studentplanner.database.StorageHelper.COLUMN_ID;
 import static com.example.clement.studentplanner.database.StorageHelper.TABLE_ASSESSMENT;
 import static com.example.clement.studentplanner.database.StorageHelper.TABLE_COURSE;
 
@@ -23,9 +27,11 @@ public class AssessmentProvider extends StudentContentProviderBase {
     public static final String BASE_PATH = "assessment";
     public static final Uri CONTENT_URI;
     public static final Uri EVENT_URI;
+    public static final Uri COURSE_URI;
     private static final int ASSESSMENT_ALL = 1;
     private static final int ASSESSMENT_ID = 2;
     private static final int ASSESSMENT_EVENT = 3;
+    private static final int ASSESSMENT_COURSE = 4;
     private static final UriMatcher uriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
     public static final String CONTENT_ITEM_TYPE = "Assessment";
     static {
@@ -34,12 +40,13 @@ public class AssessmentProvider extends StudentContentProviderBase {
             .authority(AUTHORITY)
             .path(BASE_PATH);
         CONTENT_URI = builder.build();
-        builder = builder.path("event");
-        EVENT_URI = builder.build();
+        EVENT_URI = builder.path(EventProvider.BASE_PATH).build();
+        COURSE_URI = builder.path(CourseProvider.BASE_PATH).build();
 //        Log.i(AssessmentProvider.class.getSimpleName(), EVENT_URI.getPath());
-        uriMatcher.addURI(AUTHORITY, BASE_PATH, ASSESSMENT_ALL);
         uriMatcher.addURI(AUTHORITY, BASE_PATH + "/#", ASSESSMENT_ID);
-        uriMatcher.addURI(AUTHORITY, "event", ASSESSMENT_EVENT);
+        uriMatcher.addURI(AUTHORITY, EventProvider.BASE_PATH, ASSESSMENT_EVENT);
+        uriMatcher.addURI(AUTHORITY, CourseProvider.BASE_PATH + "/#", ASSESSMENT_COURSE);
+        uriMatcher.addURI(AUTHORITY, BASE_PATH, ASSESSMENT_ALL);
     }
 
     @Override
@@ -53,37 +60,32 @@ public class AssessmentProvider extends StudentContentProviderBase {
                         @Nullable String[] selectionArgs, @Nullable String sortOrder) {
         Cursor cursor;
         ContentResolver resolver = getContext().getContentResolver();
+        projection = COLUMNS_ASSESSMENT;
         switch(uriMatcher.match(uri)) {
             case ASSESSMENT_ID:
-                selection = StorageHelper.COLUMN_ID + "=" + ContentUris.parseId(uri);
-                // deliberate fallthrough, not a bug
+                selection = COLUMN_ID + "=" + ContentUris.parseId(uri);
+                break;
             case ASSESSMENT_ALL:
-                cursor = getWritableDatabase().query(
-                    StorageHelper.TABLE_ASSESSMENT,
-                    StorageHelper.COLUMNS_ASSESSMENT,
-                    selection,
-                    null,
-                    null,
-                    null,
-                    StorageHelper.COLUMN_ID + " ASC"
-                );
-                cursor.setNotificationUri(resolver, CONTENT_URI);
                 break;
             case ASSESSMENT_EVENT:
-                cursor = getWritableDatabase().query(
-                    StorageHelper.TABLE_ASSESSMENT,
-                    StorageHelper.COLUMNS_EVENT,
-                    selection,
-                    null,
-                    null,
-                    null,
-                    StorageHelper.COLUMN_ID + " ASC"
-                );
-                cursor.setNotificationUri(resolver, CONTENT_URI);
+                projection = COLUMNS_EVENT;
+                break;
+            case ASSESSMENT_COURSE:
+                selection = COLUMN_COURSE_ID + "=" + ContentUris.parseId(uri);
                 break;
             default:
-                cursor = null;
+                return null;
         }
+        cursor = getWritableDatabase().query(
+            TABLE_ASSESSMENT,
+            projection,
+            selection,
+            null,
+            null,
+            null,
+            COLUMN_ID + " ASC"
+        );
+        cursor.setNotificationUri(resolver, CONTENT_URI);
         return cursor;
     }
 

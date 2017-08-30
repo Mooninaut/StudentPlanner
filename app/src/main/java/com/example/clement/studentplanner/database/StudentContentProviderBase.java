@@ -59,7 +59,7 @@ abstract class StudentContentProviderBase extends ContentProvider {
     public int update(@NonNull Uri uri, @Nullable ContentValues values, @Nullable String selection, @Nullable String[] selectionArgs) {
         int rowsUpdated = getWritableDatabase().update(getTableName(), values, selection, selectionArgs);
         if (rowsUpdated > 0) {
-            getContext().getContentResolver().notifyChange(getContentUri(), null);
+            notifyChange(uri);
         }
         return rowsUpdated;
     }
@@ -67,21 +67,16 @@ abstract class StudentContentProviderBase extends ContentProvider {
     public int delete(@NonNull Uri uri, @Nullable String selection, @Nullable String[] selectionArgs) {
         if (getUriMatcher().match(uri) == getSingleRowMatchConstant()) {
                 selection = COLUMN_ID + " = " + ContentUris.parseId(uri);
-            }
-            int rowsAffected = getWritableDatabase().delete(
-                getTableName(),
-                selection,
-                null
-            );
-            if (rowsAffected > 0) {
-                notifyChange(getContentUri());
-            }
-
-        int rowsDeleted = getWritableDatabase().delete(getTableName(), selection, selectionArgs);
-        if (rowsDeleted > 0) {
-            getContext().getContentResolver().notifyChange(getContentUri(), null);
         }
-        return rowsDeleted;
+        int rowsAffected = getWritableDatabase().delete(
+            getTableName(),
+            selection,
+            null
+        );
+        if (rowsAffected > 0) {
+            notifyChange(uri);
+        }
+        return rowsAffected;
     }
     @Nullable
     @Override
@@ -91,7 +86,8 @@ abstract class StudentContentProviderBase extends ContentProvider {
             null,
             values
         );
-        getContext().getContentResolver().notifyChange(getContentUri(), null);
-        return ContentUris.withAppendedId(getContentUri(), id);
+        Uri newUri = ContentUris.withAppendedId(getContentUri(), id);
+        notifyChange(newUri);
+        return newUri;
     }
 }

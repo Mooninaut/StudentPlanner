@@ -56,8 +56,12 @@ public class TermListingFragment extends Fragment {
         super.onAttach(context);
         if (context instanceof HostActivity) {
             hostActivity = (HostActivity) context;
-            termCursorAdapter = hostActivity.getTermCursorAdapter();
+
         }
+        Cursor termCursor = context.getContentResolver().query(
+            getContentUri(), null, null, null, null
+        );
+        termCursorAdapter = new TermCursorAdapter(context, termCursor, 0);
         getLoaderManager().initLoader(TERM_LOADER_ID, null, termLoaderListener);
     }
     @Override

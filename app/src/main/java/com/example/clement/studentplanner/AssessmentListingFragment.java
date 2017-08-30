@@ -1,23 +1,61 @@
 package com.example.clement.studentplanner;
 
 import android.content.Context;
-import android.support.annotation.NonNull;
-import android.support.v4.app.Fragment;
+import android.database.Cursor;
+import android.net.Uri;
+import android.view.View;
+import android.widget.AdapterView;
 
 import com.example.clement.studentplanner.database.AssessmentCursorAdapter;
+import com.example.clement.studentplanner.database.AssessmentProvider;
 
 /**
  * Created by Clement on 8/23/2017.
  */
 
-public class AssessmentListingFragment extends Fragment {
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
+public class AssessmentListingFragment extends
+    ListingFragmentBase<AssessmentCursorAdapter, AssessmentListingFragment.HostActivity> {
 
+    //    private Cursor assessmentCursor;
+//    private AssessmentLoaderListener assessmentLoaderListener;
+//    private HostActivity hostActivity;
+
+    public static final int ASSESSMENT_LOADER_ID = 1;
+//    @Override
+//    public int getLoaderId() { return ASSESSMENT_LOADER_ID; }
+
+//    private AssessmentCursorAdapter assessmentCursorAdapter;
+
+    /**
+     * Mandatory empty constructor for the fragment manager to instantiate the
+     * fragment (e.g. upon screen orientation changes).
+     */
+    public AssessmentListingFragment() {
+        super(AssessmentProvider.CONTENT_URI,
+            AssessmentProvider.CONTENT_ITEM_TYPE,
+            HostActivity.class,
+            R.layout.assessment_list_view,
+            ASSESSMENT_LOADER_ID
+        );
     }
+
+    public static AssessmentListingFragment newInstance(Uri contentUri) {
+        AssessmentListingFragment fragment = new AssessmentListingFragment();
+        fragment.initialize(contentUri);
+        return fragment;
+    }
+
+    @Override
+    protected AssessmentCursorAdapter createAdapter(Context context, Cursor cursor) {
+        return new AssessmentCursorAdapter(context, cursor, 0);
+    }
+
+    @Override
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        getHostActivity().onAssessmentListFragmentInteraction(id);
+    }
+
     public interface HostActivity {
-        @NonNull
-        AssessmentCursorAdapter getAssessmentCursorAdapter();
+        void onAssessmentListFragmentInteraction(long assessmentId);
     }
 }

@@ -7,6 +7,8 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.support.v7.app.AppCompatActivity;
@@ -14,6 +16,7 @@ import android.support.v7.app.ActionBar;
 import android.support.v4.app.NavUtils;
 import android.view.MenuItem;
 
+import com.example.clement.studentplanner.database.AssessmentProvider;
 import com.example.clement.studentplanner.database.CourseCursorAdapter;
 import com.example.clement.studentplanner.database.CourseProvider;
 
@@ -23,8 +26,10 @@ import com.example.clement.studentplanner.database.CourseProvider;
  * item details are presented side-by-side with a list of items
  * TODO FIXME.
  */
-public class CourseDetailActivity extends AppCompatActivity {
+public class CourseDetailActivity extends AppCompatActivity
+    implements AssessmentListingFragment.HostActivity {
 
+    private AssessmentListingFragment fragment;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -48,7 +53,13 @@ public class CourseDetailActivity extends AppCompatActivity {
                 cursor.close();
             }
         }
+        Uri assessmentContentUri = ContentUris.withAppendedId(AssessmentProvider.COURSE_URI, courseId);
 
+        fragment = AssessmentListingFragment.newInstance(assessmentContentUri);
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        FragmentTransaction transaction = fragmentManager.beginTransaction();
+        transaction.replace(R.id.assessment_list_fragment, fragment);
+        transaction.commit();
 
 /*        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -103,5 +114,15 @@ public class CourseDetailActivity extends AppCompatActivity {
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onAssessmentListFragmentInteraction(long assessmentId) {
+/*        Intent intent = new Intent(this, AssessmentDetailActivity.class);
+        intent.putExtra(
+            AssessmentProvider.CONTENT_ITEM_TYPE,
+            ContentUris.withAppendedId(AssessmentProvider.CONTENT_URI, assessmentId)
+        );
+        startActivity(intent);*/
     }
 }

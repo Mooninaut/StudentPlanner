@@ -1,6 +1,7 @@
 package com.example.clement.studentplanner;
 
 import android.content.ContentUris;
+import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
@@ -33,11 +34,7 @@ public class TermDetailActivity extends AppCompatActivity
 
         Uri termContentUri = getIntent().getParcelableExtra(TermProvider.CONTENT_ITEM_TYPE);
         long termId = ContentUris.parseId(termContentUri);
-//        long termId = getIntent().getLongExtra(TermProvider.CONTENT_ITEM_TYPE, -1);
-//        if (termId == -1) {
-//            throw new IllegalStateException("Invalid Term ID");
-//        }
-//        Uri termContentUri = ContentUris.withAppendedId(TermProvider.CONTENT_URI, termId);
+
         setTerm(termContentUri);
         Uri courseContentUri = ContentUris.withAppendedId(CourseProvider.TERM_URI, termId);
 
@@ -48,7 +45,7 @@ public class TermDetailActivity extends AppCompatActivity
 //        fragment = new CourseListingFragment();
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction transaction = fragmentManager.beginTransaction();
-        transaction.replace(R.id.contentFragment, fragment);
+        transaction.replace(R.id.course_list_fragment, fragment);
         transaction.commit();
 
         // Course list below
@@ -87,7 +84,12 @@ public class TermDetailActivity extends AppCompatActivity
 
     @Override
     public void onCourseListFragmentInteraction(long courseId) {
-
+        Intent intent = new Intent(this, CourseDetailActivity.class);
+        intent.putExtra(
+            CourseProvider.CONTENT_ITEM_TYPE,
+            ContentUris.withAppendedId(CourseProvider.CONTENT_URI, courseId)
+        );
+        startActivity(intent);
     }
 
 //    @Override

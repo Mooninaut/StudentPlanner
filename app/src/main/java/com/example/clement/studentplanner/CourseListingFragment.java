@@ -23,12 +23,7 @@ import com.example.clement.studentplanner.database.CourseProvider;
      * interface.
      */
 public class CourseListingFragment extends Fragment {
-
-    // TODO: Customize parameter argument names
-//    private static final String ARG_CONTENT_URI = "content-uri";
-    // TODO: Customize parameters
-    private Cursor courseCursor;
-    private CourseLoaderListener courseLoaderListener;
+//    private CourseLoaderListener courseLoaderListener;
     private HostActivity hostActivity;
     public static final int COURSE_LOADER_ID = 1;
     private CourseCursorAdapter courseCursorAdapter;
@@ -40,19 +35,12 @@ public class CourseListingFragment extends Fragment {
     public CourseListingFragment() {
     }
 
-        // TODO: Customize parameter initialization
-        @SuppressWarnings("unused")
-        public static CourseListingFragment newInstance(Uri contentUri) {
-            CourseListingFragment fragment = new CourseListingFragment();
-            Bundle args = new Bundle();
-            args.putParcelable(CourseProvider.CONTENT_ITEM_TYPE, contentUri);
-            fragment.setArguments(args);
-            return fragment;
-        }
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    public static CourseListingFragment newInstance(Uri contentUri) {
+        CourseListingFragment fragment = new CourseListingFragment();
+        Bundle args = new Bundle();
+        args.putParcelable(CourseProvider.CONTENT_ITEM_TYPE, contentUri);
+        fragment.setArguments(args);
+        return fragment;
     }
 
     @Override
@@ -60,16 +48,15 @@ public class CourseListingFragment extends Fragment {
         super.onAttach(context);
         if (context instanceof HostActivity) {
             hostActivity = (HostActivity) context;
-       }
+        }
         else {
             throw new IllegalStateException("Activity must implement HostActivity interface");
         }
-        Uri contentUri = getContentUri();
-        courseCursor = context.getContentResolver().query(
-            contentUri, null, null, null, null
+        Cursor courseCursor = context.getContentResolver().query(
+            getContentUri(), null, null, null, null
         );
         courseCursorAdapter = new CourseCursorAdapter(context, courseCursor, 0);
-        getLoaderManager().initLoader(COURSE_LOADER_ID, null, getCourseLoaderListener());
+        getLoaderManager().initLoader(COURSE_LOADER_ID, null, new CourseLoaderListener());
     }
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -91,12 +78,12 @@ public class CourseListingFragment extends Fragment {
         super.onDetach();
         hostActivity = null;
     }
-    private synchronized CourseLoaderListener getCourseLoaderListener() {
+/*    private synchronized CourseLoaderListener getCourseLoaderListener() {
         if (courseLoaderListener == null) {
             courseLoaderListener = new CourseLoaderListener();
         }
         return courseLoaderListener;
-    }
+    }*/
     private synchronized Uri getContentUri() {
         Bundle arguments = getArguments();
         if (arguments == null) {
@@ -105,7 +92,6 @@ public class CourseListingFragment extends Fragment {
         else {
             return arguments.getParcelable(CourseProvider.CONTENT_ITEM_TYPE);
         }
-
     }
     private class CourseLoaderListener implements LoaderManager.LoaderCallbacks<Cursor> {
         @Override
@@ -133,8 +119,6 @@ public class CourseListingFragment extends Fragment {
      * >Communicating with Other Fragments</a> for more information.
      */
     public interface HostActivity {
-        // TODO: Update argument type and name
         void onCourseListFragmentInteraction(long courseId);
-//        CourseCursorAdapter getCourseCursorAdapter();
     }
 }

@@ -5,7 +5,7 @@
     android:layout_height="match_parent">
     <include layout="@layout/term_list_item"/>
     <FrameLayout
-        android:id="@+id/contentFragment"
+        android:id="@+id/course_list_fragment"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1">

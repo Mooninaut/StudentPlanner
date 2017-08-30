@@ -57,9 +57,8 @@ public class CourseProvider extends StudentContentProviderBase {
     public Cursor query(@NonNull Uri uri, @Nullable String[] projection, @Nullable String selection, @Nullable String[] selectionArgs, @Nullable String sortOrder) {
         Cursor cursor;
         ContentResolver resolver = getContext().getContentResolver();
-        int match = uriMatcher.match(uri);
         projection = COLUMNS_COURSE;
-        switch (match) {
+        switch (uriMatcher.match(uri)) {
             case COURSE_EVENT:
                 projection = COLUMNS_EVENT;
                 break;
