@@ -18,6 +18,8 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
+import com.example.clement.studentplanner.database.ProviderContract;
+
 /**
  * Created by Clement on 8/29/2017.
  */
@@ -39,9 +41,9 @@ public abstract class ListingFragmentBase<A extends CursorAdapter, H> extends Fr
 //    protected abstract void setHostActivity(Context context); // must verify interface type
     protected abstract A createAdapter(Context context, Cursor cursor);
 //    protected abstract int getListViewId();
-    protected ListingFragmentBase(Uri defaultContentUri, String contentItemType, Class<H> hostInterface, int listViewId, int loaderId) {
-        this.defaultContentUri = defaultContentUri;
-        this.contentItemType = contentItemType;
+    protected ListingFragmentBase(ProviderContract contract, Class<H> hostInterface, int listViewId, int loaderId) {
+        this.defaultContentUri = contract.getContentUri();
+        this.contentItemType = contract.getContentItemType();
         this.hostInterface = hostInterface;
 //        this.itemClickListener = itemClickListener;
         this.listViewId = listViewId;

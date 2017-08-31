@@ -2,13 +2,11 @@ package com.example.clement.studentplanner.database;
 
 import android.content.ContentResolver;
 import android.content.ContentUris;
-import android.content.ContentValues;
 import android.content.UriMatcher;
 import android.database.Cursor;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.util.Log;
 
 import static android.content.ContentResolver.SCHEME_CONTENT;
 import static com.example.clement.studentplanner.database.StorageHelper.COLUMNS_ASSESSMENT;
@@ -16,37 +14,64 @@ import static com.example.clement.studentplanner.database.StorageHelper.COLUMNS_
 import static com.example.clement.studentplanner.database.StorageHelper.COLUMN_COURSE_ID;
 import static com.example.clement.studentplanner.database.StorageHelper.COLUMN_ID;
 import static com.example.clement.studentplanner.database.StorageHelper.TABLE_ASSESSMENT;
-import static com.example.clement.studentplanner.database.StorageHelper.TABLE_COURSE;
 
 /**
  * Created by Clement on 8/13/2017.
  */
 
-public class AssessmentProvider extends StudentContentProviderBase {
-    public static final String AUTHORITY = "com.example.clement.studentplanner.assessmentprovider";
-    public static final String BASE_PATH = "assessment";
-    public static final Uri CONTENT_URI;
-    public static final Uri EVENT_URI;
-    public static final Uri COURSE_URI;
+public class AssessmentProvider extends ContentProviderBase {
+    public enum AssessmentContract implements ProviderContract {
+        INSTANCE;
+        @Override
+        public Uri getContentUri() {
+            return contentUri;
+        }
+        @Override
+        public Uri getContentUri(long id) {
+            return ContentUris.withAppendedId(contentUri, id);
+        }
+        @Override
+        public String getContentItemType() {
+            return contentItemType;
+        }
+        @Override
+        public String getAuthority() {
+            return authority;
+        }
+        @Override
+        public String getBasePath() {
+            return basePath;
+        }
+        public final String authority = "com.example.clement.studentplanner.assessmentprovider";
+        public final String basePath = "assessment";
+        public final String contentItemType = "Assessment";
+        public final Uri contentUri;
+        public final Uri eventUri;
+        public final Uri courseUri;
+        AssessmentContract() {
+            Uri.Builder builder = new Uri.Builder()
+                .scheme(SCHEME_CONTENT)
+                .authority(authority)
+                .path(basePath);
+            contentUri = builder.build();
+            eventUri = builder.path(EventProvider.CONTRACT.basePath).build();
+            courseUri = builder.path(CourseProvider.CONTRACT.basePath).build();
+        }
+    }
+
     private static final int ASSESSMENT_ALL = 1;
     private static final int ASSESSMENT_ID = 2;
     private static final int ASSESSMENT_EVENT = 3;
     private static final int ASSESSMENT_COURSE = 4;
     private static final UriMatcher uriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
-    public static final String CONTENT_ITEM_TYPE = "Assessment";
+    public static final AssessmentContract CONTRACT = AssessmentContract.INSTANCE;
     static {
-        Uri.Builder builder = new Uri.Builder()
-            .scheme(SCHEME_CONTENT)
-            .authority(AUTHORITY)
-            .path(BASE_PATH);
-        CONTENT_URI = builder.build();
-        EVENT_URI = builder.path(EventProvider.BASE_PATH).build();
-        COURSE_URI = builder.path(CourseProvider.BASE_PATH).build();
-//        Log.i(AssessmentProvider.class.getSimpleName(), EVENT_URI.getPath());
-        uriMatcher.addURI(AUTHORITY, BASE_PATH + "/#", ASSESSMENT_ID);
-        uriMatcher.addURI(AUTHORITY, EventProvider.BASE_PATH, ASSESSMENT_EVENT);
-        uriMatcher.addURI(AUTHORITY, CourseProvider.BASE_PATH + "/#", ASSESSMENT_COURSE);
-        uriMatcher.addURI(AUTHORITY, BASE_PATH, ASSESSMENT_ALL);
+
+//        Log.i(AssessmentProvider.class.getSimpleName(), eventUri.getPath());
+        uriMatcher.addURI(CONTRACT.authority, CONTRACT.basePath + "/#", ASSESSMENT_ID);
+        uriMatcher.addURI(CONTRACT.authority, EventProvider.CONTRACT.basePath, ASSESSMENT_EVENT);
+        uriMatcher.addURI(CONTRACT.authority, CourseProvider.CONTRACT.basePath + "/#", ASSESSMENT_COURSE);
+        uriMatcher.addURI(CONTRACT.authority, CONTRACT.basePath, ASSESSMENT_ALL);
     }
 
     @Override
@@ -85,7 +110,7 @@ public class AssessmentProvider extends StudentContentProviderBase {
             null,
             COLUMN_ID + " ASC"
         );
-        cursor.setNotificationUri(resolver, CONTENT_URI);
+        cursor.setNotificationUri(resolver, CONTRACT.contentUri);
         return cursor;
     }
 
@@ -104,7 +129,7 @@ public class AssessmentProvider extends StudentContentProviderBase {
     @NonNull
     @Override
     protected Uri getContentUri() {
-        return CONTENT_URI;
+        return CONTRACT.contentUri;
     }
 
     @NonNull
@@ -128,7 +153,7 @@ public class AssessmentProvider extends StudentContentProviderBase {
     public int delete(@NonNull Uri uri, @Nullable String selection, @Nullable String[] selectionArgs) {
         int rowsDeleted = getWritableDatabase().delete(TABLE_ASSESSMENT, selection, selectionArgs);
         if (rowsDeleted > 0) {
-            getContext().getContentResolver().notifyChange(CONTENT_URI, null);
+            getContext().getContentResolver().notifyChange(contentUri, null);
         }
         return rowsDeleted;
     }*/
@@ -137,7 +162,7 @@ public class AssessmentProvider extends StudentContentProviderBase {
     public int update(@NonNull Uri uri, @Nullable ContentValues values, @Nullable String selection, @Nullable String[] selectionArgs) {
         int rowsUpdated = getWritableDatabase().update(TABLE_COURSE, values, selection, selectionArgs);
         if (rowsUpdated > 0) {
-            getContext().getContentResolver().notifyChange(CONTENT_URI, null);
+            getContext().getContentResolver().notifyChange(contentUri, null);
         }
         return rowsUpdated;
     }*/

@@ -2,18 +2,22 @@ package com.example.clement.studentplanner.database;
 
 import android.content.ContentResolver;
 import android.content.ContentUris;
-import android.content.ContentValues;
 import android.content.UriMatcher;
 import android.database.Cursor;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import com.example.clement.studentplanner.data.Course;
+
 import static android.content.ContentResolver.SCHEME_CONTENT;
-import static android.content.ContentResolver.getCurrentSyncs;
 import static com.example.clement.studentplanner.database.StorageHelper.COLUMNS_COURSE;
 import static com.example.clement.studentplanner.database.StorageHelper.COLUMNS_EVENT;
+import static com.example.clement.studentplanner.database.StorageHelper.COLUMN_END;
 import static com.example.clement.studentplanner.database.StorageHelper.COLUMN_ID;
+import static com.example.clement.studentplanner.database.StorageHelper.COLUMN_NAME;
+import static com.example.clement.studentplanner.database.StorageHelper.COLUMN_START;
+import static com.example.clement.studentplanner.database.StorageHelper.COLUMN_STATUS;
 import static com.example.clement.studentplanner.database.StorageHelper.COLUMN_TERM_ID;
 import static com.example.clement.studentplanner.database.StorageHelper.TABLE_COURSE;
 
@@ -21,30 +25,58 @@ import static com.example.clement.studentplanner.database.StorageHelper.TABLE_CO
  * Created by Clement on 8/12/2017.
  */
 
-public class CourseProvider extends StudentContentProviderBase {
-    public static final String AUTHORITY = "com.example.clement.studentplanner.courseprovider";
-    public static final String BASE_PATH = "course";
-    public static final Uri CONTENT_URI;
-    public static final Uri EVENT_URI;
-    public static final Uri TERM_URI;
+public class CourseProvider extends ContentProviderBase {
+    public enum CourseContract implements ProviderContract {
+        INSTANCE;
+        @Override
+        public Uri getContentUri() {
+            return contentUri;
+        }
+        @Override
+        public Uri getContentUri(long id) {
+            return ContentUris.withAppendedId(contentUri, id);
+        }
+        @Override
+        public String getContentItemType() {
+            return contentItemType;
+        }
+        @Override
+        public String getAuthority() {
+            return authority;
+        }
+        @Override
+        public String getBasePath() {
+            return basePath;
+        }
+
+        public final String authority = "com.example.clement.studentplanner.courseprovider";
+        public final String basePath = "course";
+        public final Uri contentUri;
+        public final Uri eventUri;
+        public final Uri termUri;
+        public final String contentItemType = "Course";
+        CourseContract() {
+            Uri.Builder builder = new Uri.Builder()
+                .scheme(SCHEME_CONTENT)
+                .authority(authority)
+                .path(basePath);
+            contentUri = builder.build();
+            eventUri = builder.path(EventProvider.CONTRACT.basePath).build();
+            termUri = builder.path(TermProvider.CONTRACT.basePath).build();
+        }
+    }
     private static final int COURSE_ALL = 1;
     private static final int COURSE_ID = 2;
     private static final int COURSE_EVENT = 3;
     private static final int COURSE_TERM = 4;
     private static final UriMatcher uriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
-    public static final String CONTENT_ITEM_TYPE = "Course";
+    public static final CourseContract CONTRACT = CourseContract.INSTANCE;
     static {
-        Uri.Builder builder = new Uri.Builder()
-            .scheme(SCHEME_CONTENT)
-            .authority(AUTHORITY)
-            .path(BASE_PATH);
-        CONTENT_URI = builder.build();
-        EVENT_URI = builder.path(EventProvider.BASE_PATH).build();
-        TERM_URI = builder.path(TermProvider.BASE_PATH).build();
-        uriMatcher.addURI(AUTHORITY, BASE_PATH + "/#", COURSE_ID);
-        uriMatcher.addURI(AUTHORITY, EventProvider.BASE_PATH, COURSE_EVENT);
-        uriMatcher.addURI(AUTHORITY, TermProvider.BASE_PATH + "/#", COURSE_TERM);
-        uriMatcher.addURI(AUTHORITY, BASE_PATH, COURSE_ALL);
+
+        uriMatcher.addURI(CONTRACT.authority, CONTRACT.basePath + "/#", COURSE_ID);
+        uriMatcher.addURI(CONTRACT.authority, EventProvider.CONTRACT.basePath, COURSE_EVENT);
+        uriMatcher.addURI(CONTRACT.authority, TermProvider.CONTRACT.basePath + "/#", COURSE_TERM);
+        uriMatcher.addURI(CONTRACT.authority, CONTRACT.basePath, COURSE_ALL);
     }
 
     @Override
@@ -82,7 +114,7 @@ public class CourseProvider extends StudentContentProviderBase {
             null,
             COLUMN_ID + " ASC"
         );
-        cursor.setNotificationUri(resolver, CONTENT_URI);
+        cursor.setNotificationUri(resolver, CONTRACT.contentUri);
         return cursor;
     }
 
@@ -100,14 +132,14 @@ public class CourseProvider extends StudentContentProviderBase {
             null,
             values
         );
-        getContext().getContentResolver().notifyChange(CONTENT_URI, null);
-        return ContentUris.withAppendedId(CONTENT_URI, id);
+        getContext().getContentResolver().notifyChange(contentUri, null);
+        return ContentUris.withAppendedId(contentUri, id);
     }*/
 /*    @Override
     public int delete(@NonNull Uri uri, @Nullable String selection, @Nullable String[] selectionArgs) {
         int rowsDeleted = getWritableDatabase().delete(TABLE_COURSE, selection, selectionArgs);
         if (rowsDeleted > 0) {
-            getContext().getContentResolver().notifyChange(CONTENT_URI, null);
+            getContext().getContentResolver().notifyChange(contentUri, null);
         }
         return rowsDeleted;
     }*/
@@ -121,7 +153,7 @@ public class CourseProvider extends StudentContentProviderBase {
     @NonNull
     @Override
     protected Uri getContentUri() {
-        return CONTENT_URI;
+        return CONTRACT.contentUri;
     }
 
     @NonNull
@@ -138,7 +170,7 @@ public class CourseProvider extends StudentContentProviderBase {
     public int update(@NonNull Uri uri, @Nullable ContentValues values, @Nullable String selection, @Nullable String[] selectionArgs) {
         int rowsUpdated = getWritableDatabase().update(TABLE_COURSE, values, selection, selectionArgs);
         if (rowsUpdated > 0) {
-            getContext().getContentResolver().notifyChange(CONTENT_URI, null);
+            getContext().getContentResolver().notifyChange(contentUri, null);
         }
         return rowsUpdated;
     }*/
@@ -149,4 +181,13 @@ public class CourseProvider extends StudentContentProviderBase {
 /*    public void erase() {
         getHelper().erase(getWritableDatabase());
     }*/
+    public static Course cursorToCourse(Cursor cursor) {
+        return new Course(
+            cursor.getInt(cursor.getColumnIndex(COLUMN_ID)),
+            cursor.getString(cursor.getColumnIndex(COLUMN_NAME)),
+            cursor.getLong(cursor.getColumnIndex(COLUMN_START)),
+            cursor.getLong(cursor.getColumnIndex(COLUMN_END)),
+            cursor.getInt(cursor.getColumnIndex(COLUMN_TERM_ID)),
+            Course.Status.of(cursor.getInt(cursor.getColumnIndex(COLUMN_STATUS))));
+    }
 }

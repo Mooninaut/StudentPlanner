@@ -3,6 +3,7 @@ package com.example.clement.studentplanner.database;
 import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.UriMatcher;
 import android.database.ContentObserver;
 import android.database.Cursor;
@@ -19,42 +20,50 @@ import static com.example.clement.studentplanner.database.StorageHelper.VIEW_EVE
  * Created by Clement on 8/13/2017.
  */
 
-public class EventProvider extends StudentContentProviderBase {
-    public static final String AUTHORITY = "com.example.clement.studentplanner.eventprovider";
-    public static final String BASE_PATH = "event";
-    public static final String COURSE_PATH = "course";
-    public static final String ASSESSMENT_PATH = "assessment";
-    public static final String TERM_PATH = "term";
-//    public static final String EVENT_ID = BaseColumns._ID;
-//    public static final String EVENT_START = "start";
-//    public static final String EVENT_END = "end";
-//    public static final String EVENT_NAME = "name";
-    public static final Uri CONTENT_URI = new Uri.Builder()
-        .scheme(SCHEME_CONTENT)
-        .authority(AUTHORITY)
-        .path(BASE_PATH)
-        .build();
+public class EventProvider extends ContentProviderBase {
+    public enum EventContract implements ProviderContract {
+        INSTANCE;
+        @Override
+        public Uri getContentUri() {
+            return contentUri;
+        }
+        @Override
+        public Uri getContentUri(long id) {
+            return ContentUris.withAppendedId(contentUri, id);
+        }
+        @Override
+        public String getContentItemType() {
+            return contentItemType;
+        }
+        @Override
+        public String getAuthority() {
+            return authority;
+        }
+        @Override
+        public String getBasePath() {
+            return basePath;
+        }
+        public final String authority = "com.example.clement.studentplanner.eventprovider";
+        public final String basePath = "event";
+        public final String coursePath = "course";
+        public final String assessmentPath = "assessment";
+        public final String termPath = "term";
+        public final Uri contentUri = new Uri.Builder()
+            .scheme(SCHEME_CONTENT)
+            .authority(authority)
+            .path(basePath)
+            .build();
+        public final String contentItemType = "Event";
+    }
+
     private static final int EVENT_ALL = 1;
     private static final int EVENT_ID = 2;
-//    public static final int EVENT_COURSE_ID = 2;
-//    public static final int EVENT_TERM_ID = 3;
-//    public static final int EVENT_ASSESSMENT_ID = 4;
-    public static final UriMatcher uriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
-    public static final String CONTENT_ITEM_TYPE = "Event";
-//    public static final String[] COLUMNS_EVENT = {
-//        EVENT_ID, EVENT_NAME, EVENT_START, EVENT_END
-//    };
+    private static final UriMatcher uriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
+    public static final EventContract CONTRACT = EventContract.INSTANCE;
     static {
-//        uriMatcher.addURI(AUTHORITY, BASE_PATH + "/" + COURSE_PATH + "/#", EVENT_COURSE_ID);
-//        uriMatcher.addURI(AUTHORITY, BASE_PATH + "/" + TERM_PATH + "/#", EVENT_TERM_ID);
-//        uriMatcher.addURI(AUTHORITY, BASE_PATH + "/" + ASSESSMENT_PATH + "/#", EVENT_ASSESSMENT_ID);
-        uriMatcher.addURI(AUTHORITY, BASE_PATH + "/#", EVENT_ID);
-        uriMatcher.addURI(AUTHORITY, BASE_PATH, EVENT_ALL);
+        uriMatcher.addURI(CONTRACT.authority, CONTRACT.basePath + "/#", EVENT_ID);
+        uriMatcher.addURI(CONTRACT.authority, CONTRACT.basePath, EVENT_ALL);
     }
-//    private static final String SELECT_EVENT_START = "SELECT "+COLUMN_ID+"*2 AS "+COLUMN_ID+", "
-//        +COLUMN_NAME+", "+COLUMN_START+" AS "+COLUMN_TIME+", '"+COLUMN_START+"' AS "+COLUMN_TYPE+" FROM ";
-//    private static final String SELECT_EVENT_END = "SELECT "+COLUMN_ID+"*2+1 AS "+COLUMN_ID+", "
-//        +COLUMN_NAME+", "+COLUMN_END+" AS "+COLUMN_TIME+", '"+COLUMN_END+"' AS "+COLUMN_TYPE+" FROM ";
 
     /**
      * Map an event ID back to the source object ID
@@ -72,6 +81,8 @@ public class EventProvider extends StudentContentProviderBase {
     }
     @Override
     public boolean onCreate() {
+        final Context context = getContext();
+        final ContentResolver resolver = context.getContentResolver();
         ContentObserver observer = new ContentObserver(null) {
             @Override
             public boolean deliverSelfNotifications() {
@@ -85,13 +96,12 @@ public class EventProvider extends StudentContentProviderBase {
 
             @Override
             public void onChange(boolean selfChange, @Nullable Uri uri) {
-                getContext().getContentResolver().notifyChange(CONTENT_URI, this);
+                resolver.notifyChange(CONTRACT.contentUri, this);
             }
         };
-        final ContentResolver resolver = getContext().getContentResolver();
-        resolver.registerContentObserver(TermProvider.CONTENT_URI,true,observer);
-        resolver.registerContentObserver(CourseProvider.CONTENT_URI,true,observer);
-        resolver.registerContentObserver(AssessmentProvider.CONTENT_URI,true,observer);
+        resolver.registerContentObserver(TermProvider.CONTRACT.contentUri,       true, observer);
+        resolver.registerContentObserver(CourseProvider.CONTRACT.contentUri,     true, observer);
+        resolver.registerContentObserver(AssessmentProvider.CONTRACT.contentUri, true, observer);
         return true;
     }
 
@@ -108,13 +118,13 @@ public class EventProvider extends StudentContentProviderBase {
                 Uri contentUri;
                 switch(StorageHelper.classify(eventToSource(id))) {
                     case TERM:
-                        contentUri = TermProvider.CONTENT_URI;
+                        contentUri = TermProvider.CONTRACT.contentUri;
                         break;
                     case COURSE:
-                        contentUri = CourseProvider.CONTENT_URI;
+                        contentUri = CourseProvider.CONTRACT.contentUri;
                         break;
                     case ASSESSMENT:
-                        contentUri = AssessmentProvider.CONTENT_URI;
+                        contentUri = AssessmentProvider.CONTRACT.contentUri;
                         break;
                     case NONE:
                     default:
@@ -137,7 +147,7 @@ public class EventProvider extends StudentContentProviderBase {
                     COLUMN_TIME + " ASC"
                 );
                 if (cursor != null) {
-                    cursor.setNotificationUri(resolver, CONTENT_URI);
+                    cursor.setNotificationUri(resolver, CONTRACT.contentUri);
                 }
                 break;
             default:
@@ -172,7 +182,7 @@ public class EventProvider extends StudentContentProviderBase {
     @NonNull
     @Override
     protected Uri getContentUri() {
-        return CONTENT_URI;
+        return CONTRACT.contentUri;
     }
 
     @NonNull

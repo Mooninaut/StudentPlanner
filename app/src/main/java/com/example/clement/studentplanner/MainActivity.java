@@ -24,6 +24,7 @@ import com.example.clement.studentplanner.data.Term;
 import com.example.clement.studentplanner.database.AssessmentProvider;
 import com.example.clement.studentplanner.database.CourseProvider;
 import com.example.clement.studentplanner.database.EventCursorAdapter;
+import com.example.clement.studentplanner.database.ProviderContract;
 import com.example.clement.studentplanner.database.StorageHelper;
 import com.example.clement.studentplanner.database.TermCursorAdapter;
 import com.example.clement.studentplanner.database.TermProvider;
@@ -76,8 +77,7 @@ public class MainActivity extends AppCompatActivity
     }
     private void launchTermDetailActivity(long id) {
         launchDetailActivity(
-            TermProvider.CONTENT_URI,
-            TermProvider.CONTENT_ITEM_TYPE,
+            TermProvider.CONTRACT,
             TermDetailActivity.class,
             id
         );
@@ -85,24 +85,22 @@ public class MainActivity extends AppCompatActivity
 
     private void launchCourseDetailActivity(long id) {
         launchDetailActivity(
-            CourseProvider.CONTENT_URI,
-            CourseProvider.CONTENT_ITEM_TYPE,
+            CourseProvider.CONTRACT,
             CourseDetailActivity.class,
             id
         );
     }
     private void launchAssessmentDetailActivity(long id) {
-//        launchDetailActivity(
-//            AssessmentProvider.CONTENT_URI,
-//            AssessmentProvider.CONTENT_ITEM_TYPE,
-//            AssessmentDetailActivity.class,
-//            id
-//        );
+        launchDetailActivity(
+            AssessmentProvider.CONTRACT,
+            AssessmentDetailActivity.class,
+            id
+        );
     }
-    private void launchDetailActivity(Uri contentUri, String itemType, Class activity, long id) {
+    private void launchDetailActivity(ProviderContract contract, Class activity, long id) {
         Intent intent = new Intent(this, activity);
-        Uri uri = ContentUris.withAppendedId(contentUri, id);
-        intent.putExtra(itemType, uri);
+        Uri uri = ContentUris.withAppendedId(contract.getContentUri(), id);
+        intent.putExtra(contract.getContentItemType(), uri);
         startActivity(intent);
     }
     @Override
@@ -121,9 +119,9 @@ public class MainActivity extends AppCompatActivity
                 insertSampleData();
                 return true;
             case R.id.delete_sample_data:
-                getContentResolver().delete(AssessmentProvider.CONTENT_URI, null, null);
-                getContentResolver().delete(CourseProvider.CONTENT_URI, null, null);
-                getContentResolver().delete(TermProvider.CONTENT_URI, null, null);
+                getContentResolver().delete(AssessmentProvider.CONTRACT.contentUri, null, null);
+                getContentResolver().delete(CourseProvider.CONTRACT.contentUri, null, null);
+                getContentResolver().delete(TermProvider.CONTRACT.contentUri, null, null);
 //                restartEventLoader();
 //                restartTermLoader();
                 Toast.makeText(this, "KABOOM!", Toast.LENGTH_SHORT).show();
@@ -133,7 +131,7 @@ public class MainActivity extends AppCompatActivity
 
     private void insertSampleData() {
         int termNumber = 1;
-        Cursor maxCursor = getContentResolver().query(TermProvider.MAX_TERM_URI, null, null, null, null);
+        Cursor maxCursor = getContentResolver().query(TermProvider.CONTRACT.maxTermUri, null, null, null, null);
         if (maxCursor == null) {
             Toast.makeText(this, "maxCursor is null!", Toast.LENGTH_SHORT).show();
         } else {
@@ -172,7 +170,7 @@ public class MainActivity extends AppCompatActivity
 
     private Uri insertTerm(Term term) {
         //Uri termUri =
-        Uri inserted = getContentResolver().insert(TermProvider.CONTENT_URI, TermProvider.termToValues(term));
+        Uri inserted = getContentResolver().insert(TermProvider.CONTRACT.contentUri, TermProvider.termToValues(term));
         if (inserted != null) {
             long id = ContentUris.parseId(inserted);
             term.id(id);
@@ -187,7 +185,7 @@ public class MainActivity extends AppCompatActivity
         values.put(StorageHelper.COLUMN_END, course.endMillis());
         values.put(StorageHelper.COLUMN_STATUS, course.status().value());
         values.put(StorageHelper.COLUMN_TERM_ID, course.termId());
-        Uri inserted = getContentResolver().insert(CourseProvider.CONTENT_URI, values);
+        Uri inserted = getContentResolver().insert(CourseProvider.CONTRACT.contentUri, values);
         if (inserted != null) {
             long id = ContentUris.parseId(inserted);
             course.id(id);
@@ -202,7 +200,7 @@ public class MainActivity extends AppCompatActivity
         values.put(StorageHelper.COLUMN_END, assessment.endMillis());
         values.put(StorageHelper.COLUMN_COURSE_ID, assessment.courseId());
         values.put(StorageHelper.COLUMN_TYPE, assessment.type().value());
-        Uri inserted = getContentResolver().insert(AssessmentProvider.CONTENT_URI, values);
+        Uri inserted = getContentResolver().insert(AssessmentProvider.CONTRACT.contentUri, values);
         if (inserted != null) {
             long id = ContentUris.parseId(inserted);
             assessment.id(id);

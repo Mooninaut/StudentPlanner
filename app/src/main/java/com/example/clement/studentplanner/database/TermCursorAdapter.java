@@ -79,9 +79,6 @@ public class TermCursorAdapter extends CursorAdapter{
                 cursor.getInt(cursor.getColumnIndex(COLUMN_NUMBER))
             );
         }
-        if (term != null) {
-            term.id();
-        }
-        return null;
+        return term;
     }
 }

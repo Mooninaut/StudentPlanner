@@ -87,7 +87,7 @@ public class TermListingFragment extends Fragment {
     private Uri getContentUri() {
         Bundle arguments = getArguments();
         if (arguments == null) {
-            return TermProvider.CONTENT_URI;
+            return TermProvider.CONTRACT.contentUri;
         }
         else {
             return arguments.getParcelable(ARG_CONTENT_URI);

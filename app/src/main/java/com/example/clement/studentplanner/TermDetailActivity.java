@@ -32,11 +32,11 @@ public class TermDetailActivity extends AppCompatActivity
 //        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
 //        setSupportActionBar(toolbar);
 
-        Uri termContentUri = getIntent().getParcelableExtra(TermProvider.CONTENT_ITEM_TYPE);
+        Uri termContentUri = getIntent().getParcelableExtra(TermProvider.CONTRACT.contentItemType);
         long termId = ContentUris.parseId(termContentUri);
 
         setTerm(termContentUri);
-        Uri courseContentUri = ContentUris.withAppendedId(CourseProvider.TERM_URI, termId);
+        Uri courseContentUri = ContentUris.withAppendedId(CourseProvider.CONTRACT.termUri, termId);
 
 //        Cursor courseCursor = getContentResolver().query(courseContentUri, null, null, null, null);
 //        courseCursorAdapter = new CourseCursorAdapter(this, courseCursor, 0);
@@ -60,7 +60,7 @@ public class TermDetailActivity extends AppCompatActivity
      * Single Term item at top
      */
     protected void setTerm(Uri termUri) {
-//        Uri termUri = getIntent().getParcelableExtra(TermProvider.CONTENT_ITEM_TYPE);
+//        Uri termUri = getIntent().getParcelableExtra(TermProvider.contentItemType);
         Cursor cursor = null;
         try {
             cursor = getContentResolver().query(termUri, null, null, null, null);
@@ -86,8 +86,8 @@ public class TermDetailActivity extends AppCompatActivity
     public void onCourseListFragmentInteraction(long courseId) {
         Intent intent = new Intent(this, CourseDetailActivity.class);
         intent.putExtra(
-            CourseProvider.CONTENT_ITEM_TYPE,
-            ContentUris.withAppendedId(CourseProvider.CONTENT_URI, courseId)
+            CourseProvider.CONTRACT.contentItemType,
+            ContentUris.withAppendedId(CourseProvider.CONTRACT.contentUri, courseId)
         );
         startActivity(intent);
     }

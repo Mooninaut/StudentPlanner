@@ -15,16 +15,17 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.app.ActionBar;
 import android.support.v4.app.NavUtils;
 import android.view.MenuItem;
+import android.widget.TextView;
 
+import com.example.clement.studentplanner.data.Course;
+import com.example.clement.studentplanner.data.Term;
 import com.example.clement.studentplanner.database.AssessmentProvider;
 import com.example.clement.studentplanner.database.CourseCursorAdapter;
 import com.example.clement.studentplanner.database.CourseProvider;
+import com.example.clement.studentplanner.database.StorageAdapter;
 
 /**
- * An activity representing a single Course detail screen. This
- * activity is only used narrow width devices. On tablet-size devices,
- * item details are presented side-by-side with a list of items
- * TODO FIXME.
+ * An activity representing a single Course detail screen.
  */
 public class CourseDetailActivity extends AppCompatActivity
     implements AssessmentListingFragment.HostActivity {
@@ -38,14 +39,22 @@ public class CourseDetailActivity extends AppCompatActivity
 /*        Toolbar toolbar = (Toolbar) findViewById(R.id.detail_toolbar);
         setSupportActionBar(toolbar);*/
 
-        Uri courseContentUri = getIntent().getParcelableExtra(CourseProvider.CONTENT_ITEM_TYPE);
+        Uri courseContentUri = getIntent().getParcelableExtra(CourseProvider.CONTRACT.contentItemType);
         long courseId = ContentUris.parseId(courseContentUri);
-
+        Course course;
         Cursor cursor = null;
         try {
             cursor = getContentResolver().query(courseContentUri, null, null, null, null);
             if (cursor != null && cursor.moveToFirst()) {
                 CourseCursorAdapter courseAdapter = new CourseCursorAdapter(this, cursor, 0);
+                course = courseAdapter.getItem(0);
+                if (course != null) {
+                    Term term = StorageAdapter.getTerm(getContentResolver(), course.termId());
+                    if (term != null) {
+                        TextView termNameTV = (TextView) findViewById(R.id.course_term_name_view);
+                        termNameTV.setText(term.name());
+                    }
+                }
                 courseAdapter.bindView(findViewById(R.id.course_list_item), this, cursor);
             }
         } finally {
@@ -53,7 +62,7 @@ public class CourseDetailActivity extends AppCompatActivity
                 cursor.close();
             }
         }
-        Uri assessmentContentUri = ContentUris.withAppendedId(AssessmentProvider.COURSE_URI, courseId);
+        Uri assessmentContentUri = ContentUris.withAppendedId(AssessmentProvider.CONTRACT.courseUri, courseId);
 
         fragment = AssessmentListingFragment.newInstance(assessmentContentUri);
         FragmentManager fragmentManager = getSupportFragmentManager();
@@ -89,8 +98,8 @@ public class CourseDetailActivity extends AppCompatActivity
             // Create the detail fragment and add it to the activity
             // using a fragment transaction.
             Bundle arguments = new Bundle();
-            arguments.putParcelable(CourseProvider.CONTENT_ITEM_TYPE,
-                getIntent().getParcelableExtra(CourseProvider.CONTENT_ITEM_TYPE));
+            arguments.putParcelable(CourseProvider.contentItemType,
+                getIntent().getParcelableExtra(CourseProvider.contentItemType));
             CourseDetailFragment fragment = new CourseDetailFragment();
             fragment.setArguments(arguments);
             getSupportFragmentManager().beginTransaction()
@@ -118,11 +127,11 @@ public class CourseDetailActivity extends AppCompatActivity
 
     @Override
     public void onAssessmentListFragmentInteraction(long assessmentId) {
-/*        Intent intent = new Intent(this, AssessmentDetailActivity.class);
+        Intent intent = new Intent(this, AssessmentDetailActivity.class);
         intent.putExtra(
-            AssessmentProvider.CONTENT_ITEM_TYPE,
-            ContentUris.withAppendedId(AssessmentProvider.CONTENT_URI, assessmentId)
+            AssessmentProvider.CONTRACT.contentItemType,
+            AssessmentProvider.CONTRACT.getContentUri(assessmentId)
         );
-        startActivity(intent);*/
+        startActivity(intent);
     }
 }

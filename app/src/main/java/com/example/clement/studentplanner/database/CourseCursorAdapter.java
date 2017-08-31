@@ -72,19 +72,13 @@ public class CourseCursorAdapter extends CursorAdapter {
         Cursor cursor = getCursor();
         Course course = null;
         if (cursor.moveToPosition(position)) {
-            String name = cursor.getString(cursor.getColumnIndex(COLUMN_NAME));
-            long start = cursor.getLong(cursor.getColumnIndex(COLUMN_START));
-            long end = cursor.getLong(cursor.getColumnIndex(COLUMN_END));
-            int id = cursor.getInt(cursor.getColumnIndex(COLUMN_ID));
-            int term = cursor.getInt(cursor.getColumnIndex(COLUMN_TERM_ID));
-            Course.Status status = Course.Status.of(cursor.getInt(cursor.getColumnIndex(COLUMN_STATUS)));
             course = new Course(
-                id,
-                name,
-                start,
-                end,
-                term,
-                status
+                cursor.getInt(cursor.getColumnIndex(COLUMN_ID)),
+                cursor.getString(cursor.getColumnIndex(COLUMN_NAME)),
+                cursor.getLong(cursor.getColumnIndex(COLUMN_START)),
+                cursor.getLong(cursor.getColumnIndex(COLUMN_END)),
+                cursor.getInt(cursor.getColumnIndex(COLUMN_TERM_ID)),
+                Course.Status.of(cursor.getInt(cursor.getColumnIndex(COLUMN_STATUS)))
             );
         }
         return course;

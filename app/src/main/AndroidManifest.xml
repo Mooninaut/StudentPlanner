@@ -42,21 +42,30 @@
         <activity
             android:name=".CourseDetailActivity"
             android:label="@string/title_course_detail"
-            android:parentActivityName=".CourseListingActivity"
+            android:parentActivityName=".MainActivity"
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.example.clement.studentplanner.CourseListingActivity"/>
+                android:value="com.example.clement.studentplanner.MainActivity"/>
         </activity>
         <activity
             android:name=".TermDetailActivity"
             android:label="Term Detail"
-            android:parentActivityName=".TermListingActivity"
+            android:parentActivityName=".MainActivity"
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.example.clement.studentplanner.TermListingActivity"/>
+                android:value="com.example.clement.studentplanner.MainActivity"/>
         </activity>
+        <activity android:name=".AssessmentDetailActivity"
+            android:label="Assessment Detail"
+            android:parentActivityName=".MainActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.example.clement.studentplanner.MainActivity"/>
+        </activity>
+
     </application>
 
 </manifest>

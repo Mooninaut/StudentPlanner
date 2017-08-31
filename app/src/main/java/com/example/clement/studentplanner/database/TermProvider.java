@@ -15,40 +15,73 @@ import com.example.clement.studentplanner.data.Term;
 import static android.content.ContentResolver.SCHEME_CONTENT;
 import static com.example.clement.studentplanner.database.StorageHelper.COLUMNS_EVENT;
 import static com.example.clement.studentplanner.database.StorageHelper.COLUMNS_TERM;
+import static com.example.clement.studentplanner.database.StorageHelper.COLUMN_END;
 import static com.example.clement.studentplanner.database.StorageHelper.COLUMN_ID;
+import static com.example.clement.studentplanner.database.StorageHelper.COLUMN_NAME;
 import static com.example.clement.studentplanner.database.StorageHelper.COLUMN_NUMBER;
+import static com.example.clement.studentplanner.database.StorageHelper.COLUMN_START;
 import static com.example.clement.studentplanner.database.StorageHelper.TABLE_TERM;
+
 
 /**
  * Created by Clement on 8/6/2017.
  */
 
-public class TermProvider extends StudentContentProviderBase {
-    public static final String AUTHORITY = "com.example.clement.studentplanner.termprovider";
-    public static final String BASE_PATH = "term";
-    public static final String PATH_EVENT = "event";
-    public static final String PATH_MAX = "max";
-    public static final Uri CONTENT_URI;
-    public static final Uri EVENT_URI;
-    public static final Uri MAX_TERM_URI;
+public class TermProvider extends ContentProviderBase {
+    public enum TermContract implements ProviderContract {
+        INSTANCE;
+        @Override
+        public Uri getContentUri() {
+            return contentUri;
+        }
+        @Override
+        public Uri getContentUri(long id) {
+            return ContentUris.withAppendedId(contentUri, id);
+        }
+        @Override
+        public String getContentItemType() {
+            return contentItemType;
+        }
+        @Override
+        public String getAuthority() {
+            return authority;
+        }
+        @Override
+        public String getBasePath() {
+            return basePath;
+        }
+
+        public final String authority = "com.example.clement.studentplanner.termprovider";
+        public final String basePath = "term";
+        public final String pathEvent = "event";
+        public final String pathMax = "max";
+        public final Uri contentUri;
+        public final Uri eventUri;
+        public final Uri maxTermUri;
+        public final String contentItemType = "Term";
+        TermContract() {
+            Uri.Builder builder = new Uri.Builder()
+                .scheme(SCHEME_CONTENT)
+                .authority(authority);
+            contentUri = builder.path(basePath).build();
+            eventUri = builder.path(pathEvent).build();
+            maxTermUri = builder.path(pathMax).build();
+
+        }
+    }
+
     private static final int TERM_ALL = 1;
     private static final int TERM_ID = 2;
     private static final int TERM_EVENT = 3;
     private static final int TERM_MAX = 4;
     private static final UriMatcher uriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
-    public static final String CONTENT_ITEM_TYPE = "Term";
+    public static final TermContract CONTRACT = TermContract.INSTANCE;
     static {
-        Uri.Builder builder = new Uri.Builder()
-            .scheme(SCHEME_CONTENT)
-            .authority(AUTHORITY);
-        CONTENT_URI = builder.path(BASE_PATH).build();
-        EVENT_URI = builder.path(PATH_EVENT).build();
-        MAX_TERM_URI = builder.path(PATH_MAX).build();
-        Log.i(TermProvider.class.getSimpleName(), EVENT_URI.getPath());
-        uriMatcher.addURI(AUTHORITY, BASE_PATH, TERM_ALL);
-        uriMatcher.addURI(AUTHORITY, BASE_PATH + "/#", TERM_ID);
-        uriMatcher.addURI(AUTHORITY, PATH_EVENT, TERM_EVENT);
-        uriMatcher.addURI(AUTHORITY, PATH_MAX, TERM_MAX);
+        Log.i(TermProvider.class.getSimpleName(), CONTRACT.eventUri.getPath());
+        uriMatcher.addURI(CONTRACT.authority, CONTRACT.basePath, TERM_ALL);
+        uriMatcher.addURI(CONTRACT.authority, CONTRACT.basePath + "/#", TERM_ID);
+        uriMatcher.addURI(CONTRACT.authority, CONTRACT.pathEvent, TERM_EVENT);
+        uriMatcher.addURI(CONTRACT.authority, CONTRACT.pathMax, TERM_MAX);
     }
     @Override
     public boolean onCreate() {
@@ -79,7 +112,7 @@ public class TermProvider extends StudentContentProviderBase {
                     null,
                     COLUMN_ID + " ASC"
                 );
-                cursor.setNotificationUri(resolver, CONTENT_URI);
+                cursor.setNotificationUri(resolver, CONTRACT.contentUri);
                 break;
             case TERM_MAX:
                 cursor = getWritableDatabase().rawQuery(
@@ -106,7 +139,7 @@ public class TermProvider extends StudentContentProviderBase {
             null,
             values
         );
-        Uri changeUri = ContentUris.withAppendedId(CONTENT_URI, id);
+        Uri changeUri = ContentUris.withAppendedId(CONTRACT.contentUri, id);
         notifyChange(changeUri);
         return changeUri;
     }
@@ -133,7 +166,7 @@ public class TermProvider extends StudentContentProviderBase {
             null
         );
         if (rowsAffected > 0) {
-            notifyChange(CONTENT_URI);
+            notifyChange(contentUri);
         }
         return rowsAffected;
     }*/
@@ -147,7 +180,7 @@ public class TermProvider extends StudentContentProviderBase {
     @NonNull
     @Override
     protected Uri getContentUri() {
-        return CONTENT_URI;
+        return CONTRACT.contentUri;
     }
 
     @NonNull
@@ -165,11 +198,20 @@ public class TermProvider extends StudentContentProviderBase {
     public int update(@NonNull Uri uri, @Nullable ContentValues values, @Nullable String selection, @Nullable String[] selectionArgs) {
         int rowsAffected = getWritableDatabase().update(TABLE_TERM, values, selection, selectionArgs);
         if (rowsAffected > 0) {
-            notifyChange(CONTENT_URI);
+            notifyChange(contentUri);
         }
         return rowsAffected;
     }*/
 /*    public void erase() {
         getHelper().erase(getWritableDatabase());
     }*/
+    public static Term cursorToTerm(Cursor cursor) {
+        return new Term(
+            cursor.getLong(cursor.getColumnIndex(COLUMN_ID)),
+            cursor.getString(cursor.getColumnIndex(COLUMN_NAME)),
+            cursor.getLong(cursor.getColumnIndex(COLUMN_START)),
+            cursor.getLong(cursor.getColumnIndex(COLUMN_END)),
+            cursor.getInt(cursor.getColumnIndex(COLUMN_NUMBER))
+        );
+    }
 }

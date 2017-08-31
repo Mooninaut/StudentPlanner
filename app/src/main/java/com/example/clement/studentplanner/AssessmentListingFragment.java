@@ -31,8 +31,7 @@ public class AssessmentListingFragment extends
      * fragment (e.g. upon screen orientation changes).
      */
     public AssessmentListingFragment() {
-        super(AssessmentProvider.CONTENT_URI,
-            AssessmentProvider.CONTENT_ITEM_TYPE,
+        super(AssessmentProvider.CONTRACT,
             HostActivity.class,
             R.layout.assessment_list_view,
             ASSESSMENT_LOADER_ID

@@ -38,7 +38,7 @@ public class CourseListingFragment extends Fragment {
     public static CourseListingFragment newInstance(Uri contentUri) {
         CourseListingFragment fragment = new CourseListingFragment();
         Bundle args = new Bundle();
-        args.putParcelable(CourseProvider.CONTENT_ITEM_TYPE, contentUri);
+        args.putParcelable(CourseProvider.CONTRACT.contentItemType, contentUri);
         fragment.setArguments(args);
         return fragment;
     }
@@ -87,10 +87,10 @@ public class CourseListingFragment extends Fragment {
     private synchronized Uri getContentUri() {
         Bundle arguments = getArguments();
         if (arguments == null) {
-            return CourseProvider.CONTENT_URI;
+            return CourseProvider.CONTRACT.contentUri;
         }
         else {
-            return arguments.getParcelable(CourseProvider.CONTENT_ITEM_TYPE);
+            return arguments.getParcelable(CourseProvider.CONTRACT.contentItemType);
         }
     }
     private class CourseLoaderListener implements LoaderManager.LoaderCallbacks<Cursor> {

@@ -1,6 +1,7 @@
 package com.example.clement.studentplanner.database;
 
 import android.content.ContentProvider;
+import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Context;
@@ -16,7 +17,7 @@ import static com.example.clement.studentplanner.database.StorageHelper.COLUMN_I
  * Created by Clement on 8/17/2017.
  */
 
-abstract class StudentContentProviderBase extends ContentProvider {
+abstract class ContentProviderBase extends ContentProvider {
     private SQLiteDatabase writableDatabase;
     private SQLiteDatabase readableDatabase;
     private StorageHelper helper;
@@ -53,7 +54,13 @@ abstract class StudentContentProviderBase extends ContentProvider {
         return readableDatabase;
     }
     protected void notifyChange(@NonNull Uri uri) {
-        getContext().getContentResolver().notifyChange(uri, null);
+        Context context = getContext();
+        if (context != null) {
+            ContentResolver contentResolver = context.getContentResolver();
+            if (contentResolver != null) {
+                contentResolver.notifyChange(uri, null);
+            }
+        }
     }
     @Override
     public int update(@NonNull Uri uri, @Nullable ContentValues values, @Nullable String selection, @Nullable String[] selectionArgs) {
