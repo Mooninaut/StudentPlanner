@@ -21,8 +21,8 @@ abstract class ContentProviderBase extends ContentProvider {
     private SQLiteDatabase writableDatabase;
     private SQLiteDatabase readableDatabase;
     private StorageHelper helper;
+    public abstract @NonNull ProviderContract getContract();
     protected abstract @NonNull String getTableName();
-    protected abstract @NonNull Uri getContentUri();
     protected abstract @NonNull UriMatcher getUriMatcher();
     protected abstract int getSingleRowMatchConstant();
     /**
@@ -93,7 +93,7 @@ abstract class ContentProviderBase extends ContentProvider {
             null,
             values
         );
-        Uri newUri = ContentUris.withAppendedId(getContentUri(), id);
+        Uri newUri = getContract().getContentUri(id);
         notifyChange(newUri);
         return newUri;
     }

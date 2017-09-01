@@ -40,35 +40,40 @@ public class CourseDetailActivity extends AppCompatActivity
         setSupportActionBar(toolbar);*/
 
         Uri courseContentUri = getIntent().getParcelableExtra(CourseProvider.CONTRACT.contentItemType);
-        long courseId = ContentUris.parseId(courseContentUri);
         Course course;
         Cursor cursor = null;
         try {
             cursor = getContentResolver().query(courseContentUri, null, null, null, null);
             if (cursor != null && cursor.moveToFirst()) {
+                // Initialize course view
                 CourseCursorAdapter courseAdapter = new CourseCursorAdapter(this, cursor, 0);
+                courseAdapter.bindView(findViewById(R.id.course_list_item), this, cursor);
                 course = courseAdapter.getItem(0);
+
                 if (course != null) {
+                    // Initialize header
                     Term term = StorageAdapter.getTerm(getContentResolver(), course.termId());
                     if (term != null) {
                         TextView termNameTV = (TextView) findViewById(R.id.course_term_name_view);
                         termNameTV.setText(term.name());
                     }
+
+                    // Initialize assessment list fragment
+                    Uri assessmentContentUri = AssessmentProvider.CONTRACT.getCourseUri(course.id());
+                    fragment = AssessmentListingFragment.newInstance(assessmentContentUri);
+                    FragmentManager fragmentManager = getSupportFragmentManager();
+                    FragmentTransaction transaction = fragmentManager.beginTransaction();
+                    transaction.replace(R.id.assessment_list_fragment, fragment);
+                    transaction.commit();
+
                 }
-                courseAdapter.bindView(findViewById(R.id.course_list_item), this, cursor);
             }
         } finally {
             if (cursor != null) {
                 cursor.close();
             }
         }
-        Uri assessmentContentUri = ContentUris.withAppendedId(AssessmentProvider.CONTRACT.courseUri, courseId);
 
-        fragment = AssessmentListingFragment.newInstance(assessmentContentUri);
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        FragmentTransaction transaction = fragmentManager.beginTransaction();
-        transaction.replace(R.id.assessment_list_fragment, fragment);
-        transaction.commit();
 
 /*        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {

@@ -42,6 +42,12 @@ public class AssessmentProvider extends ContentProviderBase {
         public String getBasePath() {
             return basePath;
         }
+        public Uri getCourseUri() {
+            return courseUri;
+        }
+        public Uri getCourseUri(long id) {
+            return ContentUris.withAppendedId(courseUri, id);
+        }
         public final String authority = "com.example.clement.studentplanner.assessmentprovider";
         public final String basePath = "assessment";
         public final String contentItemType = "Assessment";
@@ -76,7 +82,7 @@ public class AssessmentProvider extends ContentProviderBase {
 
     @Override
     public boolean onCreate() {
-        return false;
+        return true;
     }
 
     @Nullable
@@ -101,7 +107,7 @@ public class AssessmentProvider extends ContentProviderBase {
             default:
                 return null;
         }
-        cursor = getWritableDatabase().query(
+        cursor = getReadableDatabase().query(
             TABLE_ASSESSMENT,
             projection,
             selection,
@@ -110,7 +116,7 @@ public class AssessmentProvider extends ContentProviderBase {
             null,
             COLUMN_ID + " ASC"
         );
-        cursor.setNotificationUri(resolver, CONTRACT.contentUri);
+        cursor.setNotificationUri(resolver, uri);
         return cursor;
     }
 
@@ -128,8 +134,8 @@ public class AssessmentProvider extends ContentProviderBase {
 
     @NonNull
     @Override
-    protected Uri getContentUri() {
-        return CONTRACT.contentUri;
+    public ProviderContract getContract() {
+        return CONTRACT;
     }
 
     @NonNull
@@ -142,28 +148,4 @@ public class AssessmentProvider extends ContentProviderBase {
     protected int getSingleRowMatchConstant() {
         return ASSESSMENT_ID;
     }
-
-/*    @Nullable
-    @Override
-    public Uri insert(@NonNull Uri uri, @Nullable ContentValues values) {
-        return null;
-    }
-
-    @Override
-    public int delete(@NonNull Uri uri, @Nullable String selection, @Nullable String[] selectionArgs) {
-        int rowsDeleted = getWritableDatabase().delete(TABLE_ASSESSMENT, selection, selectionArgs);
-        if (rowsDeleted > 0) {
-            getContext().getContentResolver().notifyChange(contentUri, null);
-        }
-        return rowsDeleted;
-    }*/
-
-/*    @Override
-    public int update(@NonNull Uri uri, @Nullable ContentValues values, @Nullable String selection, @Nullable String[] selectionArgs) {
-        int rowsUpdated = getWritableDatabase().update(TABLE_COURSE, values, selection, selectionArgs);
-        if (rowsUpdated > 0) {
-            getContext().getContentResolver().notifyChange(contentUri, null);
-        }
-        return rowsUpdated;
-    }*/
 }

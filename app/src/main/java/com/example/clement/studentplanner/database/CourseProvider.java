@@ -114,7 +114,7 @@ public class CourseProvider extends ContentProviderBase {
             null,
             COLUMN_ID + " ASC"
         );
-        cursor.setNotificationUri(resolver, CONTRACT.contentUri);
+        cursor.setNotificationUri(resolver, uri);
         return cursor;
     }
 
@@ -152,8 +152,8 @@ public class CourseProvider extends ContentProviderBase {
 
     @NonNull
     @Override
-    protected Uri getContentUri() {
-        return CONTRACT.contentUri;
+    public ProviderContract getContract() {
+        return CONTRACT;
     }
 
     @NonNull
@@ -175,19 +175,4 @@ public class CourseProvider extends ContentProviderBase {
         return rowsUpdated;
     }*/
 
-    /**
-     * Erases all data in the database, not just Courses.
-     */
-/*    public void erase() {
-        getHelper().erase(getWritableDatabase());
-    }*/
-    public static Course cursorToCourse(Cursor cursor) {
-        return new Course(
-            cursor.getInt(cursor.getColumnIndex(COLUMN_ID)),
-            cursor.getString(cursor.getColumnIndex(COLUMN_NAME)),
-            cursor.getLong(cursor.getColumnIndex(COLUMN_START)),
-            cursor.getLong(cursor.getColumnIndex(COLUMN_END)),
-            cursor.getInt(cursor.getColumnIndex(COLUMN_TERM_ID)),
-            Course.Status.of(cursor.getInt(cursor.getColumnIndex(COLUMN_STATUS))));
-    }
 }

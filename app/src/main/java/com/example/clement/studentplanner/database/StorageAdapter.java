@@ -18,7 +18,7 @@ public class StorageAdapter {
         try {
             cursor = resolver.query(ContentUris.withAppendedId(CourseProvider.CONTRACT.contentUri, courseId), null, null, null, null);
             if (cursor != null && cursor.moveToFirst()) {
-                course = CourseProvider.cursorToCourse(cursor);
+                course = CourseCursorAdapter.cursorToCourse(cursor);
             }
         } finally {
             if (cursor != null) {
@@ -33,7 +33,7 @@ public class StorageAdapter {
         try {
             cursor = resolver.query(ContentUris.withAppendedId(TermProvider.CONTRACT.contentUri, termId), null, null, null, null);
             if (cursor != null && cursor.moveToFirst()) {
-                term = TermProvider.cursorToTerm(cursor);
+                term = TermCursorAdapter.cursorToTerm(cursor);
             }
         } finally {
             if (cursor != null) {

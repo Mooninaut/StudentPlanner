@@ -119,53 +119,87 @@ public class MainActivity extends AppCompatActivity
                 insertSampleData();
                 return true;
             case R.id.delete_sample_data:
-                getContentResolver().delete(AssessmentProvider.CONTRACT.contentUri, null, null);
-                getContentResolver().delete(CourseProvider.CONTRACT.contentUri, null, null);
-                getContentResolver().delete(TermProvider.CONTRACT.contentUri, null, null);
-//                restartEventLoader();
-//                restartTermLoader();
-                Toast.makeText(this, "KABOOM!", Toast.LENGTH_SHORT).show();
+                deleteSampleData();
+                return true;
         }
         return false;
     }
-
+    private void deleteSampleData() {
+        getContentResolver().delete(AssessmentProvider.CONTRACT.contentUri, null, null);
+        getContentResolver().delete(CourseProvider.CONTRACT.contentUri, null, null);
+        getContentResolver().delete(TermProvider.CONTRACT.contentUri, null, null);
+        Toast.makeText(this, "KABOOM!", Toast.LENGTH_SHORT).show();
+    }
     private void insertSampleData() {
-        int termNumber = 1;
-        Cursor maxCursor = getContentResolver().query(TermProvider.CONTRACT.maxTermUri, null, null, null, null);
-        if (maxCursor == null) {
-            Toast.makeText(this, "maxCursor is null!", Toast.LENGTH_SHORT).show();
-        } else {
-            if (maxCursor.moveToFirst()) {
-                if (maxCursor.getColumnIndex(COLUMN_NUMBER) >= 0) {
-                    termNumber += maxCursor.getInt(maxCursor.getColumnIndex(COLUMN_NUMBER));
-                }
-                else {
-                    Toast.makeText(this, "max column is missing!", Toast.LENGTH_SHORT).show();
-                }
-            }
-            maxCursor.close();
-        }
-        Calendar start = new GregorianCalendar(2015, Calendar.APRIL, 1);
-        start.add(Calendar.MONTH, 6 * (termNumber - 1));
-        Calendar end = new GregorianCalendar(2015, Calendar.OCTOBER, 1);
-        end.add(Calendar.MONTH, 6 * (termNumber - 1));
-        end.add(Calendar.DATE, -1);
-        Term term = new Term("Term "+termNumber, start.getTimeInMillis(), end.getTimeInMillis(), termNumber);
-        insertTerm(term);
-        end.add(Calendar.DATE, 1);
-        end.add(Calendar.MONTH, -5);
-        end.add(Calendar.DATE, -1);
-        Course course1 = new Course("Course "+termNumber+".1", start.getTimeInMillis(), end.getTimeInMillis(), term, Course.Status.IN_PROGRESS);
-        insertCourse(course1);
-        long assessmentStart = end.getTimeInMillis() - 3_600_000 * 8;
-        long assessmentEnd = assessmentStart + 3_600_000;
-        insertAssessment(new Assessment("Assessment "+termNumber+".1", assessmentStart, assessmentEnd, course1, Assessment.Type.OBJECTIVE, "notes"));
-        end.add(Calendar.DATE, 1);
-        start.add(Calendar.MONTH, 1);
-        end.add(Calendar.MONTH, 1);
-        end.add(Calendar.DATE, -1);
-        insertCourse(new Course("Course "+termNumber+".2", start.getTimeInMillis(), end.getTimeInMillis(), term, Course.Status.PLANNED));
+//        int termNumber = 1;
+//        Cursor maxCursor = getContentResolver().query(TermProvider.CONTRACT.maxTermUri, null, null, null, null);
+//        if (maxCursor == null) {
+//            Toast.makeText(this, "maxCursor is null!", Toast.LENGTH_SHORT).show();
+//        } else {
+//            if (maxCursor.moveToFirst()) {
+//                if (maxCursor.getColumnIndex(COLUMN_NUMBER) >= 0) {
+//                    termNumber += maxCursor.getInt(maxCursor.getColumnIndex(COLUMN_NUMBER));
+//                }
+//                else {
+//                    Toast.makeText(this, "max column is missing!", Toast.LENGTH_SHORT).show();
+//                }
+//            }
+//            maxCursor.close();
+//        }
+        deleteSampleData();
+        final int terms[] = {1, 2, 3, 4, 5};
+        final int courses[] = {1, 2, 3, 4, 5, 6};
+        final Assessment.Type assessments[] = { Assessment.Type.PERFORMANCE, Assessment.Type.OBJECTIVE };
 
+        final Calendar termStart = new GregorianCalendar(2015, Calendar.APRIL, 1);
+        final Calendar termEnd = new GregorianCalendar(2015, Calendar.OCTOBER, 1);
+        for (final int termNumber : terms) {
+            termEnd.add(Calendar.DATE, -1);
+            termEnd.set(Calendar.HOUR_OF_DAY, 23);
+            final Term term = new Term("Term " + termNumber, termStart.getTimeInMillis(), termEnd.getTimeInMillis(), termNumber);
+            insertTerm(term);
+            Calendar courseStart = (Calendar) termStart.clone();
+            courseStart.set(Calendar.HOUR_OF_DAY, 6);
+            Calendar courseEnd = (Calendar) termStart.clone();
+            courseEnd.add(Calendar.MONTH, 1);
+            courseEnd.add(Calendar.DATE, -1);
+            courseEnd.set(Calendar.HOUR_OF_DAY, 22);
+            for (final int courseNumber : courses) {
+                Calendar today = Calendar.getInstance();
+                Course.Status status = Course.Status.IN_PROGRESS;
+                if (courseEnd.compareTo(today) <= 0) {
+                    status = Course.Status.COMPLETED;
+                }
+                if (today.compareTo(courseStart) <= 0) {
+                    status = Course.Status.PLANNED;
+                }
+                final Course course = new Course("Course " + termNumber + "." + courseNumber, courseStart.getTimeInMillis(), courseEnd.getTimeInMillis(), term, status);
+                insertCourse(course);
+                Calendar assessmentStart = (Calendar) courseEnd.clone();
+                Calendar assessmentEnd = (Calendar) courseEnd.clone();
+                assessmentStart.add(Calendar.DATE, -8);
+                assessmentStart.set(Calendar.HOUR_OF_DAY, 12);
+                assessmentEnd.add(Calendar.DATE, -1);
+                assessmentEnd.set(Calendar.HOUR_OF_DAY, 12);
+                for (Assessment.Type type : assessments) {
+                    Assessment assessment = new Assessment(
+                        "Assessment " + termNumber + "." + courseNumber + "." + type.getString(this),
+                        assessmentStart.getTimeInMillis(), assessmentEnd.getTimeInMillis(), course, type,
+                        "This notes text is long and will hopefully wrap to demonstrate the capacity of the field to display multi-line text.");
+                    insertAssessment(assessment);
+                    assessmentStart.add(Calendar.DATE, 7);
+                    assessmentStart.set(Calendar.HOUR_OF_DAY, 16);
+                    assessmentEnd.set(Calendar.HOUR_OF_DAY, 18);
+                }
+                courseStart.add(Calendar.MONTH, 1);
+                courseEnd.add(Calendar.DATE, 1);
+                courseEnd.add(Calendar.MONTH, 1);
+                courseEnd.add(Calendar.DATE, -1);
+            }
+            termStart.add(Calendar.MONTH, 6);
+            termEnd.add(Calendar.DATE, 1);
+            termEnd.add(Calendar.MONTH, 6);
+        }
     }
 
     private Uri insertTerm(Term term) {
@@ -174,7 +208,7 @@ public class MainActivity extends AppCompatActivity
         if (inserted != null) {
             long id = ContentUris.parseId(inserted);
             term.id(id);
-            Toast.makeText(this, "Term "+ ContentUris.parseId(inserted)+" inserted!", Toast.LENGTH_SHORT).show();
+//            Toast.makeText(this, "Term "+ ContentUris.parseId(inserted)+" inserted!", Toast.LENGTH_SHORT).show();
         }
         return inserted;
     }
@@ -189,7 +223,7 @@ public class MainActivity extends AppCompatActivity
         if (inserted != null) {
             long id = ContentUris.parseId(inserted);
             course.id(id);
-            Toast.makeText(this, "Course "+id+" inserted!", Toast.LENGTH_SHORT).show();
+//            Toast.makeText(this, "Course "+id+" inserted!", Toast.LENGTH_SHORT).show();
         }
         return inserted;
     }
@@ -200,11 +234,12 @@ public class MainActivity extends AppCompatActivity
         values.put(StorageHelper.COLUMN_END, assessment.endMillis());
         values.put(StorageHelper.COLUMN_COURSE_ID, assessment.courseId());
         values.put(StorageHelper.COLUMN_TYPE, assessment.type().value());
+        values.put(StorageHelper.COLUMN_NOTES, assessment.notes());
         Uri inserted = getContentResolver().insert(AssessmentProvider.CONTRACT.contentUri, values);
         if (inserted != null) {
             long id = ContentUris.parseId(inserted);
             assessment.id(id);
-            Toast.makeText(this, "Assessment "+id+" inserted!", Toast.LENGTH_SHORT).show();
+//            Toast.makeText(this, "Assessment "+id+" inserted!", Toast.LENGTH_SHORT).show();
         }
         return inserted;
     }

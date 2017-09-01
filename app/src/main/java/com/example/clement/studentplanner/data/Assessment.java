@@ -1,6 +1,9 @@
 package com.example.clement.studentplanner.data;
 
+import android.content.Context;
 import android.support.annotation.NonNull;
+
+import com.example.clement.studentplanner.R;
 
 import java.util.Locale;
 
@@ -26,6 +29,16 @@ public class Assessment extends AcademicEvent {
                     throw new IllegalArgumentException(Type.class.getCanonicalName()+" has no enum for value "+value);
             }
         }
+        public String getString(Context context) {
+            switch (value) {
+                case 1:
+                    return context.getString(R.string.assessment_performance);
+                case 2:
+                    return context.getString(R.string.assessment_objective);
+                default:
+                    throw new IllegalStateException();
+            }
+        }
     }
     //private String name;
     private long courseId = AcademicEvent.NO_ID;
@@ -35,26 +48,31 @@ public class Assessment extends AcademicEvent {
     @NonNull
     private String notes;
 
-    public Assessment(long id, @NonNull String name, long startMillis, long endMillis, long courseId, @NonNull Type type, @NonNull String notes) {
+    public Assessment(long id, @NonNull String name, long startMillis, long endMillis,
+                      long courseId, @NonNull Type type, @NonNull String notes) {
         super(id, name, startMillis, endMillis);
         this.type = type;
         this.notes = notes;
         this.courseId = courseId;
     }
-    public Assessment(long id, @NonNull String name, long startMillis, long endMillis, @NonNull Course course, @NonNull Type type, @NonNull String notes) {
+    public Assessment(long id, @NonNull String name, long startMillis, long endMillis,
+                      @NonNull Course course, @NonNull Type type, @NonNull String notes) {
         super(id, name, startMillis, endMillis);
         this.type = type;
         this.notes = notes;
         this.courseId = course.id();
     }
     public Assessment() {}
-    public Assessment(@NonNull String name, long startMillis, long endMillis, long courseId, @NonNull Type type, @NonNull String notes) {
+
+    public Assessment(@NonNull String name, long startMillis, long endMillis,
+                      long courseId, @NonNull Type type, @NonNull String notes) {
         super(AcademicEvent.NO_ID, name, startMillis, endMillis);
         this.type = type;
         this.notes = notes;
         this.courseId = courseId;
     }
-    public Assessment(@NonNull String name, long startMillis, long endMillis, @NonNull Course course, @NonNull Type type, @NonNull String notes) {
+    public Assessment(@NonNull String name, long startMillis, long endMillis,
+                      @NonNull Course course, @NonNull Type type, @NonNull String notes) {
         super(AcademicEvent.NO_ID, name, startMillis, endMillis);
         this.type = type;
         this.notes = notes;

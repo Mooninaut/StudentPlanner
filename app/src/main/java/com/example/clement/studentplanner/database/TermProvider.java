@@ -15,11 +15,8 @@ import com.example.clement.studentplanner.data.Term;
 import static android.content.ContentResolver.SCHEME_CONTENT;
 import static com.example.clement.studentplanner.database.StorageHelper.COLUMNS_EVENT;
 import static com.example.clement.studentplanner.database.StorageHelper.COLUMNS_TERM;
-import static com.example.clement.studentplanner.database.StorageHelper.COLUMN_END;
 import static com.example.clement.studentplanner.database.StorageHelper.COLUMN_ID;
-import static com.example.clement.studentplanner.database.StorageHelper.COLUMN_NAME;
 import static com.example.clement.studentplanner.database.StorageHelper.COLUMN_NUMBER;
-import static com.example.clement.studentplanner.database.StorageHelper.COLUMN_START;
 import static com.example.clement.studentplanner.database.StorageHelper.TABLE_TERM;
 
 
@@ -103,7 +100,7 @@ public class TermProvider extends ContentProviderBase {
                 projection = COLUMNS_TERM;
                 // deliberate fallthrough, not a bug
             case TERM_EVENT:
-                cursor = getWritableDatabase().query(
+                cursor = getReadableDatabase().query(
                     TABLE_TERM,
                     projection,
                     selection,
@@ -112,17 +109,23 @@ public class TermProvider extends ContentProviderBase {
                     null,
                     COLUMN_ID + " ASC"
                 );
-                cursor.setNotificationUri(resolver, CONTRACT.contentUri);
+                if (cursor != null) {
+                    cursor.setNotificationUri(resolver, uri);
+                }
                 break;
             case TERM_MAX:
-                cursor = getWritableDatabase().rawQuery(
+                cursor = getReadableDatabase().rawQuery(
                     "SELECT MAX("+COLUMN_NUMBER+") AS "+COLUMN_NUMBER+" FROM "+TABLE_TERM,
                     null
                 );
+                if (cursor != null) {
+                    cursor.setNotificationUri(resolver, CONTRACT.contentUri);
+                }
                 break;
             default:
                 cursor = null;
         }
+
         return cursor;
     }
 
@@ -179,8 +182,8 @@ public class TermProvider extends ContentProviderBase {
 
     @NonNull
     @Override
-    protected Uri getContentUri() {
-        return CONTRACT.contentUri;
+    public ProviderContract getContract() {
+        return CONTRACT;
     }
 
     @NonNull
@@ -194,24 +197,4 @@ public class TermProvider extends ContentProviderBase {
         return TERM_ID;
     }
 
-/*    @Override
-    public int update(@NonNull Uri uri, @Nullable ContentValues values, @Nullable String selection, @Nullable String[] selectionArgs) {
-        int rowsAffected = getWritableDatabase().update(TABLE_TERM, values, selection, selectionArgs);
-        if (rowsAffected > 0) {
-            notifyChange(contentUri);
-        }
-        return rowsAffected;
-    }*/
-/*    public void erase() {
-        getHelper().erase(getWritableDatabase());
-    }*/
-    public static Term cursorToTerm(Cursor cursor) {
-        return new Term(
-            cursor.getLong(cursor.getColumnIndex(COLUMN_ID)),
-            cursor.getString(cursor.getColumnIndex(COLUMN_NAME)),
-            cursor.getLong(cursor.getColumnIndex(COLUMN_START)),
-            cursor.getLong(cursor.getColumnIndex(COLUMN_END)),
-            cursor.getInt(cursor.getColumnIndex(COLUMN_NUMBER))
-        );
-    }
 }

@@ -12,4 +12,6 @@
     <string name="title_terms">Terms</string>
     <string name="title_courses">Courses</string>
     <string name="title_assessments">Assessments</string>
+    <string name="assessment_performance">Performance assessment</string>
+    <string name="assessment_objective">Objective assessment</string>
 </resources>

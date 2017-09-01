@@ -48,6 +48,9 @@ public class StorageHelper extends SQLiteOpenHelper {
     public static final String TABLE_PHOTO = "photo";
     public static final String COLUMN_ASSESSMENT_ID = TABLE_ASSESSMENT + BaseColumns._ID;
     public static final String COLUMN_FILE_NAME = "file_name";
+    public static final String[] COLUMNS_PHOTO = {
+        COLUMN_ID, COLUMN_ASSESSMENT_ID, COLUMN_FILE_NAME
+    };
 
     public static final String[] COLUMNS_EVENT = {
         COLUMN_ID, COLUMN_NAME, COLUMN_TIME, COLUMN_TYPE

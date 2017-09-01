@@ -35,6 +35,14 @@ public class CourseCursorAdapter extends CursorAdapter {
         super(context, cursor, flags);
     }
 
+    /**
+     * Erases all data in the database, not just Courses.
+     */
+/*    public void erase() {
+        getHelper().erase(getWritableDatabase());
+    }*/
+
+
     @Override
     public View newView(Context context, Cursor cursor, ViewGroup parent) {
         return LayoutInflater.from(context).inflate(
@@ -44,42 +52,35 @@ public class CourseCursorAdapter extends CursorAdapter {
 
     @Override
     public void bindView(View view, Context context, Cursor cursor) {
-        String courseName = cursor.getString(
-            cursor.getColumnIndex(COLUMN_NAME)
-        );
-/*        int courseNumber = cursor.getInt(
-            cursor.getColumnIndex(StorageHelper.COURSE_NUMBER)
-        );*/
-        int courseId = cursor.getInt(
-            cursor.getColumnIndex(COLUMN_ID)
-        );
-        Log.d("CourseCursorAdapter", "Id: "+courseId+" termId: "+cursor.getLong(cursor.getColumnIndex(COLUMN_TERM_ID)));
-        Date courseStart = new Date(cursor.getLong(cursor.getColumnIndex(COLUMN_START)));
-        Date courseEnd = new Date(cursor.getLong(cursor.getColumnIndex(COLUMN_END)));
+
+        Course course = cursorToCourse(cursor);
+        Log.d("CourseCursorAdapter", "Id: "+course.id()+" termId: "+course.termId());
         TextView nameTV = (TextView) view.findViewById(R.id.courseNameTextView);
         TextView numberTV = (TextView) view.findViewById(R.id.courseNumberTextView);
         TextView startTV = (TextView) view.findViewById(R.id.courseStartTextView);
         TextView endTV = (TextView) view.findViewById(R.id.courseEndTextView);
 
-        nameTV.setText(courseName);
-        numberTV.setText(String.format(Locale.getDefault(), "%d", courseId - StorageHelper.COURSE_ID_OFFSET));
-        startTV.setText(dateFormat.format(courseStart));
-        endTV.setText(dateFormat.format(courseEnd));
+        nameTV.setText(course.name());
+        numberTV.setText(String.format(Locale.getDefault(), "%d", course.id() - StorageHelper.COURSE_ID_OFFSET));
+        startTV.setText(dateFormat.format(course.startDate()));
+        endTV.setText(dateFormat.format(course.endDate()));
     }
 
+    public static Course cursorToCourse(Cursor cursor) {
+        return new Course(
+            cursor.getInt(cursor.getColumnIndex(COLUMN_ID)),
+            cursor.getString(cursor.getColumnIndex(COLUMN_NAME)),
+            cursor.getLong(cursor.getColumnIndex(COLUMN_START)),
+            cursor.getLong(cursor.getColumnIndex(COLUMN_END)),
+            cursor.getInt(cursor.getColumnIndex(COLUMN_TERM_ID)),
+            Course.Status.of(cursor.getInt(cursor.getColumnIndex(COLUMN_STATUS))));
+    }
     @Override
     public Course getItem(int position) {
         Cursor cursor = getCursor();
         Course course = null;
         if (cursor.moveToPosition(position)) {
-            course = new Course(
-                cursor.getInt(cursor.getColumnIndex(COLUMN_ID)),
-                cursor.getString(cursor.getColumnIndex(COLUMN_NAME)),
-                cursor.getLong(cursor.getColumnIndex(COLUMN_START)),
-                cursor.getLong(cursor.getColumnIndex(COLUMN_END)),
-                cursor.getInt(cursor.getColumnIndex(COLUMN_TERM_ID)),
-                Course.Status.of(cursor.getInt(cursor.getColumnIndex(COLUMN_STATUS)))
-            );
+            course = cursorToCourse(cursor);
         }
         return course;
     }

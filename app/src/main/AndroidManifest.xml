@@ -38,6 +38,11 @@
             android:authorities="com.example.clement.studentplanner.assessmentprovider"
             android:enabled="true"
             android:exported="false"/>
+        <provider
+            android:name=".database.PhotoProvider"
+            android:authorities="com.example.clement.studentplanner.photoprovider"
+            android:enabled="true"
+            android:exported="false"/>
 
         <activity
             android:name=".CourseDetailActivity"

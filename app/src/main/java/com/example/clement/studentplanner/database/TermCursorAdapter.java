@@ -2,6 +2,7 @@ package com.example.clement.studentplanner.database;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.support.annotation.Nullable;
 import android.support.v4.widget.CursorAdapter;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -34,6 +35,18 @@ public class TermCursorAdapter extends CursorAdapter{
         super(context, cursor, flags);
     }
 
+    /*    @Override
+            public int update(@NonNull Uri uri, @Nullable ContentValues values, @Nullable String selection, @Nullable String[] selectionArgs) {
+                int rowsAffected = getWritableDatabase().update(TABLE_TERM, values, selection, selectionArgs);
+                if (rowsAffected > 0) {
+                    notifyChange(contentUri);
+                }
+                return rowsAffected;
+            }*/
+    /*    public void erase() {
+            getHelper().erase(getWritableDatabase());
+        }*/
+
     @Override
     public View newView(Context context, Cursor cursor, ViewGroup parent) {
         return LayoutInflater.from(context).inflate(
@@ -43,41 +56,37 @@ public class TermCursorAdapter extends CursorAdapter{
 
     @Override
     public void bindView(View view, Context context, Cursor cursor) {
-        String termName = cursor.getString(
-            cursor.getColumnIndex(COLUMN_NAME)
-        );
-/*        int termNumber = cursor.getInt(
-            cursor.getColumnIndex(StorageHelper.TERM_NUMBER)
-        );*/
-        int termNumber = cursor.getInt(
-            cursor.getColumnIndex(COLUMN_NUMBER)
-        );
-        Log.d("TermCursorAdapter", "Id: "+cursor.getLong(cursor.getColumnIndex(COLUMN_ID)));
-        Date termStart = new Date(cursor.getLong(cursor.getColumnIndex(StorageHelper.COLUMN_START)));
-        Date termEnd = new Date(cursor.getLong(cursor.getColumnIndex(StorageHelper.COLUMN_END)));
+        Term term = cursorToTerm(cursor);
+
+        Log.d("TermCursorAdapter", "Id: "+term.id());
         TextView nameTV = (TextView) view.findViewById(R.id.termNameTextView);
         TextView numberTV = (TextView) view.findViewById(R.id.termNumberTextView);
         TextView startTV = (TextView) view.findViewById(R.id.termStartTextView);
         TextView endTV = (TextView) view.findViewById(R.id.termEndTextView);
 
-        nameTV.setText(termName);
-        numberTV.setText(String.format(Locale.getDefault(), "%d", termNumber));
-        startTV.setText(dateFormat.format(termStart));
-        endTV.setText(dateFormat.format(termEnd));
+        nameTV.setText(term.name());
+        numberTV.setText(String.format(Locale.getDefault(), "%d", term.number()));
+        startTV.setText(dateFormat.format(term.startDate()));
+        endTV.setText(dateFormat.format(term.endDate()));
+    }
+
+    public static Term cursorToTerm(Cursor cursor) {
+        return new Term(
+            cursor.getLong(cursor.getColumnIndex(COLUMN_ID)),
+            cursor.getString(cursor.getColumnIndex(COLUMN_NAME)),
+            cursor.getLong(cursor.getColumnIndex(COLUMN_START)),
+            cursor.getLong(cursor.getColumnIndex(COLUMN_END)),
+            cursor.getInt(cursor.getColumnIndex(COLUMN_NUMBER))
+        );
     }
 
     @Override
+    @Nullable
     public Term getItem(int position) {
         Cursor cursor = getCursor();
         Term term = null;
         if (cursor.moveToPosition(position)) {
-            term = new Term(
-                cursor.getLong(cursor.getColumnIndex(COLUMN_ID)),
-                cursor.getString(cursor.getColumnIndex(COLUMN_NAME)),
-                cursor.getLong(cursor.getColumnIndex(COLUMN_START)),
-                cursor.getLong(cursor.getColumnIndex(COLUMN_END)),
-                cursor.getInt(cursor.getColumnIndex(COLUMN_NUMBER))
-            );
+            term = cursorToTerm(cursor);
         }
         return term;
     }

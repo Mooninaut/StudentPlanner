@@ -147,7 +147,7 @@ public class EventProvider extends ContentProviderBase {
                     COLUMN_TIME + " ASC"
                 );
                 if (cursor != null) {
-                    cursor.setNotificationUri(resolver, CONTRACT.contentUri);
+                    cursor.setNotificationUri(resolver, uri);
                 }
                 break;
             default:
@@ -181,8 +181,8 @@ public class EventProvider extends ContentProviderBase {
 
     @NonNull
     @Override
-    protected Uri getContentUri() {
-        return CONTRACT.contentUri;
+    public ProviderContract getContract() {
+        return CONTRACT;
     }
 
     @NonNull
