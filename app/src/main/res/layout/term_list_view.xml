@@ -10,4 +10,5 @@
     android:background="#FFFF"
     app:layoutManager="LinearLayoutManager"
     tools:context="com.example.clement.studentplanner.TermListingFragment"
-    tools:listitem="@layout/term_list_item"/>
+    tools:listitem="@layout/term_list_item"
+/>

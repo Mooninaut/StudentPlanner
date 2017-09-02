@@ -35,6 +35,7 @@ public abstract class ListingFragmentBase<A extends CursorAdapter, H> extends Fr
     private Class<H> hostInterface;
     private int listViewId = Integer.MIN_VALUE;
     private int loaderId = Integer.MIN_VALUE;
+
 //    public abstract int getLoaderId();
 //    protected abstract Uri getDefaultContentUri();
 //    protected abstract String getContentItemType();

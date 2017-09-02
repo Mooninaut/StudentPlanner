@@ -14,4 +14,10 @@
     <string name="title_assessments">Assessments</string>
     <string name="assessment_performance">Performance assessment</string>
     <string name="assessment_objective">Objective assessment</string>
+    <string name="assessment_type">Assessment Type</string>
+    <string name="add">Add</string>
+    <string-array name="assessment_types">
+        <item>Objective</item>
+        <item>Performance</item>
+    </string-array>
 </resources>

@@ -22,7 +22,6 @@
             android:authorities="com.example.clement.studentplanner.termprovider"
             android:enabled="true"
             android:exported="false"/>
-
         <provider
             android:name=".database.EventProvider"
             android:authorities="com.example.clement.studentplanner.eventprovider"
@@ -48,7 +47,7 @@
             android:name=".CourseDetailActivity"
             android:label="@string/title_course_detail"
             android:parentActivityName=".MainActivity"
-            android:theme="@style/AppTheme.NoActionBar">
+            android:theme="@style/AppTheme">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.example.clement.studentplanner.MainActivity"/>
@@ -57,20 +56,22 @@
             android:name=".TermDetailActivity"
             android:label="Term Detail"
             android:parentActivityName=".MainActivity"
-            android:theme="@style/AppTheme.NoActionBar">
+            android:theme="@style/AppTheme">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.example.clement.studentplanner.MainActivity"/>
         </activity>
-        <activity android:name=".AssessmentDetailActivity"
+        <activity
+            android:name=".AssessmentDetailActivity"
             android:label="Assessment Detail"
             android:parentActivityName=".MainActivity"
-            android:theme="@style/AppTheme.NoActionBar">
+            android:theme="@style/AppTheme">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.example.clement.studentplanner.MainActivity"/>
         </activity>
-
+        <activity android:name=".AssessmentDataEntryActivity">
+        </activity>
     </application>
 
 </manifest>

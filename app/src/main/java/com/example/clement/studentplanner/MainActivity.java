@@ -4,7 +4,6 @@ package com.example.clement.studentplanner;
 import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Intent;
-import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -13,6 +12,8 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -32,13 +33,17 @@ import com.example.clement.studentplanner.database.TermProvider;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 
-import static com.example.clement.studentplanner.database.StorageHelper.COLUMN_NUMBER;
 
 public class MainActivity extends AppCompatActivity
     implements EventListingFragment.HostActivity,
     TermListingFragment.HostActivity,
     CourseListingFragment.HostActivity,
     AssessmentListingFragment.HostActivity {
+    private final String EVENT_TAG = "event";
+    private final String COURSE_TAG = "course";
+    private final String ASSESSMENT_TAG = "assessment";
+    private final String TERM_TAG = "term";
+
 
     private final EventCursorAdapter eventCursorAdapter = new EventCursorAdapter(this, null, 0);
     private final TermCursorAdapter termCursorAdapter = new TermCursorAdapter(this, null, 0);
@@ -51,6 +56,7 @@ public class MainActivity extends AppCompatActivity
     private AssessmentListingFragment assessmentListingFragment;
     private final BottomNavigationListener bottomNavigationListener = new BottomNavigationListener();
     private FragmentManager fragmentManager;
+    private String currentFragment = null;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -61,18 +67,17 @@ public class MainActivity extends AppCompatActivity
 
         eventListingFragment = new EventListingFragment();
         fragmentManager = getSupportFragmentManager();
-        switchToFragment(eventListingFragment);
+        switchToFragment(eventListingFragment, EVENT_TAG);
 
-//        courseCursorAdapter = new CourseCursorAdapter()
+        Toolbar myToolbar = (Toolbar) findViewById(R.id.main_toolbar);
+        setSupportActionBar(myToolbar);
 
-//        getLoaderManager().initLoader(TERM_LOADER_ID, null, termLoaderListener);
-
-//        getLoaderManager().initLoader(COURSE_LOADER_ID, null, courseLoaderListener);
     }
 
-    private void switchToFragment(Fragment fragment) {
+    private void switchToFragment(Fragment fragment, String tag) {
+        currentFragment = tag;
         FragmentTransaction transaction = fragmentManager.beginTransaction();
-        transaction.replace(R.id.contentFragment, fragment);
+        transaction.replace(R.id.contentFragment, fragment, tag);
         transaction.commit();
     }
     private void launchTermDetailActivity(long id) {
@@ -109,10 +114,30 @@ public class MainActivity extends AppCompatActivity
         inflater.inflate(R.menu.options_menu, menu);
         return true;
     }
-
+    private void addItem() {
+        switch(currentFragment) {
+            case EVENT_TAG:
+            case TERM_TAG:
+                Log.d("MainActivity", "New Term");
+            break;
+            case COURSE_TAG:
+                Log.d("MainActivity", "New Course");
+                break;
+            case ASSESSMENT_TAG:
+                Log.d("MainActivity", "New Assessment");
+                Intent intent = new Intent(this, AssessmentDataEntryActivity.class);
+                startActivity(intent);
+                break;
+            default:
+                throw new IllegalStateException();
+        }
+    }
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
+            case R.id.add:
+                addItem();
+                return true;
             case R.id.settings:
                 return true;
             case R.id.sample_data:
@@ -121,8 +146,9 @@ public class MainActivity extends AppCompatActivity
             case R.id.delete_sample_data:
                 deleteSampleData();
                 return true;
+            default:
+                return super.onOptionsItemSelected(item);
         }
-        return false;
     }
     private void deleteSampleData() {
         getContentResolver().delete(AssessmentProvider.CONTRACT.contentUri, null, null);
@@ -297,19 +323,19 @@ public class MainActivity extends AppCompatActivity
             switch (item.getItemId()) {
                 case R.id.navigation_home:
 //                    activity = MainActivity.class;
-                    switchToFragment(eventListingFragment);
+                    switchToFragment(eventListingFragment, EVENT_TAG);
                     return true;
                 case R.id.navigation_terms:
 //                    termListingFragment.setArguments(null);
-                    switchToFragment(getTermListingFragment());
+                    switchToFragment(getTermListingFragment(), TERM_TAG);
                     return true;
                 case R.id.navigation_courses:
 //                    courseListingFragment.setArguments(null);
-                    switchToFragment(getCourseListingFragment());
+                    switchToFragment(getCourseListingFragment(), COURSE_TAG);
                     return true;
                 case R.id.navigation_assessments:
 //                    assessmentListingFragment.setArguments(null);
-                    switchToFragment(getAssessmentListingFragment());
+                    switchToFragment(getAssessmentListingFragment(), ASSESSMENT_TAG);
                     return true;
                 default:
                     return false;
