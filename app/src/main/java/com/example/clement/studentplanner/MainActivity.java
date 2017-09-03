@@ -29,6 +29,7 @@ import com.example.clement.studentplanner.database.ProviderContract;
 import com.example.clement.studentplanner.database.StorageHelper;
 import com.example.clement.studentplanner.database.TermCursorAdapter;
 import com.example.clement.studentplanner.database.TermProvider;
+import com.example.clement.studentplanner.input.AssessmentDataEntryActivity;
 
 import java.util.Calendar;
 import java.util.GregorianCalendar;

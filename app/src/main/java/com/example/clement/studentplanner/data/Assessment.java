@@ -13,7 +13,7 @@ import java.util.Locale;
 
 public class Assessment extends AcademicEvent {
     public enum Type {
-        PERFORMANCE(1), OBJECTIVE(2);
+        PERFORMANCE(1), OBJECTIVE(2), NONE(0);
         private final int value;
         Type(int value) {
             this.value = value;
@@ -25,6 +25,8 @@ public class Assessment extends AcademicEvent {
                     return PERFORMANCE;
                 case 2:
                     return OBJECTIVE;
+                case 0:
+                    return NONE;
                 default:
                     throw new IllegalArgumentException(Type.class.getCanonicalName()+" has no enum for value "+value);
             }
@@ -43,10 +45,10 @@ public class Assessment extends AcademicEvent {
     //private String name;
     private long courseId = AcademicEvent.NO_ID;
     @NonNull
-    private Type type;
+    private Type type = Type.NONE;
     //private long startMillis;
     @NonNull
-    private String notes;
+    private String notes = "";
 
     public Assessment(long id, @NonNull String name, long startMillis, long endMillis,
                       long courseId, @NonNull Type type, @NonNull String notes) {
@@ -62,7 +64,8 @@ public class Assessment extends AcademicEvent {
         this.notes = notes;
         this.courseId = course.id();
     }
-    public Assessment() {}
+    public Assessment() {
+    }
 
     public Assessment(@NonNull String name, long startMillis, long endMillis,
                       long courseId, @NonNull Type type, @NonNull String notes) {

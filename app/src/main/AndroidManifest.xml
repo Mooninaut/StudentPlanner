@@ -70,7 +70,14 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.example.clement.studentplanner.MainActivity"/>
         </activity>
-        <activity android:name=".AssessmentDataEntryActivity">
+        <activity
+            android:name=".input.AssessmentDataEntryActivity"
+            android:label="Assessment Entry"
+            android:parentActivityName=".MainActivity"
+            android:theme="@style/AppTheme">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.example.clement.studentplanner.MainActivity"/>
         </activity>
     </application>
 
