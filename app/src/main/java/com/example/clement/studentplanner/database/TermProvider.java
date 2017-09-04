@@ -15,8 +15,11 @@ import com.example.clement.studentplanner.data.Term;
 import static android.content.ContentResolver.SCHEME_CONTENT;
 import static com.example.clement.studentplanner.database.StorageHelper.COLUMNS_EVENT;
 import static com.example.clement.studentplanner.database.StorageHelper.COLUMNS_TERM;
+import static com.example.clement.studentplanner.database.StorageHelper.COLUMN_END;
 import static com.example.clement.studentplanner.database.StorageHelper.COLUMN_ID;
+import static com.example.clement.studentplanner.database.StorageHelper.COLUMN_NAME;
 import static com.example.clement.studentplanner.database.StorageHelper.COLUMN_NUMBER;
+import static com.example.clement.studentplanner.database.StorageHelper.COLUMN_START;
 import static com.example.clement.studentplanner.database.StorageHelper.TABLE_TERM;
 
 
@@ -135,26 +138,17 @@ public class TermProvider extends ContentProviderBase {
         return null;
     }
 
-    @Override
-    public Uri insert(@NonNull Uri uri, @Nullable ContentValues values) {
-        long id = getWritableDatabase().insert(
-            TABLE_TERM,
-            null,
-            values
-        );
-        Uri changeUri = ContentUris.withAppendedId(CONTRACT.contentUri, id);
-        notifyChange(changeUri);
-        return changeUri;
-    }
 
     @NonNull
     public static ContentValues termToValues(@NonNull Term term) {
         ContentValues values = new ContentValues();
         values.put(COLUMN_NUMBER, term.number());
-        values.put(StorageHelper.COLUMN_NAME, term.name());
-        values.put(StorageHelper.COLUMN_START, term.startMillis());
-        values.put(StorageHelper.COLUMN_END, term.endMillis());
-//        values.put(StorageHelper.COLUMN_ID, term.getId());
+        values.put(COLUMN_NAME, term.name());
+        values.put(COLUMN_START, term.startMillis());
+        values.put(COLUMN_END, term.endMillis());
+        if (term.hasId()) {
+            values.put(COLUMN_ID, term.id());
+        }
         return values;
     }
 
@@ -196,5 +190,6 @@ public class TermProvider extends ContentProviderBase {
     protected int getSingleRowMatchConstant() {
         return TERM_ID;
     }
+
 
 }

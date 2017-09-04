@@ -14,7 +14,6 @@ import com.example.clement.studentplanner.R;
 import com.example.clement.studentplanner.data.Term;
 
 import java.text.DateFormat;
-import java.util.Date;
 import java.util.Locale;
 
 import static com.example.clement.studentplanner.database.StorageHelper.COLUMN_END;

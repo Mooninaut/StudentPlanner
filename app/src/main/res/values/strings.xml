@@ -15,9 +15,16 @@
     <string name="assessment_performance">Performance assessment</string>
     <string name="assessment_objective">Objective assessment</string>
     <string name="assessment_type">Assessment Type</string>
+    <string name="dateTimeFormatSkeleton">yyyy-MM-dd hh:mm a</string>
     <string name="add">Add</string>
-    <string-array name="assessment_types">
+    <!-- The following two arrays MUST match the mapping of integer values to Assessment.Type enums.
+     See data/Assessment.java -->
+    <string-array name="assessment_type_name">
         <item>Objective</item>
         <item>Performance</item>
     </string-array>
+    <integer-array name="assessment_type_id">
+        <item>2</item>
+        <item>1</item>
+    </integer-array>
 </resources>

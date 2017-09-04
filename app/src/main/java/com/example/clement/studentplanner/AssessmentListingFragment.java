@@ -20,7 +20,7 @@ public class AssessmentListingFragment extends
 //    private AssessmentLoaderListener assessmentLoaderListener;
 //    private HostActivity hostActivity;
 
-    public static final int ASSESSMENT_LOADER_ID = 1;
+    public static final int ASSESSMENT_LOADER_ID = 400;
 //    @Override
 //    public int getLoaderId() { return ASSESSMENT_LOADER_ID; }
 

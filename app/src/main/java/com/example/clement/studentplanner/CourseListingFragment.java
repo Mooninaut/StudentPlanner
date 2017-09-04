@@ -25,7 +25,7 @@ import com.example.clement.studentplanner.database.CourseProvider;
 public class CourseListingFragment extends Fragment {
 //    private CourseLoaderListener courseLoaderListener;
     private HostActivity hostActivity;
-    public static final int COURSE_LOADER_ID = 1;
+    public static final int COURSE_LOADER_ID = 300;
     private CourseCursorAdapter courseCursorAdapter;
 
     /**

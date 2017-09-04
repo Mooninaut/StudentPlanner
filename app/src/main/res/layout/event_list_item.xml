@@ -3,9 +3,9 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="56dp"
+    android:layout_height="@dimen/item_height"
     android:orientation="vertical"
-    >
+    android:id="@+id/event_list_item">
     <TextView
         android:id="@+id/eventIdTextView"
         android:textStyle="bold"
@@ -22,17 +22,18 @@
         android:text="eventId"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toTopOf="parent"/>
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintRight_toLeftOf="@+id/eventNameTextView"/>
 
     <TextView
         android:id="@+id/eventNameTextView"
         android:layout_width="236dp"
         android:layout_height="wrap_content"
         android:textSize="18sp"
-        android:layout_marginLeft="@dimen/margin_medium"
-        android:layout_marginStart="@dimen/margin_medium"
+        android:layout_marginLeft="@dimen/keyline"
+        android:layout_marginStart="@dimen/keyline"
         android:text="eventName"
-        app:layout_constraintLeft_toRightOf="@id/eventIdTextView"
+        app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
         tools:layout_constraintLeft_creator="1"

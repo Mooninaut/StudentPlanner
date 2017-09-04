@@ -30,7 +30,7 @@ public class TermListingFragment extends Fragment {
 
     private TermLoaderListener termLoaderListener = new TermLoaderListener();
     private HostActivity hostActivity;
-    public static final int TERM_LOADER_ID = 1;
+    public static final int TERM_LOADER_ID = 200;
     private TermCursorAdapter termCursorAdapter;
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the

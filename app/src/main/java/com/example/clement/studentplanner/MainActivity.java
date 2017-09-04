@@ -29,7 +29,6 @@ import com.example.clement.studentplanner.database.ProviderContract;
 import com.example.clement.studentplanner.database.StorageHelper;
 import com.example.clement.studentplanner.database.TermCursorAdapter;
 import com.example.clement.studentplanner.database.TermProvider;
-import com.example.clement.studentplanner.input.AssessmentDataEntryActivity;
 
 import java.util.Calendar;
 import java.util.GregorianCalendar;
@@ -120,14 +119,12 @@ public class MainActivity extends AppCompatActivity
             case EVENT_TAG:
             case TERM_TAG:
                 Log.d("MainActivity", "New Term");
-            break;
+                break;
             case COURSE_TAG:
                 Log.d("MainActivity", "New Course");
                 break;
             case ASSESSMENT_TAG:
                 Log.d("MainActivity", "New Assessment");
-                Intent intent = new Intent(this, AssessmentDataEntryActivity.class);
-                startActivity(intent);
                 break;
             default:
                 throw new IllegalStateException();
@@ -240,12 +237,7 @@ public class MainActivity extends AppCompatActivity
         return inserted;
     }
     private Uri insertCourse(Course course) {
-        ContentValues values = new ContentValues();
-        values.put(StorageHelper.COLUMN_NAME, course.name());
-        values.put(StorageHelper.COLUMN_START, course.startMillis());
-        values.put(StorageHelper.COLUMN_END, course.endMillis());
-        values.put(StorageHelper.COLUMN_STATUS, course.status().value());
-        values.put(StorageHelper.COLUMN_TERM_ID, course.termId());
+        ContentValues values = CourseProvider.courseToValues(course);
         Uri inserted = getContentResolver().insert(CourseProvider.CONTRACT.contentUri, values);
         if (inserted != null) {
             long id = ContentUris.parseId(inserted);
@@ -255,13 +247,7 @@ public class MainActivity extends AppCompatActivity
         return inserted;
     }
     private Uri insertAssessment(Assessment assessment) {
-        ContentValues values = new ContentValues();
-        values.put(StorageHelper.COLUMN_NAME, assessment.name());
-        values.put(StorageHelper.COLUMN_START, assessment.startMillis());
-        values.put(StorageHelper.COLUMN_END, assessment.endMillis());
-        values.put(StorageHelper.COLUMN_COURSE_ID, assessment.courseId());
-        values.put(StorageHelper.COLUMN_TYPE, assessment.type().value());
-        values.put(StorageHelper.COLUMN_NOTES, assessment.notes());
+        ContentValues values = AssessmentProvider.assessmentToValues(assessment);
         Uri inserted = getContentResolver().insert(AssessmentProvider.CONTRACT.contentUri, values);
         if (inserted != null) {
             long id = ContentUris.parseId(inserted);

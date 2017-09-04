@@ -34,8 +34,8 @@ public class DatePickerFragment extends DialogFragment /*implements DatePickerDi
   /*  public void setCalendar(@NonNull Calendar calendar) {
         this.calendar = calendar;
     }
-    public void setDestination(@NonNull TextView textView) {
-        destination = textView;
+    public void setDestination(@NonNull TextView label_assessment_type) {
+        destination = label_assessment_type;
     }
 */
 /*    @Override

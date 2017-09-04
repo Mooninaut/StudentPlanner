@@ -2,6 +2,7 @@ package com.example.clement.studentplanner.database;
 
 import android.content.ContentResolver;
 import android.content.ContentUris;
+import android.content.ContentValues;
 import android.content.UriMatcher;
 import android.database.Cursor;
 import android.net.Uri;
@@ -48,7 +49,12 @@ public class CourseProvider extends ContentProviderBase {
         public String getBasePath() {
             return basePath;
         }
-
+        public Uri getTermUri() {
+            return termUri;
+        }
+        public Uri getTermUri(long id) {
+            return ContentUris.withAppendedId(termUri, id);
+        }
         public final String authority = "com.example.clement.studentplanner.courseprovider";
         public final String basePath = "course";
         public final Uri contentUri;
@@ -175,4 +181,26 @@ public class CourseProvider extends ContentProviderBase {
         return rowsUpdated;
     }*/
 
+    @Nullable
+    @Override
+    public Uri insert(@NonNull Uri uri, @Nullable ContentValues values) {
+        Uri newUri = super.insert(uri, values);
+        if (newUri != null) {
+            notifyChange(CONTRACT.getTermUri(values.getAsLong(COLUMN_TERM_ID)));
+        }
+        return newUri;
+    }
+
+    public static ContentValues courseToValues(Course course) {
+        ContentValues values = new ContentValues();
+        if (course.hasId()) {
+           values.put(StorageHelper.COLUMN_ID, course.id());
+        }
+        values.put(StorageHelper.COLUMN_NAME, course.name());
+        values.put(StorageHelper.COLUMN_START, course.startMillis());
+        values.put(StorageHelper.COLUMN_END, course.endMillis());
+        values.put(StorageHelper.COLUMN_STATUS, course.status().value());
+        values.put(StorageHelper.COLUMN_TERM_ID, course.termId());
+        return values;
+    }
 }

@@ -43,8 +43,8 @@ public class TimePickerFragment extends DialogFragment /*implements TimePickerDi
     }*/
 
 /*
-    public void setTextView(@NonNull TextView textView) {
-        destination = textView;
+    public void setTextView(@NonNull TextView label_assessment_type) {
+        destination = label_assessment_type;
     }
     */
     /*

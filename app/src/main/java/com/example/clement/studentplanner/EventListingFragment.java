@@ -20,7 +20,7 @@ public class EventListingFragment
     extends ListingFragmentBase<EventCursorAdapter, EventListingFragment.HostActivity> {
 //    private EventLoaderListener eventLoaderListener = new EventLoaderListener();
 //    private HostActivity hostActivity;
-    public static final int EVENT_LOADER_ID = 1;
+    public static final int EVENT_LOADER_ID = 100;
     public EventListingFragment() {
         super(EventProvider.CONTRACT,
             HostActivity.class,

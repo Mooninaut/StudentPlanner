@@ -10,6 +10,9 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.app.ActionBar;
@@ -23,14 +26,17 @@ import com.example.clement.studentplanner.database.AssessmentProvider;
 import com.example.clement.studentplanner.database.CourseCursorAdapter;
 import com.example.clement.studentplanner.database.CourseProvider;
 import com.example.clement.studentplanner.database.StorageAdapter;
+import com.example.clement.studentplanner.input.AssessmentDataEntryActivity;
 
 /**
  * An activity representing a single Course detail screen.
  */
 public class CourseDetailActivity extends AppCompatActivity
     implements AssessmentListingFragment.HostActivity {
-
+    private static final int NEW_ASSESSMENT = 100;
     private AssessmentListingFragment fragment;
+    private Course course;
+    private Uri courseContentUri;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -38,9 +44,18 @@ public class CourseDetailActivity extends AppCompatActivity
         setContentView(R.layout.course_detail_activity);
 /*        Toolbar toolbar = (Toolbar) findViewById(R.id.detail_toolbar);
         setSupportActionBar(toolbar);*/
+        Toolbar myToolbar = (Toolbar) findViewById(R.id.main_toolbar);
+        setSupportActionBar(myToolbar);
 
-        Uri courseContentUri = getIntent().getParcelableExtra(CourseProvider.CONTRACT.contentItemType);
-        Course course;
+        if (courseContentUri == null && getIntent() != null) {
+            courseContentUri = getIntent().getParcelableExtra(CourseProvider.CONTRACT.contentItemType);
+        }
+        if (courseContentUri == null && savedInstanceState != null) {
+            courseContentUri = savedInstanceState.getParcelable(CourseProvider.CONTRACT.contentItemType);
+        }
+        if (courseContentUri == null) {
+            throw new NullPointerException();
+        }
         Cursor cursor = null;
         try {
             cursor = getContentResolver().query(courseContentUri, null, null, null, null);
@@ -85,10 +100,10 @@ public class CourseDetailActivity extends AppCompatActivity
         });*/
 
         // Show the Up button in the action bar.
-        ActionBar actionBar = getSupportActionBar();
-        if (actionBar != null) {
-            actionBar.setDisplayHomeAsUpEnabled(true);
-        }
+//        ActionBar actionBar = getSupportActionBar();
+//        if (actionBar != null) {
+//            actionBar.setDisplayHomeAsUpEnabled(true);
+//        }
 
         // savedInstanceState is non-null when there is fragment state
         // saved from previous configurations of this activity
@@ -112,22 +127,47 @@ public class CourseDetailActivity extends AppCompatActivity
                 .commit();
         }*/
     }
-
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.options_menu, menu);
+        return true;
+    }
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-        if (id == android.R.id.home) {
-            // This ID represents the Home or Up button. In the case of this
-            // activity, the Up button is shown. Use NavUtils to allow users
-            // to navigate up one level in the application structure. For
-            // more details, see the Navigation pattern on Android Design:
-            //
-            // http://developer.android.com/design/patterns/navigation.html#up-vs-back
-            //
-            NavUtils.navigateUpTo(this, new Intent(this, MainActivity.class));
-            return true;
+        switch(item.getItemId()) {
+            case android.R.id.home:
+                // This ID represents the Home or Up button. In the case of this
+                // activity, the Up button is shown. Use NavUtils to allow users
+                // to navigate up one level in the application structure. For
+                // more details, see the Navigation pattern on Android Design:
+                //
+                // http://developer.android.com/design/patterns/navigation.html#up-vs-back
+                //
+                NavUtils.navigateUpTo(this, new Intent(this, MainActivity.class));
+                return true;
+
+
+            case R.id.add:
+                Log.d("MainActivity", "New Assessment");
+                Intent intent = new Intent(this, AssessmentDataEntryActivity.class);
+                intent.putExtra(CourseProvider.CONTRACT.contentItemType, CourseProvider.CONTRACT.getContentUri(course.id()));
+                startActivity(intent);
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
         }
-        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putParcelable(CourseProvider.CONTRACT.contentItemType, courseContentUri);
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        courseContentUri = savedInstanceState.getParcelable(CourseProvider.CONTRACT.contentItemType);
     }
 
     @Override

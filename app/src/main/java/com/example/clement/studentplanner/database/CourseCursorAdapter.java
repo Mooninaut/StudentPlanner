@@ -61,7 +61,7 @@ public class CourseCursorAdapter extends CursorAdapter {
         TextView endTV = (TextView) view.findViewById(R.id.courseEndTextView);
 
         nameTV.setText(course.name());
-        numberTV.setText(String.format(Locale.getDefault(), "%d", course.id() - StorageHelper.COURSE_ID_OFFSET));
+        numberTV.setText(String.format(Locale.getDefault(), "%d", cursor.getPosition()));
         startTV.setText(dateFormat.format(course.startDate()));
         endTV.setText(dateFormat.format(course.endDate()));
     }

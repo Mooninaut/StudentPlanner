@@ -26,8 +26,8 @@ import static com.example.clement.studentplanner.database.StorageHelper.COLUMN_T
  */
 
 public class EventCursorAdapter extends CursorAdapter {
-    private static DateFormat dateFormat = DateFormat.getDateInstance();
-    private static DateFormat dateTimeFormat = DateFormat.getDateTimeInstance();
+    private static final DateFormat DATE_FORMAT = DateFormat.getDateInstance();
+    private static final DateFormat DATE_TIME_FORMAT = DateFormat.getDateTimeInstance();
     public EventCursorAdapter(Context context, Cursor cursor, int flags) {
         super(context, cursor, flags);
     }
@@ -85,10 +85,10 @@ public class EventCursorAdapter extends CursorAdapter {
         long eventId = cursor.getLong(cursor.getColumnIndex(COLUMN_ID));
         long sourceId = EventProvider.eventToSource(eventId);
         if (StorageHelper.classify(sourceId) == StorageHelper.Type.ASSESSMENT) {
-            timeTV.setText(dateTimeFormat.format(eventTime));
+            timeTV.setText(DATE_TIME_FORMAT.format(eventTime));
         }
         else {
-            timeTV.setText(dateFormat.format(eventTime));
+            timeTV.setText(DATE_FORMAT.format(eventTime));
         }
     }
 }

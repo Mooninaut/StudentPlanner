@@ -2,17 +2,25 @@ package com.example.clement.studentplanner.database;
 
 import android.content.ContentResolver;
 import android.content.ContentUris;
+import android.content.ContentValues;
 import android.content.UriMatcher;
 import android.database.Cursor;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import com.example.clement.studentplanner.data.Assessment;
+
 import static android.content.ContentResolver.SCHEME_CONTENT;
 import static com.example.clement.studentplanner.database.StorageHelper.COLUMNS_ASSESSMENT;
 import static com.example.clement.studentplanner.database.StorageHelper.COLUMNS_EVENT;
 import static com.example.clement.studentplanner.database.StorageHelper.COLUMN_COURSE_ID;
+import static com.example.clement.studentplanner.database.StorageHelper.COLUMN_END;
 import static com.example.clement.studentplanner.database.StorageHelper.COLUMN_ID;
+import static com.example.clement.studentplanner.database.StorageHelper.COLUMN_NAME;
+import static com.example.clement.studentplanner.database.StorageHelper.COLUMN_NOTES;
+import static com.example.clement.studentplanner.database.StorageHelper.COLUMN_START;
+import static com.example.clement.studentplanner.database.StorageHelper.COLUMN_TYPE;
 import static com.example.clement.studentplanner.database.StorageHelper.TABLE_ASSESSMENT;
 
 /**
@@ -118,6 +126,30 @@ public class AssessmentProvider extends ContentProviderBase {
         );
         cursor.setNotificationUri(resolver, uri);
         return cursor;
+    }
+
+    public static ContentValues assessmentToValues(@NonNull Assessment assessment) {
+        ContentValues values = new ContentValues();
+        if (assessment.hasId()) {
+            values.put(COLUMN_ID, assessment.id());
+        }
+        values.put(COLUMN_NAME, assessment.name());
+        values.put(COLUMN_START, assessment.startMillis());
+        values.put(COLUMN_END, assessment.endMillis());
+        values.put(COLUMN_COURSE_ID, assessment.courseId());
+        values.put(COLUMN_TYPE, assessment.type().value());
+        values.put(COLUMN_NOTES, assessment.notes());
+        return values;
+    }
+
+    @Nullable
+    @Override
+    public Uri insert(@NonNull Uri uri, @Nullable ContentValues values) {
+        Uri newUri = super.insert(uri, values);
+        if (newUri != null) {
+            notifyChange(CONTRACT.getCourseUri(values.getAsLong(COLUMN_COURSE_ID)));
+        }
+        return newUri;
     }
 
     @Nullable
