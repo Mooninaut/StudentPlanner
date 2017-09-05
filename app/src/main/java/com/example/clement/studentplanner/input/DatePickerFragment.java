@@ -2,17 +2,11 @@ package com.example.clement.studentplanner.input;
 
 import android.app.DatePickerDialog;
 import android.app.Dialog;
-import android.app.TimePickerDialog;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
-import android.text.format.DateFormat;
-import android.widget.DatePicker;
-import android.widget.TextView;
 
 import java.util.Calendar;
-import java.util.Date;
-import java.util.Locale;
 
 /**
  * Created by Clement on 9/2/2017.

@@ -56,10 +56,10 @@ public class EventCursorAdapter extends CursorAdapter {
                 eventType = context.getResources().getString(R.string.start);
                 eventTypeIcon = context.getResources().getString(R.string.go);
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-                    eventTV.setBackground(context.getResources().getDrawable(R.drawable.green_circle));
+                    eventTV.setBackground(context.getResources().getDrawable(R.drawable.start_circle));
                 }
                 else {
-                    eventTV.setBackgroundDrawable(context.getResources().getDrawable(R.drawable.green_circle));
+                    eventTV.setBackgroundDrawable(context.getResources().getDrawable(R.drawable.start_circle));
                 }
                 eventTV.setTextSize(18f);
                 break;
@@ -67,28 +67,42 @@ public class EventCursorAdapter extends CursorAdapter {
                 eventType = context.getResources().getString(R.string.end);
                 eventTypeIcon = context.getResources().getString(R.string.stop);
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-                    eventTV.setBackground(context.getResources().getDrawable(R.drawable.red_circle));
+                    eventTV.setBackground(context.getResources().getDrawable(R.drawable.end_circle));
                 }
                 else {
-                    eventTV.setBackgroundDrawable(context.getResources().getDrawable(R.drawable.red_circle));
+                    eventTV.setBackgroundDrawable(context.getResources().getDrawable(R.drawable.end_circle));
                 }
                 eventTV.setTextSize(10f);
                 break;
             default:
-                throw new RuntimeException("EventCursorAdapter.bindView: Unexpected event type encountered");
+                throw new IllegalStateException("EventCursorAdapter.bindView: Unexpected event type encountered");
         }
         Date eventTime = new Date(cursor.getLong(cursor.getColumnIndex(COLUMN_TIME)));
 
-        nameTV.setText(eventName);
+//        nameTV.setText(eventName);
         eventTV.setText(eventTypeIcon);
         typeTV.setText(eventType);
         long eventId = cursor.getLong(cursor.getColumnIndex(COLUMN_ID));
         long sourceId = EventProvider.eventToSource(eventId);
-        if (StorageHelper.classify(sourceId) == StorageHelper.Type.ASSESSMENT) {
-            timeTV.setText(DATE_TIME_FORMAT.format(eventTime));
+        String prefix;
+        DateFormat format;
+        switch (StorageHelper.classify(sourceId)) {
+            case ASSESSMENT:
+                format = DATE_TIME_FORMAT;
+                prefix = context.getResources().getString(R.string.assessment);
+                break;
+            case TERM:
+                format = DATE_FORMAT;
+                prefix = context.getResources().getString(R.string.term);
+                break;
+            case COURSE:
+                format = DATE_FORMAT;
+                prefix = context.getResources().getString(R.string.course);
+                break;
+            default:
+                throw new IllegalStateException("EventCursorAdapter.bindView: Unexpected event source type encountered");
         }
-        else {
-            timeTV.setText(DATE_FORMAT.format(eventTime));
-        }
+        timeTV.setText(format.format(eventTime));
+        nameTV.setText(prefix+" "+eventName);
     }
 }

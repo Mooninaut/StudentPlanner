@@ -1,41 +1,127 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@color/colorAssessment"
+    android:id="@+id/assessment_detail">
+    <include layout="@layout/toolbar"
+        android:id="@+id/toolbar"
+        android:layout_height="wrap_content"
+        android:layout_width="0dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"/>
+<!--
     <TextView
         android:id="@+id/assessment_course_name_view"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:textSize="20sp"
         android:textAlignment="center"
         android:textStyle="bold"
         android:padding="8dp"
-        android:text="Course Name"/>
-    <include layout="@layout/assessment_list_item"/>
+        android:layout_marginLeft="@dimen/margin_medium"
+        android:text="Course Name"
+        android:layout_marginTop="@dimen/margin_medium"
+        app:layout_constraintTop_toBottomOf="@+id/toolbar"
+        app:layout_constraintLeft_toLeftOf="parent"/>
+-->
+
+    <TextView
+        android:id="@+id/assessment_type_text_view"
+        android:textStyle="bold"
+        android:textSize="20sp"
+        android:layout_width="@dimen/circle_size"
+        android:layout_height="@dimen/circle_size"
+        android:layout_marginLeft="@dimen/margin_large"
+        android:layout_marginStart="@dimen/margin_large"
+        android:layout_marginEnd="@dimen/margin_medium"
+        android:layout_marginRight="@dimen/margin_medium"
+        android:gravity="center"
+        android:textColor="@color/colorDarkGray"
+        app:layout_constraintRight_toLeftOf="@+id/assessment_name_text_view"
+        app:layout_constraintLeft_toLeftOf="parent"
+        android:text="P"
+        app:layout_constraintTop_toBottomOf="@+id/toolbar"
+        app:layout_constraintBottom_toTopOf="@+id/nested_view"
+        android:background="@drawable/white_circle"
+        app:layout_constraintHorizontal_bias="0.5"/>
+
+    <TextView
+        android:id="@+id/assessment_name_text_view"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:textSize="18sp"
+        android:layout_marginLeft="@dimen/keyline"
+        android:layout_marginStart="@dimen/keyline"
+        android:text="assessmentName"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/toolbar"
+        app:layout_constraintBottom_toTopOf="@+id/nested_view"/>
+
+    <TextView
+        android:id="@+id/assessment_start_text_view"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/margin_small"
+        android:layout_marginRight="@dimen/margin_small"
+        android:gravity="end"
+        android:text="assessmentStart"
+        android:layout_margin="@dimen/margin_large"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/toolbar"
+        />
+
+    <TextView
+        android:id="@+id/assessment_end_text_view"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/margin_large"
+        android:gravity="end"
+        android:text="assessmentEnd"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/assessment_start_text_view"
+        />
+
+<android.support.constraint.ConstraintLayout
+    android:layout_height="0dp"
+    android:id="@+id/nested_view"
+    android:layout_width="0dp"
+    app:layout_constraintLeft_toLeftOf="parent"
+    app:layout_constraintRight_toRightOf="parent"
+    app:layout_constraintBottom_toBottomOf="parent"
+    android:layout_marginTop="@dimen/margin_large"
+    app:layout_constraintTop_toBottomOf="@id/assessment_end_text_view"
+    android:background="@android:color/white">
     <TextView
         android:id="@+id/assessment_type_view"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:textSize="20sp"
-        android:layout_marginLeft="@dimen/text_margin"
-        android:layout_marginStart="@dimen/text_margin"
-        android:layout_marginRight="@dimen/text_margin"
-        android:layout_marginEnd="@dimen/text_margin"
-        android:layout_marginTop="@dimen/text_margin"
         android:textStyle="bold"
         android:padding="4dp"
+        android:layout_marginTop="@dimen/margin_medium"
+        android:layout_marginLeft="@dimen/margin_large"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
         android:text="Type Field"/>
     <TextView
         android:id="@+id/assessment_notes_view"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:textSize="20sp"
-        android:layout_marginLeft="@dimen/text_margin"
-        android:layout_marginStart="@dimen/text_margin"
-        android:layout_marginRight="@dimen/text_margin"
-        android:layout_marginEnd="@dimen/text_margin"
-        android:layout_marginTop="@dimen/text_margin"
-        android:text="Notes Field"/>
+        android:layout_marginTop="@dimen/margin_medium"
+        android:padding="4dp"
+        android:layout_marginLeft="@dimen/margin_large"
+        app:layout_constraintTop_toBottomOf="@+id/assessment_type_view"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        android:text="Notes Field"
+        />
 
-</LinearLayout>
+</android.support.constraint.ConstraintLayout>
+</android.support.constraint.ConstraintLayout>

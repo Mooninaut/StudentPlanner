@@ -13,12 +13,12 @@ import com.example.clement.studentplanner.R;
 import com.example.clement.studentplanner.data.Course;
 
 import java.text.DateFormat;
-import java.util.Date;
 import java.util.Locale;
 
 import static com.example.clement.studentplanner.database.StorageHelper.COLUMN_END;
 import static com.example.clement.studentplanner.database.StorageHelper.COLUMN_ID;
 import static com.example.clement.studentplanner.database.StorageHelper.COLUMN_NAME;
+import static com.example.clement.studentplanner.database.StorageHelper.COLUMN_NOTES;
 import static com.example.clement.studentplanner.database.StorageHelper.COLUMN_START;
 import static com.example.clement.studentplanner.database.StorageHelper.COLUMN_STATUS;
 import static com.example.clement.studentplanner.database.StorageHelper.COLUMN_TERM_ID;
@@ -61,7 +61,7 @@ public class CourseCursorAdapter extends CursorAdapter {
         TextView endTV = (TextView) view.findViewById(R.id.courseEndTextView);
 
         nameTV.setText(course.name());
-        numberTV.setText(String.format(Locale.getDefault(), "%d", cursor.getPosition()));
+        numberTV.setText(String.format(Locale.getDefault(), "%d", cursor.getPosition() + 1));
         startTV.setText(dateFormat.format(course.startDate()));
         endTV.setText(dateFormat.format(course.endDate()));
     }
@@ -73,7 +73,9 @@ public class CourseCursorAdapter extends CursorAdapter {
             cursor.getLong(cursor.getColumnIndex(COLUMN_START)),
             cursor.getLong(cursor.getColumnIndex(COLUMN_END)),
             cursor.getInt(cursor.getColumnIndex(COLUMN_TERM_ID)),
-            Course.Status.of(cursor.getInt(cursor.getColumnIndex(COLUMN_STATUS))));
+            Course.Status.of(cursor.getInt(cursor.getColumnIndex(COLUMN_STATUS))),
+            cursor.getString(cursor.getColumnIndex(COLUMN_NOTES))
+        );
     }
     @Override
     public Course getItem(int position) {

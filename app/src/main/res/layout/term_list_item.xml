@@ -10,8 +10,8 @@
         android:id="@+id/termNumberTextView"
         android:textStyle="bold"
         android:textSize="20sp"
-        android:layout_width="30sp"
-        android:layout_height="30sp"
+        android:layout_width="@dimen/circle_size"
+        android:layout_height="@dimen/circle_size"
         android:layout_marginLeft="@dimen/margin_medium"
         android:layout_marginStart="@dimen/margin_medium"
         android:layout_marginEnd="@dimen/margin_medium"
@@ -23,7 +23,7 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        android:background="@drawable/blue_circle"/>
+        android:background="@drawable/term_circle"/>
 
     <TextView
         android:id="@+id/termNameTextView"

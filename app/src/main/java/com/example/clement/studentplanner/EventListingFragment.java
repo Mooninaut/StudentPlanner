@@ -101,6 +101,5 @@ public class EventListingFragment
 //
     public interface HostActivity {
         void onEventSelected(long sourceId);
-        EventCursorAdapter getEventCursorAdapter();
     }
 }

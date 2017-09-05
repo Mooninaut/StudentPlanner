@@ -13,17 +13,17 @@
     android:layout_height="match_parent"
     android:layout_width="match_parent">
 
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
     android:weightSum="1">
-    <include layout="@layout/course_list_item"
+    <include layout="@layout/term_list_item"
         android:layout_width="0dp"
         android:layout_height="@dimen/item_height"
 
         android:layout_marginBottom="@dimen/margin_large"
-        android:id="@+id/course_list_item"
+        android:id="@+id/term_list_item"
         android:layout_marginLeft="0dp"
         app:layout_constraintLeft_toLeftOf="parent"
         android:layout_marginRight="0dp"
@@ -39,14 +39,14 @@
         android:layout_marginLeft="@dimen/keyline"
         android:layout_marginRight="@dimen/margin_large"
         android:layout_marginStart="@dimen/keyline"
-        android:text="Assessment Name"
+        android:text="Course Name"
         android:textAppearance="@style/TextAppearance.AppCompat.Large"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         tools:layout_constraintLeft_creator="1"
         android:layout_marginTop="@dimen/margin_large"
-        app:layout_constraintTop_toBottomOf="@+id/course_list_item"/>-->
+        app:layout_constraintTop_toBottomOf="@+id/term_list_item"/>-->
     <EditText
         android:id="@+id/edit_name"
         android:layout_width="0dp"
@@ -57,12 +57,12 @@
         android:layout_marginStart="@dimen/keyline"
         android:layout_marginTop="@dimen/margin_large"
         android:ems="10"
-        android:hint="@string/assessment_name"
+        android:hint="@string/course_name"
         android:inputType="text|textCapSentences|textAutoCorrect"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/course_list_item"
+        app:layout_constraintTop_toBottomOf="@+id/term_list_item"
         tools:layout_constraintLeft_creator="1"
         tools:layout_constraintRight_creator="1"
         tools:layout_constraintTop_creator="1"/>
@@ -180,27 +180,27 @@
         />
 
     <TextView
-        android:id="@+id/label_assessment_type"
+        android:id="@+id/label_course_status"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="@dimen/margin_large"
         android:layout_marginStart="@dimen/margin_large"
         android:layout_marginTop="@dimen/margin_section"
-        android:text="@string/type"
+        android:text="@string/status"
         android:textAppearance="@style/TextAppearance.AppCompat.Medium"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/edit_end_date"/>
 <!--android:theme="@style/AppTheme.EditControl"-->
     <Spinner
-        android:id="@+id/spinner_assessment_type"
+        android:id="@+id/spinner_course_status"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="@dimen/keyline"
-        android:entries="@array/assessment_type_name"
-        android:prompt="@string/assessment_type"
+        android:entries="@array/course_status_name"
+        android:prompt="@string/course_status"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/label_assessment_type"/>
+        app:layout_constraintTop_toTopOf="@+id/label_course_status"/>
     <!--app:layout_constraintRight_toRightOf="parent"-->
     <!--android:theme="@style/AppTheme.EditControl"-->
     <Button
@@ -210,13 +210,13 @@
         android:layout_marginBottom="16dp"
         android:layout_marginEnd="16dp"
         android:layout_marginRight="16dp"
-        android:onClick="createAssessment"
-        android:text="@string/add_assessment"
+        android:onClick="createCourse"
+        android:text="@string/add_course"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintLeft_toRightOf="@+id/cancel_button"
         android:layout_marginTop="@dimen/margin_section"
-        app:layout_constraintTop_toBottomOf="@+id/spinner_assessment_type"
+        app:layout_constraintTop_toBottomOf="@+id/spinner_course_status"
         app:layout_constraintVertical_bias="0.941"
         app:layout_constraintHorizontal_bias="1.0"/>
 
@@ -231,7 +231,7 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toLeftOf="@id/create_button"
         android:layout_marginTop="@dimen/margin_section"
-        app:layout_constraintTop_toBottomOf="@+id/spinner_assessment_type"
+        app:layout_constraintTop_toBottomOf="@+id/spinner_course_status"
         />
 
 

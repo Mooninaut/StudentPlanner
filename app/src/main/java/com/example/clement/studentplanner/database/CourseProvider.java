@@ -14,11 +14,7 @@ import com.example.clement.studentplanner.data.Course;
 import static android.content.ContentResolver.SCHEME_CONTENT;
 import static com.example.clement.studentplanner.database.StorageHelper.COLUMNS_COURSE;
 import static com.example.clement.studentplanner.database.StorageHelper.COLUMNS_EVENT;
-import static com.example.clement.studentplanner.database.StorageHelper.COLUMN_END;
 import static com.example.clement.studentplanner.database.StorageHelper.COLUMN_ID;
-import static com.example.clement.studentplanner.database.StorageHelper.COLUMN_NAME;
-import static com.example.clement.studentplanner.database.StorageHelper.COLUMN_START;
-import static com.example.clement.studentplanner.database.StorageHelper.COLUMN_STATUS;
 import static com.example.clement.studentplanner.database.StorageHelper.COLUMN_TERM_ID;
 import static com.example.clement.studentplanner.database.StorageHelper.TABLE_COURSE;
 
@@ -201,6 +197,7 @@ public class CourseProvider extends ContentProviderBase {
         values.put(StorageHelper.COLUMN_END, course.endMillis());
         values.put(StorageHelper.COLUMN_STATUS, course.status().value());
         values.put(StorageHelper.COLUMN_TERM_ID, course.termId());
+        values.put(StorageHelper.COLUMN_NOTES, course.notes());
         return values;
     }
 }

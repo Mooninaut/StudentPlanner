@@ -13,7 +13,6 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -29,6 +28,7 @@ import com.example.clement.studentplanner.database.ProviderContract;
 import com.example.clement.studentplanner.database.StorageHelper;
 import com.example.clement.studentplanner.database.TermCursorAdapter;
 import com.example.clement.studentplanner.database.TermProvider;
+import com.example.clement.studentplanner.input.TermDataEntryActivity;
 
 import java.util.Calendar;
 import java.util.GregorianCalendar;
@@ -69,7 +69,7 @@ public class MainActivity extends AppCompatActivity
         fragmentManager = getSupportFragmentManager();
         switchToFragment(eventListingFragment, EVENT_TAG);
 
-        Toolbar myToolbar = (Toolbar) findViewById(R.id.main_toolbar);
+        Toolbar myToolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(myToolbar);
 
     }
@@ -111,33 +111,20 @@ public class MainActivity extends AppCompatActivity
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.options_menu, menu);
+        inflater.inflate(R.menu.main_options_menu, menu);
         return true;
     }
-    private void addItem() {
-        switch(currentFragment) {
-            case EVENT_TAG:
-            case TERM_TAG:
-                Log.d("MainActivity", "New Term");
-                break;
-            case COURSE_TAG:
-                Log.d("MainActivity", "New Course");
-                break;
-            case ASSESSMENT_TAG:
-                Log.d("MainActivity", "New Assessment");
-                break;
-            default:
-                throw new IllegalStateException();
-        }
+    private void addTerm() {
+        startActivity(new Intent(this, TermDataEntryActivity.class));
     }
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.add:
-                addItem();
+                addTerm();
                 return true;
-            case R.id.settings:
-                return true;
+/*            case R.id.settings:
+                return true;*/
             case R.id.sample_data:
                 insertSampleData();
                 return true;
@@ -197,7 +184,7 @@ public class MainActivity extends AppCompatActivity
                 if (today.compareTo(courseStart) <= 0) {
                     status = Course.Status.PLANNED;
                 }
-                final Course course = new Course("Course " + termNumber + "." + courseNumber, courseStart.getTimeInMillis(), courseEnd.getTimeInMillis(), term, status);
+                final Course course = new Course("Course " + termNumber + "." + courseNumber, courseStart.getTimeInMillis(), courseEnd.getTimeInMillis(), term, status, "Note.");
                 insertCourse(course);
                 Calendar assessmentStart = (Calendar) courseEnd.clone();
                 Calendar assessmentEnd = (Calendar) courseEnd.clone();
@@ -329,17 +316,6 @@ public class MainActivity extends AppCompatActivity
             }
 
         }
-    }
-    @Override
-    @NonNull
-    public EventCursorAdapter getEventCursorAdapter() {
-        return eventCursorAdapter;
-    }
-
-    @Override
-    @NonNull
-    public TermCursorAdapter getTermCursorAdapter() {
-        return termCursorAdapter;
     }
 
     @Override

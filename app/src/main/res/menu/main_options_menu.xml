@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/add"
+        android:title="@string/add_term"
+        android:orderInCategory="0"
+        app:showAsAction="always"
+        /> <!--android:icon="@drawable/ic_action_add"-->
+<!--    <item android:id="@+id/settings"
+        android:title="@string/settings"
+        android:orderInCategory="100"/>-->
+    <item android:id="@+id/sample_data"
+        android:title="Add Sample Data"
+        android:orderInCategory="200"/>
+    <item android:id="@+id/delete_sample_data"
+        android:title="Delete Sample Data"
+        android:orderInCategory="300"/>
+</menu>

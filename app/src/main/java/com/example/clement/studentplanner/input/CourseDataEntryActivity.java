@@ -21,41 +21,41 @@ import android.widget.TextView;
 import android.widget.TimePicker;
 
 import com.example.clement.studentplanner.R;
-import com.example.clement.studentplanner.data.Assessment;
 import com.example.clement.studentplanner.data.Course;
-import com.example.clement.studentplanner.database.AssessmentProvider;
-import com.example.clement.studentplanner.database.CourseCursorAdapter;
+import com.example.clement.studentplanner.data.Term;
 import com.example.clement.studentplanner.database.CourseProvider;
+import com.example.clement.studentplanner.database.TermCursorAdapter;
+import com.example.clement.studentplanner.database.TermProvider;
 
 import java.util.Calendar;
 
-public class AssessmentDataEntryActivity extends AppCompatActivity implements
+public class CourseDataEntryActivity extends AppCompatActivity implements
         TimePickerDialog.OnTimeSetListener, DatePickerDialog.OnDateSetListener {
     private enum when { START, END }
 //    private static final String WHEN = "when";
-    private Assessment assessment = new Assessment();
+    private Course course = new Course();
     private Calendar start = Calendar.getInstance();
     private Calendar end = Calendar.getInstance();
     private when time;
     private TextView timeView;
     private when date;
     private TextView dateView;
-    private Uri courseUri;
-    private Course course;
+    private Uri termUri;
+    private Term term;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.assessment_data_entry);
+        setContentView(R.layout.course_data_entry);
         Intent intent = getIntent();
-        courseUri = intent.getParcelableExtra(CourseProvider.CONTRACT.contentItemType);
+        termUri = intent.getParcelableExtra(TermProvider.CONTRACT.contentItemType);
         Cursor cursor = null;
         try {
-            cursor = getContentResolver().query(courseUri, null, null, null, null);
+            cursor = getContentResolver().query(termUri, null, null, null, null);
             if (cursor != null && cursor.moveToFirst()) {
-                // Initialize course view
-                CourseCursorAdapter courseAdapter = new CourseCursorAdapter(this, cursor, 0);
-                courseAdapter.bindView(findViewById(R.id.course_list_item), this, cursor);
-                course = courseAdapter.getItem(0);
+                // Initialize term view
+                TermCursorAdapter termAdapter = new TermCursorAdapter(this, cursor, 0);
+                termAdapter.bindView(findViewById(R.id.term_list_item), this, cursor);
+                term = termAdapter.getItem(0);
             }
         } finally {
             if (cursor != null) {
@@ -65,20 +65,8 @@ public class AssessmentDataEntryActivity extends AppCompatActivity implements
         Toolbar myToolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(myToolbar);
         ActionBar actionBar = getSupportActionBar();
-        if (actionBar != null) {
-            actionBar.setDisplayHomeAsUpEnabled(true);
-        }
+        actionBar.setDisplayHomeAsUpEnabled(true);
     }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == android.R.id.home) {
-            finish();
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
-    }
-
     public void showStartDatePickerDialog(View v) {
         showDatePickerDialog(v, when.START);
     }
@@ -146,25 +134,32 @@ public class AssessmentDataEntryActivity extends AppCompatActivity implements
         dateView.setText(DateFormat.getDateFormat(this).format(calendar.getTime()));
     }
 
-    public void createAssessment(View view) {
-        EditText name = (EditText) findViewById(R.id.edit_name);
-        Spinner type = (Spinner) findViewById(R.id.spinner_assessment_type);
-        EditText notes = (EditText) findViewById(R.id.edit_notes);
-
-        assessment.name(name.getText().toString().trim());
-        assessment.startEndMillis(start.getTimeInMillis(), end.getTimeInMillis());
-        if (course != null) {
-            assessment.courseId(course.id());
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+            finish();
+            return true;
         }
-        int spinnerPosition = type.getSelectedItemPosition();
-        int assessmentType = getResources().getIntArray(R.array.assessment_type_id)[spinnerPosition];
-        assessment.type(Assessment.Type.of(assessmentType));
+        return super.onOptionsItemSelected(item);
+    }
 
-        assessment.notes(notes.getText().toString().trim());
-        Log.d(AssessmentDataEntryActivity.class.getSimpleName(), assessment.toString());
+    public void createCourse(View view) {
+        EditText name = (EditText) findViewById(R.id.edit_name);
+        Spinner status = (Spinner) findViewById(R.id.spinner_course_status);
+
+        course.name(name.getText().toString().trim());
+        course.startEndMillis(start.getTimeInMillis(), end.getTimeInMillis());
+        if (term != null) {
+            course.termId(term.id());
+        }
+        int spinnerPosition = status.getSelectedItemPosition();
+        int courseStatus = getResources().getIntArray(R.array.course_status_id)[spinnerPosition];
+        course.status(Course.Status.of(courseStatus));
+
+        Log.d(TermDataEntryActivity.class.getSimpleName(), course.toString());
         getContentResolver().insert(
-            AssessmentProvider.CONTRACT.contentUri,
-            AssessmentProvider.assessmentToValues(assessment)
+            CourseProvider.CONTRACT.contentUri,
+            CourseProvider.courseToValues(course)
         );
         finish();
     }

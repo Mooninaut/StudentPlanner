@@ -10,16 +10,24 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
+import com.example.clement.studentplanner.data.CourseMentor;
 import com.example.clement.studentplanner.data.Term;
 
 import static android.content.ContentResolver.SCHEME_CONTENT;
 import static com.example.clement.studentplanner.database.StorageHelper.COLUMNS_EVENT;
+import static com.example.clement.studentplanner.database.StorageHelper.COLUMNS_MENTOR;
 import static com.example.clement.studentplanner.database.StorageHelper.COLUMNS_TERM;
+import static com.example.clement.studentplanner.database.StorageHelper.COLUMN_COURSE_ID;
+import static com.example.clement.studentplanner.database.StorageHelper.COLUMN_EMAIL;
 import static com.example.clement.studentplanner.database.StorageHelper.COLUMN_END;
 import static com.example.clement.studentplanner.database.StorageHelper.COLUMN_ID;
+import static com.example.clement.studentplanner.database.StorageHelper.COLUMN_MENTOR_ID;
 import static com.example.clement.studentplanner.database.StorageHelper.COLUMN_NAME;
 import static com.example.clement.studentplanner.database.StorageHelper.COLUMN_NUMBER;
+import static com.example.clement.studentplanner.database.StorageHelper.COLUMN_PHONE_NUMBER;
 import static com.example.clement.studentplanner.database.StorageHelper.COLUMN_START;
+import static com.example.clement.studentplanner.database.StorageHelper.TABLE_COURSE_MENTOR;
+import static com.example.clement.studentplanner.database.StorageHelper.TABLE_MENTOR;
 import static com.example.clement.studentplanner.database.StorageHelper.TABLE_TERM;
 
 
@@ -27,8 +35,8 @@ import static com.example.clement.studentplanner.database.StorageHelper.TABLE_TE
  * Created by Clement on 8/6/2017.
  */
 
-public class TermProvider extends ContentProviderBase {
-    public enum TermContract implements ProviderContract {
+public class MentorProvider extends ContentProviderBase {
+    public enum CourseMentorContract implements ProviderContract {
         INSTANCE;
         @Override
         public Uri getContentUri() {
@@ -51,37 +59,26 @@ public class TermProvider extends ContentProviderBase {
             return basePath;
         }
 
-        public final String authority = "com.example.clement.studentplanner.termprovider";
-        public final String basePath = "term";
-        public final String pathEvent = "event";
-        public final String pathMax = "max";
+        public final String authority = "com.example.clement.studentplanner.mentorprovider";
+        public final String basePath = "mentor";
         public final Uri contentUri;
-        public final Uri eventUri;
-        public final Uri maxTermUri;
-        public final String contentItemType = "Term";
-        TermContract() {
+        public final String contentItemType = "CourseMentor";
+        CourseMentorContract() {
             Uri.Builder builder = new Uri.Builder()
                 .scheme(SCHEME_CONTENT)
                 .authority(authority);
             contentUri = builder.path(basePath).build();
-            eventUri = builder.path(pathEvent).build();
-            maxTermUri = builder.path(pathMax).build();
-
         }
     }
 
-    private static final int TERM_ALL = 1;
-    private static final int TERM_ID = 2;
-    private static final int TERM_EVENT = 3;
-    private static final int TERM_MAX = 4;
+    private static final int MENTOR_ALL = 1;
+    private static final int MENTOR_ID = 2;
+
     private static final UriMatcher uriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
-    public static final TermContract CONTRACT = TermContract.INSTANCE;
+    public static final CourseMentorContract CONTRACT = CourseMentorContract.INSTANCE;
     static {
-        Log.i(TermProvider.class.getSimpleName(), CONTRACT.eventUri.getPath());
-        uriMatcher.addURI(CONTRACT.authority, CONTRACT.basePath + "/#", TERM_ID);
-        uriMatcher.addURI(CONTRACT.authority, CONTRACT.pathEvent, TERM_EVENT);
-        uriMatcher.addURI(CONTRACT.authority, CONTRACT.pathMax, TERM_MAX);
-        uriMatcher.addURI(CONTRACT.authority, CONTRACT.basePath, TERM_ALL);
+        uriMatcher.addURI(CONTRACT.authority, CONTRACT.basePath + "/#", MENTOR_ID);
+        uriMatcher.addURI(CONTRACT.authority, CONTRACT.basePath, MENTOR_ALL);
     }
     @Override
     public boolean onCreate() {
@@ -94,17 +91,14 @@ public class TermProvider extends ContentProviderBase {
                         @Nullable String[] selectionArgs, @Nullable String sortOrder) {
         Cursor cursor;
         ContentResolver resolver = getContext().getContentResolver();
-        projection = COLUMNS_EVENT;
+        projection = COLUMNS_MENTOR;
         switch(uriMatcher.match(uri)) {
-            case TERM_ID:
+            case MENTOR_ID:
                 selection = COLUMN_ID + " = " + ContentUris.parseId(uri);
                 // deliberate fallthrough, not a bug
-            case TERM_ALL:
-                projection = COLUMNS_TERM;
-                // deliberate fallthrough, not a bug
-            case TERM_EVENT:
+            case MENTOR_ALL:
                 cursor = getReadableDatabase().query(
-                    TABLE_TERM,
+                    TABLE_MENTOR,
                     projection,
                     selection,
                     selectionArgs,
@@ -116,19 +110,9 @@ public class TermProvider extends ContentProviderBase {
                     cursor.setNotificationUri(resolver, uri);
                 }
                 break;
-            case TERM_MAX:
-                cursor = getReadableDatabase().rawQuery(
-                    "SELECT MAX("+COLUMN_NUMBER+") AS "+COLUMN_NUMBER+" FROM "+TABLE_TERM,
-                    null
-                );
-                if (cursor != null) {
-                    cursor.setNotificationUri(resolver, CONTRACT.contentUri);
-                }
-                break;
             default:
-                cursor = null;
+                throw new IllegalArgumentException(String.format("Invalid Uri '%s' supplied to MentorProvider.query()", uri.toString()));
         }
-
         return cursor;
     }
 
@@ -138,40 +122,22 @@ public class TermProvider extends ContentProviderBase {
         return null;
     }
 
-
     @NonNull
-    public static ContentValues termToValues(@NonNull Term term) {
+    public static ContentValues mentorToValues(@NonNull CourseMentor mentor) {
         ContentValues values = new ContentValues();
-        values.put(COLUMN_NUMBER, term.number());
-        values.put(COLUMN_NAME, term.name());
-        values.put(COLUMN_START, term.startMillis());
-        values.put(COLUMN_END, term.endMillis());
-        if (term.hasId()) {
-            values.put(COLUMN_ID, term.id());
+        values.put(COLUMN_PHONE_NUMBER, mentor.phoneNumber());
+        values.put(COLUMN_NAME, mentor.name());
+        values.put(COLUMN_EMAIL, mentor.emailAddress());
+        if (mentor.hasId()) {
+            values.put(COLUMN_ID, mentor.id());
         }
         return values;
     }
 
-/*    @Override
-    public int delete(@NonNull Uri uri, @Nullable String selection, @Nullable String[] selectionArgs) {
-        if (uriMatcher.match(uri) == TERM_ID) {
-            selection = COLUMN_ID + " = " + ContentUris.parseId(uri);
-        }
-        int rowsAffected = getWritableDatabase().delete(
-            TABLE_TERM,
-            selection,
-            null
-        );
-        if (rowsAffected > 0) {
-            notifyChange(contentUri);
-        }
-        return rowsAffected;
-    }*/
-
     @NonNull
     @Override
     protected String getTableName() {
-        return TABLE_TERM;
+        return TABLE_MENTOR;
     }
 
     @NonNull
@@ -188,7 +154,7 @@ public class TermProvider extends ContentProviderBase {
 
     @Override
     protected int getSingleRowMatchConstant() {
-        return TERM_ID;
+        return MENTOR_ID;
     }
 
 

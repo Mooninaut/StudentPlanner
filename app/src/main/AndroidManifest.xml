@@ -42,12 +42,22 @@
             android:authorities="com.example.clement.studentplanner.photoprovider"
             android:enabled="true"
             android:exported="false"/>
-
+        <provider
+            android:name=".database.MentorProvider"
+            android:authorities="com.example.clement.studentplanner.mentorprovider"
+            android:enabled="true"
+            android:exported="false"/>
+        <provider
+            android:name=".database.CourseMentorProvider"
+            android:authorities="com.example.clement.studentplanner.coursementorprovider"
+            android:enabled="true"
+            android:exported="false"/>
         <activity
             android:name=".CourseDetailActivity"
             android:label="@string/title_course_detail"
             android:parentActivityName=".MainActivity"
-            android:theme="@style/AppTheme">
+            android:theme="@style/AppTheme"
+            android:launchMode="singleTop">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.example.clement.studentplanner.MainActivity"/>
@@ -56,7 +66,8 @@
             android:name=".TermDetailActivity"
             android:label="Term Detail"
             android:parentActivityName=".MainActivity"
-            android:theme="@style/AppTheme">
+            android:theme="@style/AppTheme"
+            android:launchMode="singleTop">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.example.clement.studentplanner.MainActivity"/>
@@ -65,20 +76,51 @@
             android:name=".AssessmentDetailActivity"
             android:label="Assessment Detail"
             android:parentActivityName=".MainActivity"
-            android:theme="@style/AppTheme">
+            android:theme="@style/AppTheme"
+            android:launchMode="singleTop">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.example.clement.studentplanner.MainActivity"/>
         </activity>
         <activity
             android:name=".input.AssessmentDataEntryActivity"
-            android:label="Assessment Entry"
+            android:label="Add Assessment"
+            android:parentActivityName=".CourseDetailActivity"
+            android:theme="@style/AppTheme"
+            android:launchMode="singleTop">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.example.clement.studentplanner.CourseDetailActivity"/>
+        </activity>
+        <activity
+            android:name=".input.TermDataEntryActivity"
+            android:label="Add Term"
             android:parentActivityName=".MainActivity"
-            android:theme="@style/AppTheme">
+            android:theme="@style/AppTheme"
+            android:launchMode="singleTop">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.example.clement.studentplanner.MainActivity"/>
         </activity>
+        <activity
+            android:name=".input.CourseDataEntryActivity"
+            android:label="Add Course"
+            android:parentActivityName=".TermDetailActivity"
+            android:theme="@style/AppTheme"
+            android:launchMode="singleTop">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.example.clement.studentplanner.TermDetailActivity"/>
+        </activity>
+        <activity
+            android:name=".input.MentorDataEntryActivity"
+            android:label="Add Course Mentor"
+            android:parentActivityName=".CourseDetailActivity"
+            android:theme="@style/AppTheme"
+            android:launchMode="singleTop">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.example.clement.studentplanner.CourseDetailActivity"/>
+        </activity>
     </application>
-
 </manifest>

@@ -11,6 +11,9 @@ import java.util.Locale;
 public class Term extends AcademicEvent {
     private int number;
 
+    public Term() {
+        super();
+    }
     public Term(@NonNull String name, long startMillis, long endMillis, int number) {
         super(name, startMillis, endMillis);
         this.number = number;

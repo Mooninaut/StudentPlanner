@@ -18,7 +18,7 @@ public class StorageHelper extends SQLiteOpenHelper {
         TERM, COURSE, ASSESSMENT, NONE
     }
 
-    public static final int DATABASE_VERSION = 15;
+    public static final int DATABASE_VERSION = 18;
     public static final String TABLE_TERM = "term";
     public static final String COLUMN_ID = BaseColumns._ID;
     public static final String COLUMN_NAME = "name";
@@ -27,29 +27,45 @@ public class StorageHelper extends SQLiteOpenHelper {
     public static final String COLUMN_START = "start";
     public static final String COLUMN_END = "end";
     public static final String COLUMN_TIME = "time";
+    public static final String COLUMN_TYPE = "type";
+    public static final String COLUMN_NOTES = "notes";
+    public static final String COLUMN_STATUS = "status";
+    public static final String COLUMN_FILE_NAME = "file_name";
+    public static final String COLUMN_PHONE_NUMBER = "phone";
+    public static final String COLUMN_EMAIL = "email";
+
     public static final String[] COLUMNS_TERM = {
         COLUMN_ID, COLUMN_NAME, COLUMN_START, COLUMN_END, COLUMN_NUMBER
 };
     public static final String TABLE_COURSE = "course";
 
     public static final String COLUMN_TERM_ID = TABLE_TERM + BaseColumns._ID;
-    public static final String COLUMN_STATUS = "status";
     public static final String[] COLUMNS_COURSE = {
-        COLUMN_ID, COLUMN_NAME, COLUMN_START, COLUMN_END, COLUMN_TERM_ID, COLUMN_STATUS
+        COLUMN_ID, COLUMN_NAME, COLUMN_START, COLUMN_END, COLUMN_TERM_ID, COLUMN_STATUS, COLUMN_NOTES
     };
     public static final String TABLE_ASSESSMENT = "assessment";
     public static final String COLUMN_COURSE_ID = TABLE_COURSE + BaseColumns._ID;
-    public static final String COLUMN_TYPE = "type";
-    public static final String COLUMN_NOTES = "notes";
 
     public static final String[] COLUMNS_ASSESSMENT = {
         COLUMN_ID, COLUMN_NAME, COLUMN_START, COLUMN_END, COLUMN_COURSE_ID, COLUMN_TYPE, COLUMN_NOTES
     };
     public static final String TABLE_PHOTO = "photo";
     public static final String COLUMN_ASSESSMENT_ID = TABLE_ASSESSMENT + BaseColumns._ID;
-    public static final String COLUMN_FILE_NAME = "file_name";
     public static final String[] COLUMNS_PHOTO = {
         COLUMN_ID, COLUMN_ASSESSMENT_ID, COLUMN_FILE_NAME
+    };
+
+    public static final String TABLE_MENTOR = "mentor";
+    public static final String COLUMN_MENTOR_ID = TABLE_MENTOR + BaseColumns._ID;
+//    public static final String COLUMN_MENTOR_NAME = "name";
+
+    public static final String[] COLUMNS_MENTOR = {
+        COLUMN_ID, COLUMN_NAME, COLUMN_PHONE_NUMBER, COLUMN_EMAIL
+    };
+
+    public static final String TABLE_COURSE_MENTOR = "course_mentor";
+    public static final String[] COLUMNS_COURSE_MENTOR = {
+        "ROWID as "+COLUMN_ID, COLUMN_COURSE_ID, COLUMN_MENTOR_ID
     };
 
     public static final String[] COLUMNS_EVENT = {
@@ -74,6 +90,8 @@ public class StorageHelper extends SQLiteOpenHelper {
         schema.add("DROP TABLE IF EXISTS "+TABLE_ASSESSMENT);
         schema.add("DROP TABLE IF EXISTS "+TABLE_COURSE);
         schema.add("DROP TABLE IF EXISTS "+TABLE_TERM);
+        schema.add("DROP TABLE IF EXISTS "+TABLE_MENTOR);
+        schema.add("DROP TABLE IF EXISTS "+TABLE_COURSE_MENTOR);
 //        schema.add("DROP TABLE IF EXISTS event");
 //        schema.add("CREATE TABLE event (_id INTEGER PRIMARY KEY, name TEXT, start INTEGER, end INTEGER)");
 //        schema.add("CREATE TABLE term (_id INTEGER PRIMARY KEY, event_id INTEGER REFERENCES event(_id))");
@@ -87,7 +105,7 @@ public class StorageHelper extends SQLiteOpenHelper {
         schema.add("CREATE TABLE "+TABLE_COURSE+ "("+COLUMN_ID+" INTEGER PRIMARY KEY AUTOINCREMENT, "+
             COLUMN_NAME+" TEXT, "+COLUMN_START+" INTEGER, "+COLUMN_END+" INTEGER, " +
             COLUMN_TERM_ID+" INTEGER REFERENCES "+TABLE_TERM+"("+COLUMN_ID+"), "+
-            COLUMN_STATUS+" INTEGER)");
+            COLUMN_STATUS+" INTEGER, "+COLUMN_NOTES+" TEXT)");
         schema.add("INSERT INTO "+TABLE_COURSE+" ("+COLUMN_ID+", "+COLUMN_NAME+", "+COLUMN_START+", "+
             COLUMN_END+", "+COLUMN_TERM_ID+", "+COLUMN_STATUS+") VALUES ("+ COURSE_ID_OFFSET +", 'B', 2, 2, "+TERM_ID_OFFSET+", 2);");
 
@@ -102,9 +120,17 @@ public class StorageHelper extends SQLiteOpenHelper {
         schema.add("CREATE TABLE "+TABLE_PHOTO+"("+COLUMN_ID+" INTEGER PRIMARY KEY AUTOINCREMENT, "+
             COLUMN_ASSESSMENT_ID+" INTEGER REFERENCES "+TABLE_ASSESSMENT+"("+COLUMN_ID+"), "+
             COLUMN_FILE_NAME+" TEXT)");
+
+        schema.add("CREATE TABLE "+TABLE_MENTOR+"("+COLUMN_ID+" INTEGER PRIMARY KEY AUTOINCREMENT, "+
+            COLUMN_NAME+" TEXT, "+COLUMN_PHONE_NUMBER+" TEXT, "+COLUMN_EMAIL+" TEXT)");
+
+        schema.add("CREATE TABLE "+TABLE_COURSE_MENTOR+"("+COLUMN_COURSE_ID+" INTEGER REFERENCES "+
+            TABLE_COURSE+"("+COLUMN_ID+"), "+COLUMN_MENTOR_ID+" INTEGER REFERENCES "+TABLE_MENTOR+"("+COLUMN_ID+
+            "), PRIMARY KEY("+COLUMN_COURSE_ID+", "+COLUMN_MENTOR_ID+"))");
         schema.add("DELETE FROM "+TABLE_ASSESSMENT+" WHERE "+COLUMN_ID+" = "+ASSESSMENT_ID_OFFSET+";");
         schema.add("DELETE FROM "+TABLE_COURSE+" WHERE "+COLUMN_ID+" = "+COURSE_ID_OFFSET+";");
         schema.add("DELETE FROM "+TABLE_TERM+" WHERE "+COLUMN_ID+" = "+TERM_ID_OFFSET+";");
+
         schema.add("CREATE VIEW "+VIEW_EVENT+" AS "+
             SELECT_EVENT_START + TABLE_TERM+" UNION "+SELECT_EVENT_END + TABLE_TERM+" UNION "+
             SELECT_EVENT_START + TABLE_COURSE+" UNION "+SELECT_EVENT_END + TABLE_COURSE + " UNION "+

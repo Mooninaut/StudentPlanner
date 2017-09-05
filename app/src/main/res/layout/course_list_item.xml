@@ -11,8 +11,8 @@
         android:id="@+id/courseNumberTextView"
         android:textStyle="bold"
         android:textSize="20sp"
-        android:layout_width="32sp"
-        android:layout_height="32sp"
+        android:layout_width="@dimen/circle_size"
+        android:layout_height="@dimen/circle_size"
         android:layout_marginLeft="@dimen/margin_medium"
         android:layout_marginStart="@dimen/margin_medium"
         android:layout_marginEnd="@dimen/margin_medium"
@@ -25,7 +25,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintRight_toLeftOf="@+id/courseNameTextView"
-        android:background="@drawable/yellow_circle"/>
+        android:background="@drawable/course_circle"/>
 
     <TextView
         android:id="@+id/courseNameTextView"
