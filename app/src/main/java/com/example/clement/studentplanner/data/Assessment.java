@@ -34,9 +34,9 @@ public class Assessment extends AcademicEvent {
         public String getString(Context context) {
             switch (value) {
                 case 1:
-                    return context.getString(R.string.assessment_performance);
+                    return context.getString(R.string.performance);
                 case 2:
-                    return context.getString(R.string.assessment_objective);
+                    return context.getString(R.string.objective);
                 default:
                     throw new IllegalStateException();
             }

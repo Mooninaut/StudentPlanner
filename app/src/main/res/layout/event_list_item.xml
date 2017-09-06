@@ -7,7 +7,7 @@
     android:orientation="vertical"
     android:id="@+id/event_list_item">
     <TextView
-        android:id="@+id/eventIdTextView"
+        android:id="@+id/event_id_text_view"
         android:textStyle="bold"
         android:textSize="20sp"
         android:layout_width="@dimen/circle_size"
@@ -23,47 +23,51 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintRight_toLeftOf="@+id/eventNameTextView"/>
+        app:layout_constraintRight_toLeftOf="@+id/event_name_text_view"/>
 
     <TextView
-        android:id="@+id/eventNameTextView"
-        android:layout_width="236dp"
-        android:layout_height="wrap_content"
-        android:textSize="18sp"
+        android:id="@+id/event_name_text_view"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:lineSpacingMultiplier="1.3"
         android:layout_marginLeft="@dimen/keyline"
         android:layout_marginStart="@dimen/keyline"
-        android:text="eventName"
+        android:layout_marginBottom="@dimen/margin_small"
+        android:layout_marginRight="@dimen/margin_medium"
+        android:layout_marginEnd="@dimen/margin_medium"
+        android:text="Event Text"
+        android:textSize="18sp"
+        android:gravity="start|center"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        tools:layout_constraintLeft_creator="1"
-        tools:layout_constraintTop_creator="1"/>
-
-
+        app:layout_constraintRight_toLeftOf="@+id/event_date_text_view"
+        android:layout_marginTop="@dimen/margin_small"/>
 
     <TextView
-        android:id="@+id/eventTypeTextView"
+        android:id="@+id/event_date_text_view"
         android:layout_width="100dp"
         android:layout_height="wrap_content"
         android:layout_marginEnd="@dimen/margin_small"
         android:layout_marginRight="@dimen/margin_small"
         android:gravity="end"
-        android:text="eventType"
+        android:text="Date"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toTopOf="@+id/eventTimeTextView"
+        app:layout_constraintBottom_toTopOf="@+id/event_time_text_view"
         />
 
     <TextView
-        android:id="@+id/eventTimeTextView"
-        android:layout_width="200dp"
+        android:id="@+id/event_time_text_view"
+        android:layout_width="100dp"
         android:layout_height="wrap_content"
         android:layout_marginEnd="@dimen/margin_small"
         android:layout_marginRight="@dimen/margin_small"
         android:gravity="end"
-        android:text="eventTime"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/eventTypeTextView"
+        android:text="Time"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/event_date_text_view"
         />
+
 </android.support.constraint.ConstraintLayout>

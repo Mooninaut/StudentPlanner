@@ -34,7 +34,8 @@ public class AssessmentDetailActivity extends AppCompatActivity {
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
 
-        Uri contentUri = getIntent().getParcelableExtra(AssessmentProvider.CONTRACT.contentItemType);
+//        Uri contentUri = getIntent().getParcelableExtra(AssessmentProvider.CONTRACT.contentItemType);
+        Uri contentUri = getIntent().getData();
 //        long assessmentId = ContentUris.parseId(contentUri);
 
         Cursor cursor = null;

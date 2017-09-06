@@ -1,5 +1,6 @@
 package com.example.clement.studentplanner;
 
+import android.app.Activity;
 import android.content.ContentUris;
 import android.content.Intent;
 import android.database.Cursor;
@@ -18,7 +19,6 @@ import android.view.View;
 
 import com.example.clement.studentplanner.database.AssessmentProvider;
 import com.example.clement.studentplanner.database.CourseCursorAdapter;
-import com.example.clement.studentplanner.database.CourseMentorProvider;
 import com.example.clement.studentplanner.database.CourseProvider;
 import com.example.clement.studentplanner.database.MentorProvider;
 import com.example.clement.studentplanner.input.AssessmentDataEntryActivity;
@@ -34,6 +34,7 @@ MentorListingFragment.HostActivity{
     private MentorListingFragment mentorFragment;
 //    private Course course;
     private Uri courseContentUri;
+    private static final int CREATE_ASSESSMENT_REQUEST_CODE = 0x66; // arbitrary
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -51,7 +52,9 @@ MentorListingFragment.HostActivity{
 
 
         if (courseContentUri == null && getIntent() != null) {
-            courseContentUri = getIntent().getParcelableExtra(CourseProvider.CONTRACT.contentItemType);
+            courseContentUri = getIntent().getData();
+//            courseContentUri = getIntent().getParcelableExtra(CourseProvider.CONTRACT.contentItemType);
+
         }
         if (courseContentUri == null && savedInstanceState != null) {
             courseContentUri = savedInstanceState.getParcelable(CourseProvider.CONTRACT.contentItemType);
@@ -59,7 +62,7 @@ MentorListingFragment.HostActivity{
         if (courseContentUri == null) {
             throw new NullPointerException();
         }
-        setCourse(courseContentUri);
+        initializeCourseView(courseContentUri);
         long courseId = ContentUris.parseId(courseContentUri);
 
         // Initialize assessment list fragment
@@ -80,7 +83,7 @@ MentorListingFragment.HostActivity{
         transaction.commit();
 
     }
-    protected void setCourse(Uri courseUri) {
+    protected void initializeCourseView(Uri courseUri) {
         Cursor cursor = null;
         try {
             cursor = getContentResolver().query(courseContentUri, null, null, null, null);
@@ -111,11 +114,26 @@ MentorListingFragment.HostActivity{
             case R.id.add:
                 Log.d("MainActivity", "New Assessment");
                 Intent intent = new Intent(this, AssessmentDataEntryActivity.class);
-                intent.putExtra(CourseProvider.CONTRACT.contentItemType, courseContentUri);
-                startActivity(intent);
+                intent.setAction(Intent.ACTION_INSERT);
+                intent.setData(courseContentUri);
+//                intent.putExtra(CourseProvider.CONTRACT.contentItemType, courseContentUri);
+                startActivityForResult(intent, CREATE_ASSESSMENT_REQUEST_CODE);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == CREATE_ASSESSMENT_REQUEST_CODE) {
+            if (resultCode == Activity.RESULT_OK) {
+                Uri assessmentUri = data.getData();
+                Intent intent = new Intent(this, AssessmentDetailActivity.class);
+                intent.setAction(Intent.ACTION_VIEW);
+                intent.setData(assessmentUri);
+                startActivity(intent);
+            }
         }
     }
 

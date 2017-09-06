@@ -2,6 +2,7 @@ package com.example.clement.studentplanner.database;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.support.v4.widget.CursorAdapter;
 import android.view.LayoutInflater;
@@ -27,7 +28,8 @@ import static com.example.clement.studentplanner.database.StorageHelper.COLUMN_T
 
 public class EventCursorAdapter extends CursorAdapter {
     private static final DateFormat DATE_FORMAT = DateFormat.getDateInstance();
-    private static final DateFormat DATE_TIME_FORMAT = DateFormat.getDateTimeInstance();
+    private static final DateFormat TIME_FORMAT = DateFormat.getTimeInstance(DateFormat.SHORT);
+//    private static final DateFormat TIME_FORMAT = new SimpleDateFormat("yyyy-M-d h:mm a", Locale.getDefault());
     public EventCursorAdapter(Context context, Cursor cursor, int flags) {
         super(context, cursor, flags);
     }
@@ -41,37 +43,30 @@ public class EventCursorAdapter extends CursorAdapter {
     @Override
     public void bindView(View view, Context context, Cursor cursor) {
 
-        TextView nameTV = (TextView) view.findViewById(R.id.eventNameTextView);
-        TextView eventTV = (TextView) view.findViewById(R.id.eventIdTextView);
-        TextView typeTV = (TextView) view.findViewById(R.id.eventTypeTextView);
-        TextView timeTV = (TextView) view.findViewById(R.id.eventTimeTextView);
+        TextView nameTV = (TextView) view.findViewById(R.id.event_name_text_view);
+        TextView eventTV = (TextView) view.findViewById(R.id.event_id_text_view);
+        TextView dateTV = (TextView) view.findViewById(R.id.event_date_text_view);
+        TextView timeTV = (TextView) view.findViewById(R.id.event_time_text_view);
 
         String eventName = cursor.getString(cursor.getColumnIndex(COLUMN_NAME));
 //        int eventNumber = cursor.getInt(    cursor.getColumnIndex(StorageHelper.COLUMN_NUMBER));
 //        int    eventId   = cursor.getInt(   cursor.getColumnIndex(COLUMN_ID));
         String eventType = cursor.getString(cursor.getColumnIndex(COLUMN_TYPE));
         String eventTypeIcon;
+        String beginOrEnd;
         switch (eventType) {
             case COLUMN_START:
-                eventType = context.getResources().getString(R.string.start);
+                beginOrEnd = "Start";
+//                eventType = context.getResources().getString(R.string.start);
                 eventTypeIcon = context.getResources().getString(R.string.go);
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-                    eventTV.setBackground(context.getResources().getDrawable(R.drawable.start_circle));
-                }
-                else {
-                    eventTV.setBackgroundDrawable(context.getResources().getDrawable(R.drawable.start_circle));
-                }
+                setViewBackground(eventTV, context.getResources().getDrawable(R.drawable.start_circle));
                 eventTV.setTextSize(18f);
                 break;
             case COLUMN_END:
-                eventType = context.getResources().getString(R.string.end);
+                beginOrEnd = "End";
+//                eventType = context.getResources().getString(R.string.end);
                 eventTypeIcon = context.getResources().getString(R.string.stop);
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-                    eventTV.setBackground(context.getResources().getDrawable(R.drawable.end_circle));
-                }
-                else {
-                    eventTV.setBackgroundDrawable(context.getResources().getDrawable(R.drawable.end_circle));
-                }
+                setViewBackground(eventTV, context.getResources().getDrawable(R.drawable.end_circle));
                 eventTV.setTextSize(10f);
                 break;
             default:
@@ -81,28 +76,36 @@ public class EventCursorAdapter extends CursorAdapter {
 
 //        nameTV.setText(eventName);
         eventTV.setText(eventTypeIcon);
-        typeTV.setText(eventType);
         long eventId = cursor.getLong(cursor.getColumnIndex(COLUMN_ID));
         long sourceId = EventProvider.eventToSource(eventId);
         String prefix;
-        DateFormat format;
+        boolean showTime = false;
         switch (StorageHelper.classify(sourceId)) {
             case ASSESSMENT:
-                format = DATE_TIME_FORMAT;
+                showTime = true;
                 prefix = context.getResources().getString(R.string.assessment);
                 break;
             case TERM:
-                format = DATE_FORMAT;
                 prefix = context.getResources().getString(R.string.term);
                 break;
             case COURSE:
-                format = DATE_FORMAT;
                 prefix = context.getResources().getString(R.string.course);
                 break;
             default:
                 throw new IllegalStateException("EventCursorAdapter.bindView: Unexpected event source type encountered");
         }
-        timeTV.setText(format.format(eventTime));
-        nameTV.setText(prefix+" "+eventName);
+        timeTV.setText(showTime ? TIME_FORMAT.format(eventTime) : "");
+        dateTV.setText(DATE_FORMAT.format(eventTime));
+//        nameTV.setText(prefix+" "+eventName);
+        nameTV.setText(String.format(context.getResources().getString(R.string.event_format), beginOrEnd, prefix, eventName));
+    }
+
+    public static void setViewBackground(View view, Drawable drawable) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+            view.setBackground(drawable);
+        }
+        else {
+            view.setBackgroundDrawable(drawable);
+        }
     }
 }

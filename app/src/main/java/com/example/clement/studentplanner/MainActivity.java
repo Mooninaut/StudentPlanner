@@ -1,6 +1,7 @@
 package com.example.clement.studentplanner;
 
 
+import android.app.Activity;
 import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Intent;
@@ -22,8 +23,11 @@ import com.example.clement.studentplanner.data.Assessment;
 import com.example.clement.studentplanner.data.Course;
 import com.example.clement.studentplanner.data.Term;
 import com.example.clement.studentplanner.database.AssessmentProvider;
+import com.example.clement.studentplanner.database.CourseMentorProvider;
 import com.example.clement.studentplanner.database.CourseProvider;
 import com.example.clement.studentplanner.database.EventCursorAdapter;
+import com.example.clement.studentplanner.database.MentorProvider;
+import com.example.clement.studentplanner.database.PhotoProvider;
 import com.example.clement.studentplanner.database.ProviderContract;
 import com.example.clement.studentplanner.database.StorageHelper;
 import com.example.clement.studentplanner.database.TermCursorAdapter;
@@ -44,6 +48,7 @@ public class MainActivity extends AppCompatActivity
     private final String ASSESSMENT_TAG = "assessment";
     private final String TERM_TAG = "term";
 
+    private static final int CREATE_TERM_REQUEST_CODE = 0x77; // arbitrary
 
     private final EventCursorAdapter eventCursorAdapter = new EventCursorAdapter(this, null, 0);
     private final TermCursorAdapter termCursorAdapter = new TermCursorAdapter(this, null, 0);
@@ -105,7 +110,8 @@ public class MainActivity extends AppCompatActivity
     private void launchDetailActivity(ProviderContract contract, Class activity, long id) {
         Intent intent = new Intent(this, activity);
         Uri uri = ContentUris.withAppendedId(contract.getContentUri(), id);
-        intent.putExtra(contract.getContentItemType(), uri);
+        intent.setAction(Intent.ACTION_VIEW);
+        intent.setData(uri);
         startActivity(intent);
     }
     @Override
@@ -115,7 +121,10 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
     private void addTerm() {
-        startActivity(new Intent(this, TermDataEntryActivity.class));
+        Intent intent = new Intent(this, TermDataEntryActivity.class);
+        intent.setAction(Intent.ACTION_INSERT);
+        intent.setData(TermProvider.CONTRACT.contentUri);
+        startActivityForResult(intent, CREATE_TERM_REQUEST_CODE);
     }
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -135,28 +144,27 @@ public class MainActivity extends AppCompatActivity
                 return super.onOptionsItemSelected(item);
         }
     }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == CREATE_TERM_REQUEST_CODE) {
+            if (resultCode == Activity.RESULT_OK) {
+                Uri termUri = data.getData();
+                launchTermDetailActivity(ContentUris.parseId(termUri));
+            }
+        }
+    }
+
     private void deleteSampleData() {
+        getContentResolver().delete(CourseMentorProvider.CONTRACT.contentUri, null, null);
+        getContentResolver().delete(MentorProvider.CONTRACT.contentUri, null, null);
+        getContentResolver().delete(PhotoProvider.CONTRACT.contentUri, null, null);
         getContentResolver().delete(AssessmentProvider.CONTRACT.contentUri, null, null);
         getContentResolver().delete(CourseProvider.CONTRACT.contentUri, null, null);
         getContentResolver().delete(TermProvider.CONTRACT.contentUri, null, null);
         Toast.makeText(this, "KABOOM!", Toast.LENGTH_SHORT).show();
     }
     private void insertSampleData() {
-//        int termNumber = 1;
-//        Cursor maxCursor = getContentResolver().query(TermProvider.CONTRACT.maxTermUri, null, null, null, null);
-//        if (maxCursor == null) {
-//            Toast.makeText(this, "maxCursor is null!", Toast.LENGTH_SHORT).show();
-//        } else {
-//            if (maxCursor.moveToFirst()) {
-//                if (maxCursor.getColumnIndex(COLUMN_NUMBER) >= 0) {
-//                    termNumber += maxCursor.getInt(maxCursor.getColumnIndex(COLUMN_NUMBER));
-//                }
-//                else {
-//                    Toast.makeText(this, "max column is missing!", Toast.LENGTH_SHORT).show();
-//                }
-//            }
-//            maxCursor.close();
-//        }
         deleteSampleData();
         final int terms[] = {1, 2, 3, 4, 5};
         final int courses[] = {1, 2, 3, 4, 5, 6};
@@ -167,7 +175,7 @@ public class MainActivity extends AppCompatActivity
         for (final int termNumber : terms) {
             termEnd.add(Calendar.DATE, -1);
             termEnd.set(Calendar.HOUR_OF_DAY, 23);
-            final Term term = new Term("Term " + termNumber, termStart.getTimeInMillis(), termEnd.getTimeInMillis(), termNumber);
+            final Term term = new Term(Integer.toString(termNumber), termStart.getTimeInMillis(), termEnd.getTimeInMillis(), termNumber);
             insertTerm(term);
             Calendar courseStart = (Calendar) termStart.clone();
             courseStart.set(Calendar.HOUR_OF_DAY, 6);
@@ -184,7 +192,7 @@ public class MainActivity extends AppCompatActivity
                 if (today.compareTo(courseStart) <= 0) {
                     status = Course.Status.PLANNED;
                 }
-                final Course course = new Course("Course " + termNumber + "." + courseNumber, courseStart.getTimeInMillis(), courseEnd.getTimeInMillis(), term, status, "Note.");
+                final Course course = new Course(termNumber + "." + courseNumber, courseStart.getTimeInMillis(), courseEnd.getTimeInMillis(), term, status, "Note.");
                 insertCourse(course);
                 Calendar assessmentStart = (Calendar) courseEnd.clone();
                 Calendar assessmentEnd = (Calendar) courseEnd.clone();
@@ -194,7 +202,7 @@ public class MainActivity extends AppCompatActivity
                 assessmentEnd.set(Calendar.HOUR_OF_DAY, 12);
                 for (Assessment.Type type : assessments) {
                     Assessment assessment = new Assessment(
-                        "Assessment " + termNumber + "." + courseNumber + "." + type.getString(this),
+                        termNumber + "." + courseNumber + " " + type.getString(this),
                         assessmentStart.getTimeInMillis(), assessmentEnd.getTimeInMillis(), course, type,
                         "This notes text is long and will hopefully wrap to demonstrate the capacity of the field to display multi-line text.");
                     insertAssessment(assessment);
@@ -245,11 +253,6 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
-    public void onTermListFragmentInteraction(long termId) {
-        launchTermDetailActivity(termId);
-    }
-
-    @Override
     public synchronized void onEventSelected(long sourceId) {
         switch (StorageHelper.classify(sourceId)) {
             case TERM:
@@ -286,6 +289,16 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
+    public void onTermListFragmentInteraction(long termId) {
+        launchTermDetailActivity(termId);
+    }
+
+    @Override
+    public void onCourseListFragmentInteraction(long courseId) {
+        launchCourseDetailActivity(courseId);
+    }
+
+    @Override
     public void onAssessmentListFragmentInteraction(long assessmentId) {
         launchAssessmentDetailActivity(assessmentId);
     }
@@ -318,19 +331,4 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    @Override
-    public void onCourseListFragmentInteraction(long courseId) {
-        launchCourseDetailActivity(courseId);
-    }
-
-//    @Override
-//    @NonNull
-//    public CourseCursorAdapter getCourseCursorAdapter() {
-//        return courseCursorAdapter;
-//    }
-/*    @Override
-    @NonNull
-    public AssessmentCursorAdapter getAssessmentCursorAdapter() {
-        return assessmentCursorAdapter;
-    }*/
 }

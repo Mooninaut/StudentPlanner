@@ -21,6 +21,7 @@ import com.example.clement.studentplanner.database.TermCursorAdapter;
 import com.example.clement.studentplanner.database.TermProvider;
 import com.example.clement.studentplanner.input.AssessmentDataEntryActivity;
 import com.example.clement.studentplanner.input.CourseDataEntryActivity;
+import com.example.clement.studentplanner.input.TermDataEntryActivity;
 
 /**
  * Created by Clement on 8/18/2017.
@@ -29,6 +30,8 @@ import com.example.clement.studentplanner.input.CourseDataEntryActivity;
 public class TermDetailActivity extends AppCompatActivity
     implements CourseListingFragment.HostActivity {
 
+    private static final int CREATE_COURSE_REQUEST_CODE = 0x55; // arbitrary
+    private static final int EDIT_TERM_REQUEST_CODE = 0x56;
     private CourseListingFragment fragment;
     private Uri termContentUri;
 
@@ -46,7 +49,7 @@ public class TermDetailActivity extends AppCompatActivity
         }
 
         if (termContentUri == null && getIntent() != null) {
-            termContentUri = getIntent().getParcelableExtra(TermProvider.CONTRACT.contentItemType);
+            termContentUri = getIntent().getData();
         }
         if (termContentUri == null && savedInstanceState != null) {
             termContentUri = savedInstanceState.getParcelable(TermProvider.CONTRACT.contentItemType);
@@ -110,15 +113,23 @@ public class TermDetailActivity extends AppCompatActivity
     }
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        Intent intent;
         switch(item.getItemId()) {
             case android.R.id.home:
                 finish();
                 return true;
             case R.id.add:
                 Log.d("MainActivity", "New Course");
-                Intent intent = new Intent(this, CourseDataEntryActivity.class);
-                intent.putExtra(TermProvider.CONTRACT.contentItemType, termContentUri);
-                startActivity(intent);
+                intent = new Intent(this, CourseDataEntryActivity.class);
+                intent.setAction(Intent.ACTION_INSERT);
+                intent.setData(termContentUri);
+                startActivityForResult(intent, CREATE_COURSE_REQUEST_CODE);
+                return true;
+            case R.id.edit:
+                intent = new Intent(this, TermDataEntryActivity.class);
+                intent.setAction(Intent.ACTION_EDIT);
+                intent.setData(termContentUri);
+                startActivityForResult(intent, EDIT_TERM_REQUEST_CODE);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -127,10 +138,8 @@ public class TermDetailActivity extends AppCompatActivity
     @Override
     public void onCourseListFragmentInteraction(long courseId) {
         Intent intent = new Intent(this, CourseDetailActivity.class);
-        intent.putExtra(
-            CourseProvider.CONTRACT.contentItemType,
-            CourseProvider.CONTRACT.getContentUri(courseId)
-        );
+        intent.setAction(Intent.ACTION_VIEW);
+        intent.setData(CourseProvider.CONTRACT.getContentUri(courseId));
         startActivity(intent);
     }
 

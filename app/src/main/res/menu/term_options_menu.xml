@@ -3,6 +3,10 @@
     xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:id="@+id/add"
             android:title="@string/add_course"
-            android:orderInCategory="0"
+            android:orderInCategory="100"
             app:showAsAction="always" />
+    <item android:id="@+id/edit"
+        android:title="@string/edit"
+        android:orderInCategory="200"
+        app:showAsAction="ifRoom" />
 </menu>

@@ -1,7 +1,11 @@
 package com.example.clement.studentplanner.input;
 
+import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
+import android.content.Intent;
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.ActionBar;
@@ -19,63 +23,127 @@ import android.widget.Toast;
 
 import com.example.clement.studentplanner.R;
 import com.example.clement.studentplanner.data.Term;
+import com.example.clement.studentplanner.database.TermCursorAdapter;
 import com.example.clement.studentplanner.database.TermProvider;
 
 import java.util.Calendar;
+import java.util.Date;
 
 public class TermDataEntryActivity extends AppCompatActivity implements
         TimePickerDialog.OnTimeSetListener, DatePickerDialog.OnDateSetListener {
-    private enum when { START, END }
-//    private static final String WHEN = "when";
+    private enum When { START, END }
+//    private static final String WHEN = "When";
     private Term term = new Term();
     private Calendar start = Calendar.getInstance();
     private Calendar end = Calendar.getInstance();
-    private when time;
+    private When timeWhen;
     private TextView timeView;
-    private when date;
+    private When dateWhen;
     private TextView dateView;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.term_data_entry);
 
+        Intent intent = getIntent();
+        String action = intent.getAction();
+//        if (action.equals(Intent.ACTION_INSERT)) {
+//
+//        }
+        if (action.equals(Intent.ACTION_EDIT)) {
+            editTerm(intent.getData());
+        }
+
         Toolbar myToolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(myToolbar);
         ActionBar actionBar = getSupportActionBar();
-        actionBar.setDisplayHomeAsUpEnabled(true);
+        if (actionBar != null) {
+            actionBar.setDisplayHomeAsUpEnabled(true);
+        }
     }
     public void showStartDatePickerDialog(View v) {
-        showDatePickerDialog(v, when.START);
+        showDatePickerDialog(v, When.START);
     }
     public void showEndDatePickerDialog(View v) {
-        showDatePickerDialog(v, when.END);
+        showDatePickerDialog(v, When.END);
     }
     public void showStartTimePickerDialog(View v) {
-        showTimePickerDialog(v, when.START);
+        showTimePickerDialog(v, When.START);
     }
     public void showEndTimePickerDialog(View v) {
-        showTimePickerDialog(v, when.END);
+        showTimePickerDialog(v, When.END);
     }
 
-    public void showDatePickerDialog(View v, when date) {
-        DatePickerFragment newFragment = new DatePickerFragment();
+    private void editTerm(Uri termUri) {
+        if (termUri == null) {
+            throw new NullPointerException();
+        }
+        Cursor cursor = getContentResolver().query(termUri, null, null, null, null);
+        if (cursor != null) {
+            // Retrieve Term object
+            cursor.moveToFirst();
+            Term term = TermCursorAdapter.cursorToTerm(cursor);
+            // Find date/time text views
+            TextView startDateTV = (TextView) findViewById(R.id.edit_start_date);
+            TextView startTimeTV = (TextView) findViewById(R.id.edit_start_time);
+            TextView endDateTV = (TextView) findViewById(R.id.edit_end_date);
+            TextView endTimeTV = (TextView) findViewById(R.id.edit_end_time);
+            // Set date/time values
+            start.setTimeInMillis(term.startMillis());
+            end.setTimeInMillis(term.endMillis());
+
+            Date startDate = term.startDate();
+            Date endDate = term.endDate();
+
+            java.text.DateFormat dateFormat = DateFormat.getDateFormat(this);
+            java.text.DateFormat timeFormat = DateFormat.getTimeFormat(this);
+            // Fill date/time text views
+            startDateTV.setText(dateFormat.format(startDate));
+            startTimeTV.setText(timeFormat.format(startDate));
+            endDateTV.setText(dateFormat.format(endDate));
+            endTimeTV.setText(timeFormat.format(endDate));
+
+            // Fill other views
+            EditText nameET = (EditText) findViewById(R.id.edit_name);
+            EditText numberET = (EditText) findViewById(R.id.edit_number);
+
+            nameET.setText(term.name());
+            numberET.setText(Integer.toString(term.number()));
+        }
+    }
+    public void showDatePickerDialog(View v, When dateWhen) {
+        Date date;
+        if (dateWhen == When.START) {
+            date = start.getTime();
+        }
+        else {
+            date = end.getTime();
+        }
+        DatePickerFragment newFragment = DatePickerFragment.newInstance(date);
         this.dateView = (TextView) v;
-        this.date = date;
+        this.dateWhen = dateWhen;
         newFragment.show(getSupportFragmentManager(), "datePicker");
     }
 
-    public void showTimePickerDialog(View v, when time) {
-        TimePickerFragment newFragment = new TimePickerFragment();
+    public void showTimePickerDialog(View v, When timeWhen) {
+        Date date;
+        if (timeWhen == When.START) {
+            date = start.getTime();
+        }
+        else {
+            date = end.getTime();
+        }
+        TimePickerFragment newFragment = TimePickerFragment.newInstance(date);
         this.timeView = (TextView) v;
-        this.time = time;
+        this.timeWhen = timeWhen;
         newFragment.show(getSupportFragmentManager(), "timePicker");
     }
 
     @Override
-//    public void updateDateTime(Calendar calendar, int when) {
+//    public void updateDateTime(Calendar calendar, int When) {
     public void onTimeSet(@NonNull TimePicker view, int hourOfDay, int minute) {
         Calendar calendar;
-        switch (time) {
+        switch (timeWhen) {
             case START:
                 calendar = start;
                 break;
@@ -95,7 +163,7 @@ public class TermDataEntryActivity extends AppCompatActivity implements
     @Override
     public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
         Calendar calendar;
-        switch (date) {
+        switch (dateWhen) {
             case START:
                 calendar = start;
                 break;
@@ -119,6 +187,7 @@ public class TermDataEntryActivity extends AppCompatActivity implements
         return super.onOptionsItemSelected(item);
     }
     public void createTerm(View view) {
+
         EditText name = (EditText) findViewById(R.id.edit_name);
         EditText number = (EditText) findViewById(R.id.edit_number);
         int termNumber;
@@ -139,10 +208,24 @@ public class TermDataEntryActivity extends AppCompatActivity implements
         term.startEndMillis(start.getTimeInMillis(), end.getTimeInMillis());
         term.number(termNumber);
         Log.d(TermDataEntryActivity.class.getSimpleName(), term.toString());
-        getContentResolver().insert(
-            TermProvider.CONTRACT.contentUri,
-            TermProvider.termToValues(term)
-        );
+        Intent intent = getIntent();
+        Uri resultUri = null;
+        if (intent.getAction().equals(Intent.ACTION_EDIT)) {
+            int rowsAffected = getContentResolver().update(intent.getData(), TermProvider.termToValues(term), null, null);
+            if (rowsAffected > 0) {
+                resultUri = intent.getData();
+            }
+        }
+        else if (intent.getAction().equals(Intent.ACTION_INSERT)) {
+            resultUri = getContentResolver().insert(
+                TermProvider.CONTRACT.contentUri,
+                TermProvider.termToValues(term)
+            );
+        }
+        if (resultUri != null) {
+            Intent result = new Intent("com.example.studentplanner.RESULT_TERM", resultUri);
+            setResult(Activity.RESULT_OK, result);
+        }
         finish();
     }
     public void cancel(View view) {

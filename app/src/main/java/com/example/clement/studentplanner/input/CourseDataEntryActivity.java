@@ -1,5 +1,6 @@
 package com.example.clement.studentplanner.input;
 
+import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.Intent;
@@ -157,10 +158,14 @@ public class CourseDataEntryActivity extends AppCompatActivity implements
         course.status(Course.Status.of(courseStatus));
 
         Log.d(TermDataEntryActivity.class.getSimpleName(), course.toString());
-        getContentResolver().insert(
+        Uri resultUri = getContentResolver().insert(
             CourseProvider.CONTRACT.contentUri,
             CourseProvider.courseToValues(course)
         );
+        if (resultUri != null) {
+            Intent result = new Intent("com.example.studentplanner.RESULT_COURSE", resultUri);
+            setResult(Activity.RESULT_OK, result);
+        }
         finish();
     }
     public void cancel(View view) {
