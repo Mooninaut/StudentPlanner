@@ -81,7 +81,7 @@
         app:layout_constraintTop_toBottomOf="@+id/edit_number"
         /> <!--android:theme="@style/AppTheme.EditControl"-->
 
-    <TextView
+<!--    <TextView
         android:id="@+id/edit_start_time"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -94,7 +94,7 @@
         android:text="@string/start_time"
         android:textAppearance="@style/TextAppearance.AppCompat.Medium"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/edit_start_date"/>
+        app:layout_constraintTop_toTopOf="@+id/edit_start_date"/>-->
     <!--android:theme="@style/AppTheme.EditControl"-->
     <!--android:inputType="datetime|time"-->
 
@@ -102,19 +102,24 @@
         android:id="@+id/edit_end_date"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="@dimen/keyline"
-        android:layout_marginStart="@dimen/keyline"
-        android:layout_marginTop="16dp"
         android:ems="6"
         android:onClick="showEndDatePickerDialog"
         android:text="@string/end_date"
         android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/edit_start_date"
+        app:layout_constraintRight_toRightOf="parent"
+        android:layout_marginEnd="@dimen/margin_large"
+        android:layout_marginRight="@dimen/margin_large"
+        app:layout_constraintTop_toTopOf="@+id/edit_start_date"
         />
+<!--
+    android:layout_marginLeft="@dimen/keyline"
+    android:layout_marginStart="@dimen/keyline"
+    android:layout_marginTop="16dp"
+-->
+
     <!--android:theme="@style/AppTheme.EditControl"-->
 
-    <TextView
+<!--    <TextView
         android:id="@+id/edit_end_time"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -130,7 +135,7 @@
         android:textAppearance="@style/TextAppearance.AppCompat.Medium"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/edit_start_time"
-        />
+        />-->
 
     <Button
         android:id="@+id/create_button"

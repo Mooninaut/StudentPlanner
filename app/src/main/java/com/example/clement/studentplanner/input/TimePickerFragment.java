@@ -79,7 +79,7 @@ public class TimePickerFragment extends DialogFragment /*implements TimePickerDi
         calendar.set(Calendar.HOUR_OF_DAY, hourOfDay);
         calendar.set(Calendar.MINUTE, minute);
         if (destination != null) {
-            Date date = calendar.getTime();
+            Date date = calendar.getTimeFrom();
             String result = DateFormat.getTimeFormat(getContext()).format(date);
             destination.setText(result);
         }

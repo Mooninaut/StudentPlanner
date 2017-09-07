@@ -152,10 +152,12 @@ MentorListingFragment.HostActivity{
     @Override
     public void onAssessmentListFragmentInteraction(long assessmentId) {
         Intent intent = new Intent(this, AssessmentDetailActivity.class);
-        intent.putExtra(
-            AssessmentProvider.CONTRACT.contentItemType,
-            AssessmentProvider.CONTRACT.getContentUri(assessmentId)
-        );
+        intent.setAction(Intent.ACTION_VIEW);
+        intent.setData(AssessmentProvider.CONTRACT.getContentUri(assessmentId));
+//        intent.putExtra(
+//            AssessmentProvider.CONTRACT.contentItemType,
+//            AssessmentProvider.CONTRACT.getContentUri(assessmentId)
+//        );
         startActivity(intent);
     }
 
@@ -163,14 +165,14 @@ MentorListingFragment.HostActivity{
         Intent intent = new Intent(this, AssessmentDataEntryActivity.class);
         intent.setAction(Intent.ACTION_INSERT);
         intent.setData(courseContentUri);
-        intent.putExtra(CourseProvider.CONTRACT.contentItemType, courseContentUri);
+//        intent.putExtra(CourseProvider.CONTRACT.contentItemType, courseContentUri);
         startActivity(intent);
     }
     public void addCourseMentor(View view) {
         Intent intent = new Intent(this, MentorDataEntryActivity.class);
         intent.setAction(Intent.ACTION_INSERT);
         intent.setData(courseContentUri);
-        intent.putExtra(CourseProvider.CONTRACT.contentItemType, courseContentUri);
+//        intent.putExtra(CourseProvider.CONTRACT.contentItemType, courseContentUri);
         startActivity(intent);
     }
 
@@ -178,8 +180,8 @@ MentorListingFragment.HostActivity{
     public void onMentorListFragmentInteraction(long mentorId) {
         Intent intent = new Intent(this, MentorDataEntryActivity.class);
         intent.setAction(Intent.ACTION_EDIT);
-        Uri contentUri = MentorProvider.CONTRACT.getContentUri(mentorId);
-        intent.setData(contentUri);
-        intent.putExtra(CourseProvider.CONTRACT.contentItemType, contentUri);
+//        Uri contentUri = MentorProvider.CONTRACT.getContentUri(mentorId);
+        intent.setData(MentorProvider.CONTRACT.getContentUri(mentorId));
+//        intent.putExtra(CourseProvider.CONTRACT.contentItemType, contentUri);
     }
 }

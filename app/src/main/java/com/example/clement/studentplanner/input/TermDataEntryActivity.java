@@ -2,12 +2,10 @@ package com.example.clement.studentplanner.input;
 
 import android.app.Activity;
 import android.app.DatePickerDialog;
-import android.app.TimePickerDialog;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -18,7 +16,6 @@ import android.view.View;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.TimePicker;
 import android.widget.Toast;
 
 import com.example.clement.studentplanner.R;
@@ -29,8 +26,8 @@ import com.example.clement.studentplanner.database.TermProvider;
 import java.util.Calendar;
 import java.util.Date;
 
-public class TermDataEntryActivity extends AppCompatActivity implements
-        TimePickerDialog.OnTimeSetListener, DatePickerDialog.OnDateSetListener {
+public class TermDataEntryActivity extends AppCompatActivity implements DatePickerDialog.OnDateSetListener {
+//        TimePickerDialog.OnTimeSetListener,
     private enum When { START, END }
 //    private static final String WHEN = "When";
     private Term term = new Term();
@@ -67,12 +64,12 @@ public class TermDataEntryActivity extends AppCompatActivity implements
     public void showEndDatePickerDialog(View v) {
         showDatePickerDialog(v, When.END);
     }
-    public void showStartTimePickerDialog(View v) {
-        showTimePickerDialog(v, When.START);
-    }
-    public void showEndTimePickerDialog(View v) {
-        showTimePickerDialog(v, When.END);
-    }
+//    public void showStartTimePickerDialog(View v) {
+//        showTimePickerDialog(v, When.START);
+//    }
+//    public void showEndTimePickerDialog(View v) {
+//        showTimePickerDialog(v, When.END);
+//    }
 
     private void editTerm(Uri termUri) {
         if (termUri == null) {
@@ -83,12 +80,10 @@ public class TermDataEntryActivity extends AppCompatActivity implements
             // Retrieve Term object
             cursor.moveToFirst();
             Term term = TermCursorAdapter.cursorToTerm(cursor);
-            // Find date/time text views
+            // Find date text views
             TextView startDateTV = (TextView) findViewById(R.id.edit_start_date);
-            TextView startTimeTV = (TextView) findViewById(R.id.edit_start_time);
             TextView endDateTV = (TextView) findViewById(R.id.edit_end_date);
-            TextView endTimeTV = (TextView) findViewById(R.id.edit_end_time);
-            // Set date/time values
+            // Set date values
             start.setTimeInMillis(term.startMillis());
             end.setTimeInMillis(term.endMillis());
 
@@ -96,12 +91,9 @@ public class TermDataEntryActivity extends AppCompatActivity implements
             Date endDate = term.endDate();
 
             java.text.DateFormat dateFormat = DateFormat.getDateFormat(this);
-            java.text.DateFormat timeFormat = DateFormat.getTimeFormat(this);
             // Fill date/time text views
             startDateTV.setText(dateFormat.format(startDate));
-            startTimeTV.setText(timeFormat.format(startDate));
             endDateTV.setText(dateFormat.format(endDate));
-            endTimeTV.setText(timeFormat.format(endDate));
 
             // Fill other views
             EditText nameET = (EditText) findViewById(R.id.edit_name);
@@ -112,52 +104,17 @@ public class TermDataEntryActivity extends AppCompatActivity implements
         }
     }
     public void showDatePickerDialog(View v, When dateWhen) {
-        Date date;
+        long timeInMillis;
         if (dateWhen == When.START) {
-            date = start.getTime();
+            timeInMillis = start.getTimeInMillis();
         }
         else {
-            date = end.getTime();
+            timeInMillis = end.getTimeInMillis();
         }
-        DatePickerFragment newFragment = DatePickerFragment.newInstance(date);
+        DatePickerFragment newFragment = DatePickerFragment.newInstance(timeInMillis);
         this.dateView = (TextView) v;
         this.dateWhen = dateWhen;
         newFragment.show(getSupportFragmentManager(), "datePicker");
-    }
-
-    public void showTimePickerDialog(View v, When timeWhen) {
-        Date date;
-        if (timeWhen == When.START) {
-            date = start.getTime();
-        }
-        else {
-            date = end.getTime();
-        }
-        TimePickerFragment newFragment = TimePickerFragment.newInstance(date);
-        this.timeView = (TextView) v;
-        this.timeWhen = timeWhen;
-        newFragment.show(getSupportFragmentManager(), "timePicker");
-    }
-
-    @Override
-//    public void updateDateTime(Calendar calendar, int When) {
-    public void onTimeSet(@NonNull TimePicker view, int hourOfDay, int minute) {
-        Calendar calendar;
-        switch (timeWhen) {
-            case START:
-                calendar = start;
-                break;
-            case END:
-                calendar = end;
-                break;
-            default:
-                throw new IllegalStateException();
-        }
-        calendar.set(Calendar.HOUR_OF_DAY, hourOfDay);
-        calendar.set(Calendar.MINUTE, minute);
-        calendar.set(Calendar.SECOND, 0);
-        calendar.set(Calendar.MILLISECOND, 0);
-        timeView.setText(DateFormat.getTimeFormat(this).format(calendar.getTime()));
     }
 
     @Override
