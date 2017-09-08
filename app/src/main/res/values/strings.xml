@@ -3,6 +3,10 @@
     <string name="add_course">Add Course</string>
     <string name="add_mentor">Add Mentor</string>
     <string name="add_term">Add Term</string>
+    <string name="edit_assessment">Edit Assessment</string>
+    <string name="edit_course">Edit Course</string>
+    <string name="edit_mentor">Edit Mentor</string>
+    <string name="edit_term">Edit Term</string>
     <string name="app_name">Student Calendar</string>
     <string name="assessment">Assessment</string>
     <string name="assessment_name">Assessment Name</string>

@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="@dimen/item_height"
     android:orientation="vertical"
@@ -37,12 +36,13 @@
         android:layout_marginEnd="@dimen/margin_medium"
         android:text="Event Text"
         android:textSize="18sp"
-        android:gravity="start|center"
+        android:gravity="start|center_vertical"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintRight_toLeftOf="@+id/event_date_text_view"
-        android:layout_marginTop="@dimen/margin_small"/>
+        android:layout_marginTop="@dimen/margin_small"
+        app:autoSizeTextType="uniform"/>
 
     <TextView
         android:id="@+id/event_date_text_view"

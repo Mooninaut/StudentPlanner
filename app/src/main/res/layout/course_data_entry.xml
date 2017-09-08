@@ -132,51 +132,18 @@
         android:textAppearance="@android:style/TextAppearance.Widget.EditText"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/edit_notes"
-        /> <!--android:theme="@style/AppTheme.EditControl"-->
-
-    <TextView
-        android:id="@+id/edit_start_time"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="@dimen/margin_large"
-        android:layout_marginRight="@dimen/margin_large"
-        android:layout_marginStart="@dimen/margin_large"
-        android:onClick="showStartTimePickerDialog"
-        android:text="@string/start_time"
-        android:textAppearance="@android:style/TextAppearance.Widget.EditText"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/edit_start_date"
         />
-    <!--android:theme="@style/AppTheme.EditControl"-->
-    <!--android:inputType="datetime|time"-->
+
     <TextView
         android:id="@+id/edit_end_date"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="@dimen/keyline"
-        android:layout_marginStart="@dimen/keyline"
-        android:layout_marginTop="24dp"
         android:onClick="showEndDatePickerDialog"
+        android:layout_marginRight="@dimen/margin_large"
         android:text="@string/end_date"
         android:textAppearance="@android:style/TextAppearance.Widget.EditText"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/edit_start_date"
-        />
-    <!--android:theme="@style/AppTheme.EditControl"-->
-
-    <TextView
-        android:id="@+id/edit_end_time"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="@dimen/margin_large"
-        android:layout_marginLeft="@dimen/margin_large"
-        android:layout_marginStart="@dimen/margin_large"
-        android:onClick="showEndTimePickerDialog"
-
-        android:text="@string/end_time"
-        android:textAppearance="@android:style/TextAppearance.Widget.EditText"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/edit_end_date"
+        app:layout_constraintTop_toTopOf="@+id/edit_start_date"
         />
 
     <TextView
@@ -190,7 +157,7 @@
         android:textAppearance="@style/TextAppearance.AppCompat.Medium"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/edit_end_date"/>
-<!--android:theme="@style/AppTheme.EditControl"-->
+
     <Spinner
         android:id="@+id/spinner_course_status"
         android:layout_width="wrap_content"
@@ -201,8 +168,7 @@
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toTopOf="@+id/label_course_status"/>
-    <!--app:layout_constraintRight_toRightOf="parent"-->
-    <!--android:theme="@style/AppTheme.EditControl"-->
+
     <Button
         android:id="@+id/create_button"
         android:layout_width="0dp"

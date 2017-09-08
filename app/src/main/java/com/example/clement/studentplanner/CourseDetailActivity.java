@@ -7,13 +7,10 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 
@@ -65,28 +62,29 @@ MentorListingFragment.HostActivity{
         initializeCourseView(courseContentUri);
         long courseId = ContentUris.parseId(courseContentUri);
 
+        FragmentManager fragmentManager = getSupportFragmentManager();
+
         // Initialize assessment list fragment
         Uri assessmentContentUri = AssessmentProvider.CONTRACT.getCourseUri(courseId);
 
         assessmentFragment = AssessmentListingFragment.newInstance(assessmentContentUri);
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        FragmentTransaction transaction = fragmentManager.beginTransaction();
-        transaction.replace(R.id.assessment_list_fragment, assessmentFragment);
-        transaction.commit();
+        fragmentManager.beginTransaction()
+            .replace(R.id.assessment_list_fragment, assessmentFragment)
+            .commit();
 
         // Initialize mentor list fragment
-        Uri mentorContentUri = MentorProvider.CONTRACT.getContentUri(courseId);
+        Uri mentorContentUri = MentorProvider.CONTRACT.getCourseUri(courseId);
 
         mentorFragment = MentorListingFragment.newInstance(mentorContentUri);
-        transaction = fragmentManager.beginTransaction();
-        transaction.replace(R.id.mentor_list_fragment, mentorFragment);
-        transaction.commit();
+        fragmentManager.beginTransaction()
+            .replace(R.id.mentor_list_fragment, mentorFragment)
+            .commit();
 
     }
     protected void initializeCourseView(Uri courseUri) {
         Cursor cursor = null;
         try {
-            cursor = getContentResolver().query(courseContentUri, null, null, null, null);
+            cursor = getContentResolver().query(courseUri, null, null, null, null);
             if (cursor != null && cursor.moveToFirst()) {
                 // Initialize course view
                 CourseCursorAdapter courseAdapter = new CourseCursorAdapter(this, cursor, 0);
@@ -100,11 +98,11 @@ MentorListingFragment.HostActivity{
             }
         }
     }
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.course_options_menu, menu);
-        return true;
-    }
+//    public boolean onCreateOptionsMenu(Menu menu) {
+//        MenuInflater inflater = getMenuInflater();
+//        inflater.inflate(R.menu.course_options_menu, menu);
+//        return true;
+//    }
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch(item.getItemId()) {

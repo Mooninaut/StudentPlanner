@@ -14,8 +14,6 @@ import android.widget.TextView;
 import com.example.clement.studentplanner.R;
 import com.example.clement.studentplanner.data.CourseMentor;
 
-import java.text.DateFormat;
-
 import static com.example.clement.studentplanner.database.StorageHelper.COLUMN_EMAIL;
 import static com.example.clement.studentplanner.database.StorageHelper.COLUMN_ID;
 import static com.example.clement.studentplanner.database.StorageHelper.COLUMN_NAME;
@@ -27,7 +25,6 @@ import static com.example.clement.studentplanner.database.StorageHelper.COLUMN_P
 
 public class MentorCursorAdapter extends CursorAdapter {
 
-    private static DateFormat dateFormat = DateFormat.getDateInstance();
     public MentorCursorAdapter(Context context, Cursor cursor, int flags) {
         super(context, cursor, flags);
     }
@@ -50,8 +47,8 @@ public class MentorCursorAdapter extends CursorAdapter {
         TextView phoneTV = (TextView) view.findViewById(R.id.mentor_phone_number_text_view);
 
         nameTV.setText(courseMentor.name());
-        emailTV.setText(dateFormat.format(courseMentor.emailAddress()));
-        phoneTV.setText(dateFormat.format(courseMentor.phoneNumber()));
+        emailTV.setText(courseMentor.emailAddress());
+        phoneTV.setText(courseMentor.phoneNumber());
 
     }
 

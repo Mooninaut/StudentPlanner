@@ -17,8 +17,6 @@ import android.widget.ListView;
 
 import com.example.clement.studentplanner.database.MentorCursorAdapter;
 import com.example.clement.studentplanner.database.MentorProvider;
-import com.example.clement.studentplanner.database.TermCursorAdapter;
-import com.example.clement.studentplanner.database.TermProvider;
 
 /**
  * A fragment representing a list of Terms.
@@ -49,10 +47,6 @@ public class MentorListingFragment extends Fragment {
         return fragment;
     }
 
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-    }
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);

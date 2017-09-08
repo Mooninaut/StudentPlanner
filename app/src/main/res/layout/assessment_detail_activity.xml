@@ -5,7 +5,7 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/colorAssessment"
+    android:background="@color/colorAssessmentBackground"
     android:id="@+id/assessment_detail">
     <include layout="@layout/toolbar"
         android:id="@+id/toolbar"
@@ -53,14 +53,19 @@
     <TextView
         android:id="@+id/assessment_name_text_view"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:textSize="18sp"
+        android:layout_height="0dp"
+        android:textAppearance="@style/TextAppearance.AppCompat.Inverse"
         android:layout_marginLeft="@dimen/keyline"
         android:layout_marginStart="@dimen/keyline"
         android:text="assessmentName"
+        android:gravity="start|center_vertical"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/toolbar"
-        app:layout_constraintBottom_toTopOf="@+id/nested_view"/>
+        app:layout_constraintBottom_toTopOf="@+id/nested_view"
+        app:layout_constraintRight_toLeftOf="@+id/assessment_start_text_view"
+        app:autoSizeTextType="uniform"
+        app:autoSizeMinTextSize="12sp"
+        app:autoSizeMaxTextSize="36sp"/>
 
     <TextView
         android:id="@+id/assessment_start_text_view"
@@ -68,6 +73,7 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="@dimen/margin_small"
         android:layout_marginRight="@dimen/margin_small"
+        android:textAppearance="@style/TextAppearance.AppCompat.Inverse"
         android:gravity="end"
         android:text="assessmentStart"
         android:layout_margin="@dimen/margin_large"
@@ -80,6 +86,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/margin_large"
+        android:textAppearance="@style/TextAppearance.AppCompat.Inverse"
         android:gravity="end"
         android:text="assessmentEnd"
         app:layout_constraintRight_toRightOf="parent"

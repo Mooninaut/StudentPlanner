@@ -5,6 +5,7 @@ import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.UriMatcher;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -142,6 +143,60 @@ public class CourseMentorProvider extends ContentProviderBase {
             cursor.setNotificationUri(resolver, uri);
         }
         return cursor;
+    }
+
+    @Override
+    public int delete(@NonNull Uri uri, @Nullable String selection, @Nullable String[] selectionArgs) {
+        int result;
+        SQLiteDatabase db = getWritableDatabase();
+        switch(uriMatcher.match(uri)) {
+            case COURSE_MENTOR_ALL:
+                result = db.delete(TABLE_COURSE_MENTOR, null, null);
+                if (result > 0) {
+                    notifyChange(uri);
+                    notifyChange(MentorProvider.CONTRACT.courseUri);
+                }
+                break;
+            case COURSE_MENTOR_MENTOR_ID:
+                long mentorId = ContentUris.parseId(uri);
+                result = db.delete(TABLE_COURSE_MENTOR, COLUMN_MENTOR_ID+"="+mentorId, null);
+                if (result > 0) {
+                    notifyChange(uri);
+                    notifyChange(MentorProvider.CONTRACT.courseUri);
+                }
+                break;
+            case COURSE_MENTOR_COURSE_ID:
+                long courseId = ContentUris.parseId(uri);
+                result = db.delete(TABLE_COURSE_MENTOR, COLUMN_COURSE_ID+"="+courseId, null);
+                if (result > 0) {
+                    notifyChange(uri);
+                    notifyChange(MentorProvider.CONTRACT.getCourseUri(courseId));
+                }
+                break;
+            case COURSE_MENTOR_ID_COURSE_ID:
+                List<String> segments = uri.getPathSegments();
+                if (segments.get(0).equalsIgnoreCase(CONTRACT.courseMentorPath)) {
+                    String[] mentorCursorIds = new String[] { segments.get(1), segments.get(2) };
+                    result = db.delete(TABLE_COURSE_MENTOR, COLUMN_MENTOR_ID+"= ? AND "+COLUMN_COURSE_ID+"= ?", mentorCursorIds);
+                    if (result > 0) {
+                        notifyChange(uri);
+                        notifyChange(MentorProvider.CONTRACT.getCourseUri(Long.valueOf(mentorCursorIds[1])));
+                    }
+                }
+            default:
+                throw new IllegalStateException();
+        }
+        return result;
+    }
+
+    @Nullable
+    @Override
+    public Uri insert(@NonNull Uri uri, @Nullable ContentValues values) {
+        Uri result = super.insert(uri, values);
+        if (result != null) {
+            notifyChange(MentorProvider.CONTRACT.getCourseUri(values.getAsLong(COLUMN_COURSE_ID)));
+        }
+        return result;
     }
 
     @Nullable

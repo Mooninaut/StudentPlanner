@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -26,6 +27,11 @@ import com.example.clement.studentplanner.database.TermProvider;
 import java.util.Calendar;
 import java.util.Date;
 
+/**
+ * Activity to enter a new Term or edit an existing one.
+ * To call, setAction({@link Intent}.ACTION_INSERT), or both setAction(Intent.ACTION_EDIT)
+ * and setData(someTermContentUri).
+ */
 public class TermDataEntryActivity extends AppCompatActivity implements DatePickerDialog.OnDateSetListener {
 //        TimePickerDialog.OnTimeSetListener,
     private enum When { START, END }
@@ -33,8 +39,6 @@ public class TermDataEntryActivity extends AppCompatActivity implements DatePick
     private Term term = new Term();
     private Calendar start = Calendar.getInstance();
     private Calendar end = Calendar.getInstance();
-    private When timeWhen;
-    private TextView timeView;
     private When dateWhen;
     private TextView dateView;
     @Override
@@ -44,11 +48,16 @@ public class TermDataEntryActivity extends AppCompatActivity implements DatePick
 
         Intent intent = getIntent();
         String action = intent.getAction();
-//        if (action.equals(Intent.ACTION_INSERT)) {
-//
-//        }
-        if (action.equals(Intent.ACTION_EDIT)) {
-            editTerm(intent.getData());
+        if (action.equals(Intent.ACTION_INSERT)) {
+            setTitle(R.string.add_term);
+        }
+        else if (action.equals(Intent.ACTION_EDIT)) {
+            setTitle(R.string.edit_term);
+            Uri termUri = intent.getData();
+            if (termUri == null) {
+                throw new NullPointerException();
+            }
+            editTerm(termUri);
         }
 
         Toolbar myToolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -64,45 +73,7 @@ public class TermDataEntryActivity extends AppCompatActivity implements DatePick
     public void showEndDatePickerDialog(View v) {
         showDatePickerDialog(v, When.END);
     }
-//    public void showStartTimePickerDialog(View v) {
-//        showTimePickerDialog(v, When.START);
-//    }
-//    public void showEndTimePickerDialog(View v) {
-//        showTimePickerDialog(v, When.END);
-//    }
 
-    private void editTerm(Uri termUri) {
-        if (termUri == null) {
-            throw new NullPointerException();
-        }
-        Cursor cursor = getContentResolver().query(termUri, null, null, null, null);
-        if (cursor != null) {
-            // Retrieve Term object
-            cursor.moveToFirst();
-            Term term = TermCursorAdapter.cursorToTerm(cursor);
-            // Find date text views
-            TextView startDateTV = (TextView) findViewById(R.id.edit_start_date);
-            TextView endDateTV = (TextView) findViewById(R.id.edit_end_date);
-            // Set date values
-            start.setTimeInMillis(term.startMillis());
-            end.setTimeInMillis(term.endMillis());
-
-            Date startDate = term.startDate();
-            Date endDate = term.endDate();
-
-            java.text.DateFormat dateFormat = DateFormat.getDateFormat(this);
-            // Fill date/time text views
-            startDateTV.setText(dateFormat.format(startDate));
-            endDateTV.setText(dateFormat.format(endDate));
-
-            // Fill other views
-            EditText nameET = (EditText) findViewById(R.id.edit_name);
-            EditText numberET = (EditText) findViewById(R.id.edit_number);
-
-            nameET.setText(term.name());
-            numberET.setText(Integer.toString(term.number()));
-        }
-    }
     public void showDatePickerDialog(View v, When dateWhen) {
         long timeInMillis;
         if (dateWhen == When.START) {
@@ -115,6 +86,42 @@ public class TermDataEntryActivity extends AppCompatActivity implements DatePick
         this.dateView = (TextView) v;
         this.dateWhen = dateWhen;
         newFragment.show(getSupportFragmentManager(), "datePicker");
+    }
+
+    private void editTerm(@NonNull Uri termUri) {
+        Cursor cursor = null;
+        try {
+            cursor = getContentResolver().query(termUri, null, null, null, null);
+            if (cursor != null && cursor.moveToFirst()) {
+                // Retrieve Term object
+                Term term = TermCursorAdapter.cursorToTerm(cursor);
+                // Find date text views
+                TextView startDateTV = (TextView) findViewById(R.id.edit_start_date);
+                TextView endDateTV = (TextView) findViewById(R.id.edit_end_date);
+                // Set date values
+                start.setTimeInMillis(term.startMillis());
+                end.setTimeInMillis(term.endMillis());
+
+                Date startDate = term.startDate();
+                Date endDate = term.endDate();
+
+                java.text.DateFormat dateFormat = DateFormat.getDateFormat(this);
+                // Fill date/time text views
+                startDateTV.setText(dateFormat.format(startDate));
+                endDateTV.setText(dateFormat.format(endDate));
+
+                // Fill other views
+                EditText nameET = (EditText) findViewById(R.id.edit_name);
+                EditText numberET = (EditText) findViewById(R.id.edit_number);
+
+                nameET.setText(term.name());
+                numberET.setText(Integer.toString(term.number()));
+            }
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
     }
 
     @Override

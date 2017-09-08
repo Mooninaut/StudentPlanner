@@ -4,6 +4,7 @@
     <dimen name="item_width">200dp</dimen>
     <dimen name="text_margin">16dp</dimen>
     <dimen name="margin_small">8dp</dimen>
+    <dimen name="margin_tiny">1dp</dimen>
     <dimen name="margin_medium">12dp</dimen>
     <dimen name="margin_large">16dp</dimen>
     <dimen name="margin_section">32dp</dimen>

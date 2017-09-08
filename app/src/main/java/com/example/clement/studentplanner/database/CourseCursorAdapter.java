@@ -55,10 +55,10 @@ public class CourseCursorAdapter extends CursorAdapter {
 
         Course course = cursorToCourse(cursor);
         Log.d("CourseCursorAdapter", "Id: "+course.id()+" termId: "+course.termId());
-        TextView nameTV = (TextView) view.findViewById(R.id.courseNameTextView);
-        TextView numberTV = (TextView) view.findViewById(R.id.courseNumberTextView);
-        TextView startTV = (TextView) view.findViewById(R.id.courseStartTextView);
-        TextView endTV = (TextView) view.findViewById(R.id.courseEndTextView);
+        TextView nameTV = (TextView) view.findViewById(R.id.course_name_text_view);
+        TextView numberTV = (TextView) view.findViewById(R.id.course_number_text_view);
+        TextView startTV = (TextView) view.findViewById(R.id.course_start_text_view);
+        TextView endTV = (TextView) view.findViewById(R.id.course_end_text_view);
 
         nameTV.setText(course.name());
         numberTV.setText(String.format(Locale.getDefault(), "%d", cursor.getPosition() + 1));

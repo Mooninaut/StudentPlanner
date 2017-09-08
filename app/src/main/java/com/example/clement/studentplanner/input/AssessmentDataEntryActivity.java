@@ -25,7 +25,6 @@ import com.example.clement.studentplanner.data.Assessment;
 import com.example.clement.studentplanner.data.Course;
 import com.example.clement.studentplanner.database.AssessmentProvider;
 import com.example.clement.studentplanner.database.CourseCursorAdapter;
-import com.example.clement.studentplanner.database.CourseProvider;
 
 import java.util.Calendar;
 
@@ -47,20 +46,26 @@ public class AssessmentDataEntryActivity extends AppCompatActivity implements
         super.onCreate(savedInstanceState);
         setContentView(R.layout.assessment_data_entry);
         Intent intent = getIntent();
-        courseUri = intent.getParcelableExtra(CourseProvider.CONTRACT.contentItemType);
-        Cursor cursor = null;
-        try {
-            cursor = getContentResolver().query(courseUri, null, null, null, null);
-            if (cursor != null && cursor.moveToFirst()) {
-                // Initialize course view
-                CourseCursorAdapter courseAdapter = new CourseCursorAdapter(this, cursor, 0);
-                courseAdapter.bindView(findViewById(R.id.course_list_item), this, cursor);
-                course = courseAdapter.getItem(0);
+        String action = intent.getAction();
+        if (action.equals(Intent.ACTION_INSERT)) {
+            courseUri = intent.getData();
+            Cursor cursor = null;
+            try {
+                cursor = getContentResolver().query(courseUri, null, null, null, null);
+                if (cursor != null && cursor.moveToFirst()) {
+                    // Initialize course view
+                    CourseCursorAdapter courseAdapter = new CourseCursorAdapter(this, cursor, 0);
+                    courseAdapter.bindView(findViewById(R.id.course_list_item), this, cursor);
+                    course = courseAdapter.getItem(0);
+                }
+            } finally {
+                if (cursor != null) {
+                    cursor.close();
+                }
             }
-        } finally {
-            if (cursor != null) {
-                cursor.close();
-            }
+        }
+        else if (action.equals(Intent.ACTION_EDIT)) {
+            throw new UnsupportedOperationException(); // TODO
         }
         Toolbar myToolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(myToolbar);

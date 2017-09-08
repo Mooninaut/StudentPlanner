@@ -6,16 +6,30 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:id="@+id/course_detail"
-    android:background="@color/colorCourse">
+    android:background="@color/colorLightGray"
+    >
+    <View
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="@color/colorCourseBackground"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/toolbar"
+        app:layout_constraintBottom_toTopOf="@+id/mentor_header"
+        android:layout_marginTop="@dimen/margin_tiny"
+        android:layout_marginBottom="@dimen/margin_tiny"
+
+        />
     <include layout="@layout/toolbar"
         android:id="@+id/toolbar"
         android:layout_height="wrap_content"
         android:layout_width="0dp"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"/>
+        app:layout_constraintRight_toRightOf="parent"
+        />
     <TextView
-        android:id="@+id/courseNumberTextView"
+        android:id="@+id/course_number_text_view"
         android:textSize="20sp"
         android:layout_width="32dp"
         android:layout_height="32dp"
@@ -27,7 +41,7 @@
         android:background="@drawable/white_circle"
         android:textColor="@color/colorDarkGray"
         android:textStyle="bold"
-        app:layout_constraintRight_toLeftOf="@+id/courseNameTextView"
+        app:layout_constraintRight_toLeftOf="@+id/course_name_text_view"
         android:text="12"
         app:layout_constraintBottom_toTopOf="@+id/mentor_header"
         app:layout_constraintLeft_toLeftOf="parent"
@@ -35,24 +49,30 @@
         />
 
     <TextView
-        android:id="@+id/courseNameTextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:id="@+id/course_name_text_view"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
         android:layout_marginEnd="@dimen/margin_large"
         android:layout_marginLeft="@dimen/keyline"
         android:layout_marginRight="@dimen/margin_large"
         android:layout_marginStart="@dimen/keyline"
         android:text="courseName"
+        android:layout_marginTop="@dimen/margin_small"
+        android:layout_marginBottom="@dimen/margin_small"
         android:textSize="30sp"
+        android:gravity="start|center_vertical"
         android:textAppearance="@style/TextAppearance.AppCompat.Inverse"
         app:layout_constraintBottom_toTopOf="@+id/mentor_header"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toLeftOf="@+id/courseStartTextView"
+        app:layout_constraintRight_toLeftOf="@+id/course_start_text_view"
         app:layout_constraintTop_toBottomOf="@+id/toolbar"
-        app:layout_constraintHorizontal_bias="0.0"/>
+        app:layout_constraintHorizontal_bias="0.0"
+        app:autoSizeTextType="uniform"
+        app:autoSizeMinTextSize="12sp"
+        app:autoSizeMaxTextSize="36sp"/>
 
     <TextView
-        android:id="@+id/courseStartTextView"
+        android:id="@+id/course_start_text_view"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginEnd="@dimen/margin_large"
@@ -66,7 +86,7 @@
         />
 
     <TextView
-        android:id="@+id/courseEndTextView"
+        android:id="@+id/course_end_text_view"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginEnd="@dimen/margin_large"
@@ -76,7 +96,7 @@
         android:gravity="end"
         android:text="courseEnd"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/courseStartTextView"
+        app:layout_constraintTop_toBottomOf="@+id/course_start_text_view"
         />
     <TextView
         android:id="@+id/mentor_header"
@@ -85,13 +105,13 @@
         android:layout_marginTop="@dimen/margin_large"
         android:padding="@dimen/margin_small"
         android:textAlignment="center"
-        android:background="@color/colorAccent"
+        android:background="@color/colorMentorBackground"
         android:layout_height="wrap_content"
         android:textAppearance="@style/TextAppearance.AppCompat.Inverse"
         android:text="Course Mentors"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/courseEndTextView"/>
+        app:layout_constraintTop_toBottomOf="@+id/course_end_text_view"/>
     <FrameLayout
         android:id="@+id/mentor_list_fragment"
         app:layout_constraintTop_toBottomOf="@+id/mentor_header"

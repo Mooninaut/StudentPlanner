@@ -4,10 +4,15 @@
     <color name="colorPrimaryDark">#303F9F</color> <!--Material Indigo 700-->
     <color name="colorAccent">#304ffe</color> <!-- Material Indigo A700 -->
     <color name="colorLightGray">#e0e0e0</color>
+    <color name="colorMediumGray">#d0d0d0</color>
     <color name="colorTerm">#5c6bbf</color> <!-- Material Indigo 400 -->
     <color name="colorCourse">#558B2F</color> <!-- Material Light Green 800 -->
+    <color name="colorCourseBackground">#628c46</color>
     <color name="colorAssessment">#F57F17</color> <!-- Material Yellow 900 -->
+    <color name="colorAssessmentBackground">#ff7e47</color>
     <color name="colorEnd">#B71C1C</color> <!-- Material Red 900 -->
+    <color name="colorMentor">#366c99</color>
+    <color name="colorMentorBackground">#447aa6</color>
     <color name="colorStart">#2E7D32</color> <!-- Material Green 800 -->
     <color name="editControlBackground">#e0e0e0</color>
     <color name="colorDarkGray">#303030</color>

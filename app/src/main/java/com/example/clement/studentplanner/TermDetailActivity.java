@@ -8,7 +8,6 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v4.app.NavUtils;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -19,7 +18,6 @@ import android.view.MenuItem;
 import com.example.clement.studentplanner.database.CourseProvider;
 import com.example.clement.studentplanner.database.TermCursorAdapter;
 import com.example.clement.studentplanner.database.TermProvider;
-import com.example.clement.studentplanner.input.AssessmentDataEntryActivity;
 import com.example.clement.studentplanner.input.CourseDataEntryActivity;
 import com.example.clement.studentplanner.input.TermDataEntryActivity;
 
@@ -62,21 +60,13 @@ public class TermDetailActivity extends AppCompatActivity
         long termId = ContentUris.parseId(termContentUri);
         Uri courseContentUri = ContentUris.withAppendedId(CourseProvider.CONTRACT.termUri, termId);
 
-//        Cursor courseCursor = getContentResolver().query(courseContentUri, null, null, null, null);
-//        courseCursorAdapter = new CourseCursorAdapter(this, courseCursor, 0);
-
         fragment = CourseListingFragment.newInstance(courseContentUri);
-//        fragment = new CourseListingFragment();
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction transaction = fragmentManager.beginTransaction();
         transaction.replace(R.id.course_list_fragment, fragment);
         transaction.commit();
 
-        // Course list below
-//        CourseRecyclerAdapter courseRecyclerAdapter = new CourseRecyclerAdapter(courseCursorAdapter, this, false);
-//        RecyclerView recyclerView = (RecyclerView) findViewById(R.id.course_listing_list);
-//        assert recyclerView != null;
-//        recyclerView.setAdapter(courseRecyclerAdapter);
+
 
     }
 

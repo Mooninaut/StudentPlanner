@@ -8,27 +8,19 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.util.Log;
 
 import com.example.clement.studentplanner.data.CourseMentor;
-import com.example.clement.studentplanner.data.Term;
 
 import static android.content.ContentResolver.SCHEME_CONTENT;
-import static com.example.clement.studentplanner.database.StorageHelper.COLUMNS_EVENT;
 import static com.example.clement.studentplanner.database.StorageHelper.COLUMNS_MENTOR;
-import static com.example.clement.studentplanner.database.StorageHelper.COLUMNS_TERM;
 import static com.example.clement.studentplanner.database.StorageHelper.COLUMN_COURSE_ID;
 import static com.example.clement.studentplanner.database.StorageHelper.COLUMN_EMAIL;
-import static com.example.clement.studentplanner.database.StorageHelper.COLUMN_END;
 import static com.example.clement.studentplanner.database.StorageHelper.COLUMN_ID;
 import static com.example.clement.studentplanner.database.StorageHelper.COLUMN_MENTOR_ID;
 import static com.example.clement.studentplanner.database.StorageHelper.COLUMN_NAME;
-import static com.example.clement.studentplanner.database.StorageHelper.COLUMN_NUMBER;
 import static com.example.clement.studentplanner.database.StorageHelper.COLUMN_PHONE_NUMBER;
-import static com.example.clement.studentplanner.database.StorageHelper.COLUMN_START;
 import static com.example.clement.studentplanner.database.StorageHelper.TABLE_COURSE_MENTOR;
 import static com.example.clement.studentplanner.database.StorageHelper.TABLE_MENTOR;
-import static com.example.clement.studentplanner.database.StorageHelper.TABLE_TERM;
 
 
 /**
@@ -50,6 +42,12 @@ public class MentorProvider extends ContentProviderBase {
         public String getContentItemType() {
             return contentItemType;
         }
+        public Uri getCourseUri() {
+            return courseUri;
+        }
+        public Uri getCourseUri(long id) {
+            return ContentUris.withAppendedId(courseUri, id);
+        }
         @Override
         public String getAuthority() {
             return authority;
@@ -61,23 +59,28 @@ public class MentorProvider extends ContentProviderBase {
 
         public final String authority = "com.example.clement.studentplanner.mentorprovider";
         public final String basePath = "mentor";
+        public final String coursePath = "course";
         public final Uri contentUri;
+        public final Uri courseUri;
         public final String contentItemType = "CourseMentor";
         CourseMentorContract() {
             Uri.Builder builder = new Uri.Builder()
                 .scheme(SCHEME_CONTENT)
                 .authority(authority);
             contentUri = builder.path(basePath).build();
+            courseUri = builder.path(coursePath).build();
         }
     }
 
     private static final int MENTOR_ALL = 1;
     private static final int MENTOR_ID = 2;
+    private static final int MENTOR_COURSE_ID = 3;
 
     private static final UriMatcher uriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
     public static final CourseMentorContract CONTRACT = CourseMentorContract.INSTANCE;
     static {
         uriMatcher.addURI(CONTRACT.authority, CONTRACT.basePath + "/#", MENTOR_ID);
+        uriMatcher.addURI(CONTRACT.authority, CONTRACT.coursePath + "/#", MENTOR_COURSE_ID);
         uriMatcher.addURI(CONTRACT.authority, CONTRACT.basePath, MENTOR_ALL);
     }
     @Override
@@ -105,6 +108,18 @@ public class MentorProvider extends ContentProviderBase {
                     null,
                     null,
                     COLUMN_ID + " ASC"
+                );
+                if (cursor != null) {
+                    cursor.setNotificationUri(resolver, uri);
+                }
+                break;
+            case MENTOR_COURSE_ID:
+                long courseId = ContentUris.parseId(uri);
+                cursor = getReadableDatabase().rawQuery("SELECT "+COLUMN_ID+","+COLUMN_NAME+","
+                    +COLUMN_PHONE_NUMBER+","+COLUMN_EMAIL+" FROM "+TABLE_MENTOR+" JOIN "
+                    +TABLE_COURSE_MENTOR+" ON "+TABLE_MENTOR+"."+COLUMN_ID+" = "+TABLE_COURSE_MENTOR
+                    +"."+COLUMN_MENTOR_ID+" WHERE "+TABLE_COURSE_MENTOR+"."+COLUMN_COURSE_ID+" = ?",
+                    new String[] { Long.toString(courseId) }
                 );
                 if (cursor != null) {
                     cursor.setNotificationUri(resolver, uri);

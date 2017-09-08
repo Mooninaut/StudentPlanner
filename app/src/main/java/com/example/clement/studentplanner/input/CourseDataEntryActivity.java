@@ -2,7 +2,6 @@ package com.example.clement.studentplanner.input;
 
 import android.app.Activity;
 import android.app.DatePickerDialog;
-import android.app.TimePickerDialog;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
@@ -13,42 +12,91 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.format.DateFormat;
 import android.util.Log;
+import android.util.SparseIntArray;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.TimePicker;
 
 import com.example.clement.studentplanner.R;
 import com.example.clement.studentplanner.data.Course;
 import com.example.clement.studentplanner.data.Term;
+import com.example.clement.studentplanner.database.CourseCursorAdapter;
 import com.example.clement.studentplanner.database.CourseProvider;
 import com.example.clement.studentplanner.database.TermCursorAdapter;
 import com.example.clement.studentplanner.database.TermProvider;
 
 import java.util.Calendar;
+import java.util.Date;
 
-public class CourseDataEntryActivity extends AppCompatActivity implements
-        TimePickerDialog.OnTimeSetListener, DatePickerDialog.OnDateSetListener {
-    private enum when { START, END }
-//    private static final String WHEN = "when";
+public class CourseDataEntryActivity extends AppCompatActivity implements DatePickerDialog.OnDateSetListener {
+    private enum When { START, END }
+//    private static final String WHEN = "When";
     private Course course = new Course();
     private Calendar start = Calendar.getInstance();
     private Calendar end = Calendar.getInstance();
-    private when time;
+    private When time;
     private TextView timeView;
-    private when date;
+    private When date;
     private TextView dateView;
-    private Uri termUri;
-    private Term term;
+    SparseIntArray statusToSpinnerPosition;
+    Term term;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.course_data_entry);
         Intent intent = getIntent();
-        termUri = intent.getParcelableExtra(TermProvider.CONTRACT.contentItemType);
+        String action = intent.getAction();
+        int[] spinnerPositionToStatus = getResources().getIntArray(R.array.course_status_id);
+        statusToSpinnerPosition = new SparseIntArray(spinnerPositionToStatus.length);
+        for (int i = 0; i < spinnerPositionToStatus.length; ++i) {
+            statusToSpinnerPosition.append(spinnerPositionToStatus[i], i);
+        }
+        Uri termUri = null;
+        if (action.equals(Intent.ACTION_INSERT)) {
+            setTitle(R.string.add_course);
+            termUri = intent.getData();
+        }
+        else if (action.equals(Intent.ACTION_EDIT)) {
+            setTitle(R.string.edit_course);
+            Uri courseUri = intent.getData();
+            if (courseUri == null) {
+                throw new NullPointerException();
+            }
+            course = editCourse(intent.getData());
+            termUri = TermProvider.CONTRACT.getContentUri(course.termId());
+        }
+        else {
+            throw new IllegalStateException();
+        }
+        term = setTermView(termUri);
+
+        Toolbar myToolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(myToolbar);
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.setDisplayHomeAsUpEnabled(true);
+        }
+    }
+    public void showStartDatePickerDialog(View v) {
+        showDatePickerDialog(v, When.START);
+    }
+    public void showEndDatePickerDialog(View v) {
+        showDatePickerDialog(v, When.END);
+    }
+
+    public void showDatePickerDialog(View v, When date) {
+        DatePickerFragment newFragment = new DatePickerFragment();
+        this.dateView = (TextView) v;
+        this.date = date;
+        newFragment.show(getSupportFragmentManager(), "datePicker");
+    }
+
+    private Term setTermView(@NonNull Uri termUri) {
+        Term localTerm = null;
         Cursor cursor = null;
         try {
             cursor = getContentResolver().query(termUri, null, null, null, null);
@@ -56,64 +104,55 @@ public class CourseDataEntryActivity extends AppCompatActivity implements
                 // Initialize term view
                 TermCursorAdapter termAdapter = new TermCursorAdapter(this, cursor, 0);
                 termAdapter.bindView(findViewById(R.id.term_list_item), this, cursor);
-                term = termAdapter.getItem(0);
+                localTerm = termAdapter.getItem(0);
             }
         } finally {
             if (cursor != null) {
                 cursor.close();
             }
         }
-        Toolbar myToolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(myToolbar);
-        ActionBar actionBar = getSupportActionBar();
-        actionBar.setDisplayHomeAsUpEnabled(true);
+        return localTerm;
     }
-    public void showStartDatePickerDialog(View v) {
-        showDatePickerDialog(v, when.START);
+    private void setStatusSpinnerFromCourse(Spinner spinner, Course course) {
+        spinner.setSelection(statusToSpinnerPosition.get(course.status().value()));
     }
-    public void showEndDatePickerDialog(View v) {
-        showDatePickerDialog(v, when.END);
-    }
-    public void showStartTimePickerDialog(View v) {
-        showTimePickerDialog(v, when.START);
-    }
-    public void showEndTimePickerDialog(View v) {
-        showTimePickerDialog(v, when.END);
-    }
+    private Course editCourse(@NonNull Uri courseUri) {
+        Course localCourse = null;
+        Cursor cursor = null;
+        try {
+            cursor = getContentResolver().query(courseUri, null, null, null, null);
+            if (cursor != null && cursor.moveToFirst()) {
+                // retrieve Course
+                localCourse = CourseCursorAdapter.cursorToCourse(cursor);
+                // Find date text views
+                TextView startDateTV = (TextView) findViewById(R.id.edit_start_date);
+                TextView endDateTV = (TextView) findViewById(R.id.edit_end_date);
+                // Set date values
+                start.setTimeInMillis(term.startMillis());
+                end.setTimeInMillis(term.endMillis());
 
-    public void showDatePickerDialog(View v, when date) {
-        DatePickerFragment newFragment = new DatePickerFragment();
-        this.dateView = (TextView) v;
-        this.date = date;
-        newFragment.show(getSupportFragmentManager(), "datePicker");
-    }
+                Date startDate = term.startDate();
+                Date endDate = term.endDate();
 
-    public void showTimePickerDialog(View v, when time) {
-        TimePickerFragment newFragment = new TimePickerFragment();
-        this.timeView = (TextView) v;
-        this.time = time;
-        newFragment.show(getSupportFragmentManager(), "timePicker");
-    }
+                java.text.DateFormat dateFormat = DateFormat.getDateFormat(this);
+                // Fill date/time text views
+                startDateTV.setText(dateFormat.format(startDate));
+                endDateTV.setText(dateFormat.format(endDate));
 
-    @Override
-//    public void updateDateTime(Calendar calendar, int when) {
-    public void onTimeSet(@NonNull TimePicker view, int hourOfDay, int minute) {
-        Calendar calendar;
-        switch (time) {
-            case START:
-                calendar = start;
-                break;
-            case END:
-                calendar = end;
-                break;
-            default:
-                throw new IllegalStateException();
+                // Fill other views
+                EditText nameET = (EditText) findViewById(R.id.edit_name);
+                EditText notesET = (EditText) findViewById(R.id.edit_notes);
+                Spinner statusSpinner = (Spinner) findViewById(R.id.spinner_course_status);
+                nameET.setText(localCourse.name());
+                notesET.setText(localCourse.notes());
+                setStatusSpinnerFromCourse(statusSpinner, localCourse);
+            }
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
         }
-        calendar.set(Calendar.HOUR_OF_DAY, hourOfDay);
-        calendar.set(Calendar.MINUTE, minute);
-        calendar.set(Calendar.SECOND, 0);
-        calendar.set(Calendar.MILLISECOND, 0);
-        timeView.setText(DateFormat.getTimeFormat(this).format(calendar.getTime()));
+        return localCourse;
     }
 
     @Override
@@ -150,9 +189,7 @@ public class CourseDataEntryActivity extends AppCompatActivity implements
 
         course.name(name.getText().toString().trim());
         course.startEndMillis(start.getTimeInMillis(), end.getTimeInMillis());
-        if (term != null) {
-            course.termId(term.id());
-        }
+        course.termId(term.id());
         int spinnerPosition = status.getSelectedItemPosition();
         int courseStatus = getResources().getIntArray(R.array.course_status_id)[spinnerPosition];
         course.status(Course.Status.of(courseStatus));

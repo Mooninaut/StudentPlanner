@@ -7,7 +7,6 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
 
 import java.util.Calendar;
-import java.util.Date;
 
 /**
  * Created by Clement on 9/2/2017.
@@ -45,7 +44,8 @@ public class DatePickerFragment extends DialogFragment /*implements DatePickerDi
         Bundle arguments = getArguments();
         if (arguments != null && arguments.containsKey(TIME_IN_MILLIS)) {
             timeInMillis = arguments.getLong(TIME_IN_MILLIS);
-        } else if (savedInstanceState != null && savedInstanceState.containsKey(TIME_IN_MILLIS)) {
+        }
+        else if (savedInstanceState != null && savedInstanceState.containsKey(TIME_IN_MILLIS)) {
             timeInMillis = savedInstanceState.getLong(TIME_IN_MILLIS);
         }
         Calendar calendar = Calendar.getInstance();
