@@ -11,9 +11,9 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.format.DateFormat;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -39,6 +39,8 @@ public class TermDataEntryActivity extends AppCompatActivity implements DatePick
     private Term term = new Term();
     private Calendar start = Calendar.getInstance();
     private Calendar end = Calendar.getInstance();
+    private boolean startSet = false;
+    private boolean endSet = false;
     private When dateWhen;
     private TextView dateView;
     @Override
@@ -53,6 +55,8 @@ public class TermDataEntryActivity extends AppCompatActivity implements DatePick
         }
         else if (action.equals(Intent.ACTION_EDIT)) {
             setTitle(R.string.edit_term);
+            Button saveButton = (Button) findViewById(R.id.create_button);
+            saveButton.setText(R.string.save_changes);
             Uri termUri = intent.getData();
             if (termUri == null) {
                 throw new NullPointerException();
@@ -68,9 +72,39 @@ public class TermDataEntryActivity extends AppCompatActivity implements DatePick
         }
     }
     public void showStartDatePickerDialog(View v) {
+        // policy:
+        // If start is unset but end is set, use end - 6 months + 1 day
+        if (!startSet) {
+            start = Calendar.getInstance();
+            if (endSet) {
+                start = (Calendar) end.clone();
+                start.add(Calendar.MONTH, -6);
+                start.add(Calendar.DAY_OF_MONTH, 1);
+            }
+            // If both are unset, default to 1st of next month
+            else {
+                start.set(Calendar.DAY_OF_MONTH, 1);
+                start.add(Calendar.MONTH, 1);
+            }
+        }
         showDatePickerDialog(v, When.START);
     }
     public void showEndDatePickerDialog(View v) {
+        // policy: If end is unset but start is set, use start + 6 months - 1 day
+        if (!endSet) {
+            end = Calendar.getInstance();
+            if (startSet) {
+                end = (Calendar) start.clone();
+                end.add(Calendar.MONTH, 6);
+                end.add(Calendar.DAY_OF_MONTH, -1);
+            }
+            // If both are unset, default to 1st of 6 month from now
+            else {
+                end.set(Calendar.DAY_OF_MONTH, 1);
+                end.add(Calendar.MONTH, 7);
+                end.add(Calendar.DAY_OF_MONTH, -1);
+            }
+        }
         showDatePickerDialog(v, When.END);
     }
 
@@ -104,6 +138,8 @@ public class TermDataEntryActivity extends AppCompatActivity implements DatePick
 
                 Date startDate = term.startDate();
                 Date endDate = term.endDate();
+                startSet = true;
+                endSet = true;
 
                 java.text.DateFormat dateFormat = DateFormat.getDateFormat(this);
                 // Fill date/time text views
@@ -130,9 +166,11 @@ public class TermDataEntryActivity extends AppCompatActivity implements DatePick
         switch (dateWhen) {
             case START:
                 calendar = start;
+                startSet = true;
                 break;
             case END:
                 calendar = end;
+                endSet = true;
                 break;
             default:
                 throw new IllegalStateException();
@@ -168,14 +206,21 @@ public class TermDataEntryActivity extends AppCompatActivity implements DatePick
             Toast.makeText(this, "Invalid term number", Toast.LENGTH_SHORT).show();
             return;
         }
+
         term.name(name.getText().toString().trim());
         term.startEndMillis(start.getTimeInMillis(), end.getTimeInMillis());
         term.number(termNumber);
-        Log.d(TermDataEntryActivity.class.getSimpleName(), term.toString());
+
         Intent intent = getIntent();
         Uri resultUri = null;
+
         if (intent.getAction().equals(Intent.ACTION_EDIT)) {
-            int rowsAffected = getContentResolver().update(intent.getData(), TermProvider.termToValues(term), null, null);
+            int rowsAffected = getContentResolver().update(
+                intent.getData(),
+                TermProvider.termToValues(term),
+                null,
+                null
+            );
             if (rowsAffected > 0) {
                 resultUri = intent.getData();
             }

@@ -1,5 +1,6 @@
 package com.example.clement.studentplanner;
 
+import android.app.Activity;
 import android.content.ContentUris;
 import android.content.Intent;
 import android.database.Cursor;
@@ -101,6 +102,25 @@ public class TermDetailActivity extends AppCompatActivity
         getMenuInflater().inflate(R.menu.term_options_menu, menu);
         return true;
     }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == CREATE_COURSE_REQUEST_CODE) {
+            if (resultCode == Activity.RESULT_OK) {
+                Uri courseUri = data.getData();
+                Intent intent = new Intent(this, CourseDetailActivity.class);
+                intent.setAction(Intent.ACTION_VIEW);
+                intent.setData(courseUri);
+                startActivity(intent);
+            }
+        }
+        else if (requestCode == EDIT_TERM_REQUEST_CODE) {
+            if (resultCode == Activity.RESULT_OK) {
+                // TODO FIXME Refresh data
+            }
+        }
+    }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         Intent intent;

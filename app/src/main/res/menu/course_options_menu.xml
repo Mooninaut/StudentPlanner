@@ -1,10 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:id="@+id/add"
+    <item android:id="@+id/edit"
+        android:title="@string/edit"
+        android:orderInCategory="100"
+        app:showAsAction="always" />
+<!--    <item android:id="@+id/add"
         android:title="@string/add_assessment"
         android:orderInCategory="0"
-        app:showAsAction="always"
+        app:showAsAction="always"-->
         /> <!--android:icon="@drawable/ic_action_add"-->
 <!--    <item android:id="@+id/settings"
         android:title="@string/settings"

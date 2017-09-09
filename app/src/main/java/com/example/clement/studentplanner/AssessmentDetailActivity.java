@@ -1,5 +1,7 @@
 package com.example.clement.studentplanner;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
@@ -7,25 +9,28 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.TextView;
 
 import com.example.clement.studentplanner.data.Assessment;
-import com.example.clement.studentplanner.data.Course;
 import com.example.clement.studentplanner.database.AssessmentCursorAdapter;
-import com.example.clement.studentplanner.database.AssessmentProvider;
-import com.example.clement.studentplanner.database.StorageAdapter;
+import com.example.clement.studentplanner.input.AssessmentDataEntryActivity;
 
 /**
  * Created by Clement on 8/30/2017.
  */
 
 public class AssessmentDetailActivity extends AppCompatActivity {
+    private Uri assessmentContentUri;
+    private static final int EDIT_ASSESSMENT_REQUEST_CODE = 0x77; // arbitrary
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.assessment_detail_activity);
+
         Toolbar myToolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(myToolbar);
         // Show the Up button in the action bar.
@@ -34,13 +39,11 @@ public class AssessmentDetailActivity extends AppCompatActivity {
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
 
-//        Uri contentUri = getIntent().getParcelableExtra(AssessmentProvider.CONTRACT.contentItemType);
-        Uri contentUri = getIntent().getData();
-//        long assessmentId = ContentUris.parseId(contentUri);
+        assessmentContentUri = getIntent().getData();
 
         Cursor cursor = null;
         try {
-            cursor = getContentResolver().query(contentUri, null, null, null, null);
+            cursor = getContentResolver().query(assessmentContentUri, null, null, null, null);
             if (cursor != null && cursor.moveToFirst()) {
                 AssessmentCursorAdapter assessmentAdapter = new AssessmentCursorAdapter(this, cursor, 0);
                 assessmentAdapter.bindView(findViewById(R.id.assessment_detail), this, cursor);
@@ -67,11 +70,33 @@ public class AssessmentDetailActivity extends AppCompatActivity {
         }
 
     }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == EDIT_ASSESSMENT_REQUEST_CODE) {
+            if (resultCode == Activity.RESULT_OK) {
+                // TODO FIXME refresh Assessment display
+            }
+        }
+    }
+
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.assessment_options_menu, menu);
+        return true;
+    }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
                 finish();
+                return true;
+            case R.id.edit:
+                Intent intent = new Intent(this, AssessmentDataEntryActivity.class);
+                intent.setAction(Intent.ACTION_EDIT);
+                intent.setData(assessmentContentUri);
+                startActivityForResult(intent, EDIT_ASSESSMENT_REQUEST_CODE);
                 return true;
         }
         return super.onOptionsItemSelected(item);

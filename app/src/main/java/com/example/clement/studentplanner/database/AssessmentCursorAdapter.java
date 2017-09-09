@@ -59,7 +59,7 @@ public class AssessmentCursorAdapter extends CursorAdapter {
         typeTV.setText(assessment.type().name().substring(0, 1));
     }
 
-    public Assessment cursorToAssessment(Cursor cursor) {
+    public static Assessment cursorToAssessment(Cursor cursor) {
         return new Assessment(
             cursor.getLong(cursor.getColumnIndex(COLUMN_ID)),
             cursor.getString(cursor.getColumnIndex(COLUMN_NAME)),

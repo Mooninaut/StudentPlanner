@@ -10,7 +10,8 @@ import android.support.v4.app.FragmentManager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 
@@ -19,6 +20,7 @@ import com.example.clement.studentplanner.database.CourseCursorAdapter;
 import com.example.clement.studentplanner.database.CourseProvider;
 import com.example.clement.studentplanner.database.MentorProvider;
 import com.example.clement.studentplanner.input.AssessmentDataEntryActivity;
+import com.example.clement.studentplanner.input.CourseDataEntryActivity;
 import com.example.clement.studentplanner.input.MentorDataEntryActivity;
 
 /**
@@ -32,6 +34,7 @@ MentorListingFragment.HostActivity{
 //    private Course course;
     private Uri courseContentUri;
     private static final int CREATE_ASSESSMENT_REQUEST_CODE = 0x66; // arbitrary
+    private static final int EDIT_COURSE_REQUEST_CODE = 0x67;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -47,11 +50,8 @@ MentorListingFragment.HostActivity{
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
 
-
         if (courseContentUri == null && getIntent() != null) {
             courseContentUri = getIntent().getData();
-//            courseContentUri = getIntent().getParcelableExtra(CourseProvider.CONTRACT.contentItemType);
-
         }
         if (courseContentUri == null && savedInstanceState != null) {
             courseContentUri = savedInstanceState.getParcelable(CourseProvider.CONTRACT.contentItemType);
@@ -98,24 +98,29 @@ MentorListingFragment.HostActivity{
             }
         }
     }
-//    public boolean onCreateOptionsMenu(Menu menu) {
-//        MenuInflater inflater = getMenuInflater();
-//        inflater.inflate(R.menu.course_options_menu, menu);
-//        return true;
-//    }
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.course_options_menu, menu);
+        return true;
+    }
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        Intent intent;
         switch(item.getItemId()) {
             case android.R.id.home:
                 finish();
                 return true;
             case R.id.add:
-                Log.d("MainActivity", "New Assessment");
-                Intent intent = new Intent(this, AssessmentDataEntryActivity.class);
+                intent = new Intent(this, AssessmentDataEntryActivity.class);
                 intent.setAction(Intent.ACTION_INSERT);
                 intent.setData(courseContentUri);
-//                intent.putExtra(CourseProvider.CONTRACT.contentItemType, courseContentUri);
                 startActivityForResult(intent, CREATE_ASSESSMENT_REQUEST_CODE);
+                return true;
+            case R.id.edit:
+                intent = new Intent(this, CourseDataEntryActivity.class);
+                intent.setAction(Intent.ACTION_EDIT);
+                intent.setData(courseContentUri);
+                startActivityForResult(intent, EDIT_COURSE_REQUEST_CODE);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -131,6 +136,11 @@ MentorListingFragment.HostActivity{
                 intent.setAction(Intent.ACTION_VIEW);
                 intent.setData(assessmentUri);
                 startActivity(intent);
+            }
+        }
+        else if (requestCode == EDIT_COURSE_REQUEST_CODE) {
+            if (resultCode == Activity.RESULT_OK) {
+                // TODO FIXME Refresh data
             }
         }
     }
