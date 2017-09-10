@@ -51,7 +51,7 @@ public class AssessmentListingFragment extends
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        getHostActivity().onAssessmentListFragmentInteraction(id);
+        getHostContext().onAssessmentListFragmentInteraction(id);
     }
 
     public interface HostActivity {

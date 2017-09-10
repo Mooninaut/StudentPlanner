@@ -5,10 +5,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.LoaderManager;
-import android.support.v4.content.CursorLoader;
-import android.support.v4.content.Loader;
+import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,87 +21,60 @@ import com.example.clement.studentplanner.database.MentorProvider;
  * Activities containing this fragment MUST implement the {@link HostActivity}
  * interface.
  */
-public class MentorListingFragment extends Fragment {
+public class MentorListingFragment
+    extends ListingFragmentBase<MentorCursorAdapter, MentorListingFragment.HostActivity>
+    implements AdapterView.OnItemLongClickListener {
 
-    private static final String ARG_CONTENT_URI = "content-uri";
+//    private static final String ARG_CONTENT_URI = "content-uri";
 
-    private MentorLoaderListener mentorLoaderListener = new MentorLoaderListener();
-    private HostActivity hostActivity;
-    public static final int MENTOR_LOADER_ID = 400;
-    private MentorCursorAdapter mentorCursorAdapter;
+//    private MentorLoaderListener mentorLoaderListener = new MentorLoaderListener();
+//    private HostActivity hostActivity;
+    public static final int MENTOR_LOADER_ID = 0x3; // 3 is M for Mentor sideways
+//    private MentorCursorAdapter mentorCursorAdapter;
+
+    @Override
+    protected MentorCursorAdapter createAdapter(Context context, Cursor cursor) {
+        return new MentorCursorAdapter(context, cursor, 0);
+    }
+
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
      * fragment (e.g. upon screen orientation changes).
      */
     public MentorListingFragment() {
+        super(MentorProvider.CONTRACT,
+            HostActivity.class,
+            R.layout.mentor_list_view,
+            MENTOR_LOADER_ID
+        );
+    }
+
+    @Nullable
+    @Override
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        View view = super.onCreateView(inflater, container, savedInstanceState);
+        ListView lv = view.findViewById(R.id.mentor_list_view);
+        lv.setOnItemLongClickListener(this);
+        return view;
     }
 
     public static MentorListingFragment newInstance(Uri contentUri) {
         MentorListingFragment fragment = new MentorListingFragment();
-        Bundle args = new Bundle();
-        args.putParcelable(ARG_CONTENT_URI, contentUri);
-        fragment.setArguments(args);
+        fragment.initialize(contentUri);
         return fragment;
     }
 
     @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        if (context instanceof HostActivity) {
-            hostActivity = (HostActivity) context;
-
-        }
-        Cursor mentorCursor = context.getContentResolver().query(
-            getContentUri(), null, null, null, null
-        );
-        mentorCursorAdapter = new MentorCursorAdapter(context, mentorCursor, 0);
-        getLoaderManager().initLoader(MENTOR_LOADER_ID, null, mentorLoaderListener);
-    }
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        ListView termView = (ListView) inflater.inflate(R.layout.mentor_list_view, container, false);
-        // Set the adapter
-        termView.setAdapter(mentorCursorAdapter);
-        termView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                hostActivity.onMentorListFragmentInteraction(id);
-            }
-        });
-        return termView;
+    public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
+        getHostContext().onMentorSelected(id);
     }
 
     @Override
-    public void onDetach() {
-        super.onDetach();
-        hostActivity = null;
+    public boolean onItemLongClick(AdapterView<?> adapterView, View view, int position, long id) {
+        getHostContext().onMentorToggled(id);
+        return true;
     }
-    private Uri getContentUri() {
-        Bundle arguments = getArguments();
-        if (arguments == null) {
-            return MentorProvider.CONTRACT.contentUri;
-        }
-        else {
-            return arguments.getParcelable(ARG_CONTENT_URI);
-        }
 
-    }
-    private class MentorLoaderListener implements LoaderManager.LoaderCallbacks<Cursor> {
-        @Override
-        public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-            return new CursorLoader(getActivity(), getContentUri(),
-                null, null, null, null);
-        }
-        @Override
-        public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-            mentorCursorAdapter.swapCursor(data);
-        }
-        @Override
-        public void onLoaderReset(Loader<Cursor> loader) {
-            mentorCursorAdapter.swapCursor(null);
-        }
-    }
     /**
      * This interface must be implemented by activities that contain this
      * fragment to allow an interaction in this fragment to be communicated
@@ -116,6 +86,7 @@ public class MentorListingFragment extends Fragment {
      * >Communicating with Other Fragments</a> for more information.
      */
     public interface HostActivity {
-        void onMentorListFragmentInteraction(long termId);
+        void onMentorSelected(long mentorId);
+        void onMentorToggled(long mentorId);
     }
 }

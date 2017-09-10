@@ -5,18 +5,8 @@
         android:title="@string/edit"
         android:orderInCategory="100"
         app:showAsAction="always" />
-<!--    <item android:id="@+id/add"
-        android:title="@string/add_assessment"
-        android:orderInCategory="0"
-        app:showAsAction="always"-->
-        /> <!--android:icon="@drawable/ic_action_add"-->
-<!--    <item android:id="@+id/settings"
-        android:title="@string/settings"
-        android:orderInCategory="100"/>-->
-<!--    <item android:id="@+id/sample_data"
-        android:title="Add Sample Data"
-        android:orderInCategory="200"/>
-    <item android:id="@+id/delete_sample_data"
-        android:title="Delete Sample Data"
-        android:orderInCategory="300"/>-->
+    <item android:id="@+id/reminder"
+        android:title="@string/add_reminder"
+        android:orderInCategory="200"
+        app:showAsAction="ifRoom" />
 </menu>

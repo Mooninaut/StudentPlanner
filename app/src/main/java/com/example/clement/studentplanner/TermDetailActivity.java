@@ -146,7 +146,7 @@ public class TermDetailActivity extends AppCompatActivity
         }
     }
     @Override
-    public void onCourseListFragmentInteraction(long courseId) {
+    public void onCourseSelected(long courseId) {
         Intent intent = new Intent(this, CourseDetailActivity.class);
         intent.setAction(Intent.ACTION_VIEW);
         intent.setData(CourseProvider.CONTRACT.getContentUri(courseId));

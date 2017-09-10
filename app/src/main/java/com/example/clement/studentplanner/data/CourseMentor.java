@@ -2,6 +2,8 @@ package com.example.clement.studentplanner.data;
 
 import android.support.annotation.NonNull;
 
+import java.util.Locale;
+
 /**
  * Created by Clement on 9/4/2017.
  */
@@ -61,5 +63,11 @@ public class CourseMentor {
     }
     public void emailAddress(@NonNull String emailAddress) {
         this.emailAddress = emailAddress;
+    }
+
+    @Override
+    public String toString() {
+        return String.format(Locale.US, "Mentor: name '%s', phone '%s', email '%s', id '%d'",
+            name(), phoneNumber(), emailAddress(), id());
     }
 }

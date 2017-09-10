@@ -25,6 +25,8 @@ abstract class ContentProviderBase extends ContentProvider {
     protected abstract @NonNull String getTableName();
     protected abstract @NonNull UriMatcher getUriMatcher();
     protected abstract int getSingleRowMatchConstant();
+
+    private static final String SELECTION = COLUMN_ID + " = ?";
     /**
      * Lazily initialize the writableDatabase object
      */
@@ -39,6 +41,7 @@ abstract class ContentProviderBase extends ContentProvider {
         }
         return helper;
     }
+
     @NonNull
     protected final synchronized SQLiteDatabase getWritableDatabase() {
         if (writableDatabase == null) {
@@ -46,6 +49,7 @@ abstract class ContentProviderBase extends ContentProvider {
         }
         return writableDatabase;
     }
+
     @NonNull
     protected final synchronized SQLiteDatabase getReadableDatabase() {
         if (readableDatabase == null) {
@@ -53,6 +57,7 @@ abstract class ContentProviderBase extends ContentProvider {
         }
         return readableDatabase;
     }
+
     protected void notifyChange(@NonNull Uri uri) {
         Context context = getContext();
         if (context != null) {
@@ -62,29 +67,37 @@ abstract class ContentProviderBase extends ContentProvider {
             }
         }
     }
+
     @Override
     public int update(@NonNull Uri uri, @Nullable ContentValues values, @Nullable String selection, @Nullable String[] selectionArgs) {
+        long id = ContentUris.parseId(uri);
+        selection = SELECTION;
+        selectionArgs = new String[] { Long.toString(id) };
         int rowsUpdated = getWritableDatabase().update(getTableName(), values, selection, selectionArgs);
         if (rowsUpdated > 0) {
             notifyChange(uri);
         }
         return rowsUpdated;
     }
+
     @Override
     public int delete(@NonNull Uri uri, @Nullable String selection, @Nullable String[] selectionArgs) {
         if (getUriMatcher().match(uri) == getSingleRowMatchConstant()) {
-                selection = COLUMN_ID + " = " + ContentUris.parseId(uri);
+            long id = ContentUris.parseId(uri);
+            selection = SELECTION;
+            selectionArgs = new String[] { Long.toString(id) };
         }
         int rowsAffected = getWritableDatabase().delete(
             getTableName(),
             selection,
-            null
+            selectionArgs
         );
         if (rowsAffected > 0) {
             notifyChange(uri);
         }
         return rowsAffected;
     }
+
     @Nullable
     @Override
     public Uri insert(@NonNull Uri uri, @Nullable ContentValues values) {

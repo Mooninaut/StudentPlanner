@@ -3,38 +3,55 @@ package com.example.clement.studentplanner;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
-import android.os.Bundle;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.LoaderManager;
-import android.support.v4.content.CursorLoader;
-import android.support.v4.content.Loader;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ListView;
 
 import com.example.clement.studentplanner.database.CourseCursorAdapter;
 import com.example.clement.studentplanner.database.CourseProvider;
-    /**
+
+/**
      * A fragment representing a list of Courses.
      * <p/>
      * Activities containing this fragment MUST implement the {@link HostActivity}
      * interface.
      */
-public class CourseListingFragment extends Fragment {
+public class CourseListingFragment extends ListingFragmentBase<CourseCursorAdapter, CourseListingFragment.HostActivity> {
 //    private CourseLoaderListener courseLoaderListener;
-    private HostActivity hostActivity;
-    public static final int COURSE_LOADER_ID = 300;
-    private CourseCursorAdapter courseCursorAdapter;
+//    private HostActivity hostActivity;
+    public static final int COURSE_LOADER_ID = 0xC;
+
+    public CourseListingFragment() {
+        super(
+            CourseProvider.CONTRACT,
+            HostActivity.class,
+            R.layout.course_list_view,
+            COURSE_LOADER_ID
+        );
+    }
+
+    @Override
+    protected CourseCursorAdapter createAdapter(Context context, Cursor cursor) {
+        return new CourseCursorAdapter(context, cursor, 0);
+    }
+
+    @Override
+    public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
+        getHostContext().onCourseSelected(id);
+    }
+
+    public static CourseListingFragment newInstance(Uri contentUri) {
+
+        CourseListingFragment fragment = new CourseListingFragment();
+        fragment.initialize(contentUri);
+        return fragment;
+    }
+//    private CourseCursorAdapter courseCursorAdapter;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
      * fragment (e.g. upon screen orientation changes).
      */
-    public CourseListingFragment() {
-    }
-
+/*
     public static CourseListingFragment newInstance(Uri contentUri) {
         CourseListingFragment fragment = new CourseListingFragment();
         Bundle args = new Bundle();
@@ -56,7 +73,7 @@ public class CourseListingFragment extends Fragment {
             getContentUri(), null, null, null, null
         );
         courseCursorAdapter = new CourseCursorAdapter(context, courseCursor, 0);
-        getLoaderManager().initLoader(COURSE_LOADER_ID, null, new CourseLoaderListener());
+        getLoaderManager().initLoader(COURSE_LOADER_ID, null, new CourseLoaderListener(getActivity(), getContentUri(), courseCursorAdapter));
     }
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -67,7 +84,7 @@ public class CourseListingFragment extends Fragment {
         courseView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                hostActivity.onCourseListFragmentInteraction(id);
+                hostActivity.onCourseSelected(id);
             }
         });
         return courseView;
@@ -78,12 +95,12 @@ public class CourseListingFragment extends Fragment {
         super.onDetach();
         hostActivity = null;
     }
-/*    private synchronized CourseLoaderListener getCourseLoaderListener() {
+*//*    private synchronized CourseLoaderListener getCourseLoaderListener() {
         if (courseLoaderListener == null) {
             courseLoaderListener = new CourseLoaderListener();
         }
         return courseLoaderListener;
-    }*/
+    }*//*
     private synchronized Uri getContentUri() {
         Bundle arguments = getArguments();
         if (arguments == null) {
@@ -92,22 +109,8 @@ public class CourseListingFragment extends Fragment {
         else {
             return arguments.getParcelable(CourseProvider.CONTRACT.contentItemType);
         }
-    }
-    private class CourseLoaderListener implements LoaderManager.LoaderCallbacks<Cursor> {
-        @Override
-        public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-            return new CursorLoader(getActivity(), getContentUri(),
-                null, null, null, null);
-        }
-        @Override
-        public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-            courseCursorAdapter.swapCursor(data);
-        }
-        @Override
-        public void onLoaderReset(Loader<Cursor> loader) {
-            courseCursorAdapter.swapCursor(null);
-        }
-    }
+    }*/
+
     /**
      * This interface must be implemented by activities that contain this
      * fragment to allow an interaction in this fragment to be communicated
@@ -119,6 +122,6 @@ public class CourseListingFragment extends Fragment {
      * >Communicating with Other Fragments</a> for more information.
      */
     public interface HostActivity {
-        void onCourseListFragmentInteraction(long courseId);
+        void onCourseSelected(long courseId);
     }
 }

@@ -2,11 +2,11 @@ package com.example.clement.studentplanner.database;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.support.v4.widget.CursorAdapter;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.CursorAdapter;
 import android.widget.TextView;
 
 import com.example.clement.studentplanner.R;
@@ -34,14 +34,6 @@ public class CourseCursorAdapter extends CursorAdapter {
     public CourseCursorAdapter(Context context, Cursor cursor, int flags) {
         super(context, cursor, flags);
     }
-
-    /**
-     * Erases all data in the database, not just Courses.
-     */
-/*    public void erase() {
-        getHelper().erase(getWritableDatabase());
-    }*/
-
 
     @Override
     public View newView(Context context, Cursor cursor, ViewGroup parent) {

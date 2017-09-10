@@ -122,5 +122,15 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.example.clement.studentplanner.CourseDetailActivity"/>
         </activity>
+        <activity
+            android:name=".input.MentorPickerActivity"
+            android:label="Choose Course Mentor"
+            android:parentActivityName=".CourseDetailActivity"
+            android:theme="@style/AppTheme"
+            android:launchMode="singleTop">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.example.clement.studentplanner.CourseDetailActivity"/>
+        </activity>
     </application>
 </manifest>

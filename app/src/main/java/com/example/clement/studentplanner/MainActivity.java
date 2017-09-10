@@ -25,12 +25,10 @@ import com.example.clement.studentplanner.data.Term;
 import com.example.clement.studentplanner.database.AssessmentProvider;
 import com.example.clement.studentplanner.database.CourseMentorProvider;
 import com.example.clement.studentplanner.database.CourseProvider;
-import com.example.clement.studentplanner.database.EventCursorAdapter;
 import com.example.clement.studentplanner.database.MentorProvider;
 import com.example.clement.studentplanner.database.PhotoProvider;
 import com.example.clement.studentplanner.database.ProviderContract;
 import com.example.clement.studentplanner.database.StorageHelper;
-import com.example.clement.studentplanner.database.TermCursorAdapter;
 import com.example.clement.studentplanner.database.TermProvider;
 import com.example.clement.studentplanner.input.TermDataEntryActivity;
 
@@ -50,8 +48,8 @@ public class MainActivity extends AppCompatActivity
 
     private static final int CREATE_TERM_REQUEST_CODE = 0x77; // arbitrary
 
-    private final EventCursorAdapter eventCursorAdapter = new EventCursorAdapter(this, null, 0);
-    private final TermCursorAdapter termCursorAdapter = new TermCursorAdapter(this, null, 0);
+//    private final EventCursorAdapter eventCursorAdapter = new EventCursorAdapter(this, null, 0);
+//    private final TermCursorAdapter termCursorAdapter = new TermCursorAdapter(this, null, 0);
 //    private final CourseCursorAdapter courseCursorAdapter = new CourseCursorAdapter(this, null, 0);
 //    private final AssessmentCursorAdapter assessmentCursorAdapter = new AssessmentCursorAdapter(this, null, 0);
 
@@ -289,12 +287,12 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
-    public void onTermListFragmentInteraction(long termId) {
+    public void onTermSelected(long termId) {
         launchTermDetailActivity(termId);
     }
 
     @Override
-    public void onCourseListFragmentInteraction(long courseId) {
+    public void onCourseSelected(long courseId) {
         launchCourseDetailActivity(courseId);
     }
 

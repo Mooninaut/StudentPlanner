@@ -232,7 +232,8 @@ public class TermDataEntryActivity extends AppCompatActivity implements DatePick
             );
         }
         if (resultUri != null) {
-            Intent result = new Intent("com.example.studentplanner.RESULT_TERM", resultUri);
+            Intent result = new Intent();
+            result.setData(resultUri);
             setResult(Activity.RESULT_OK, result);
         }
         finish();

@@ -64,6 +64,12 @@ public class CourseMentorProvider extends ContentProviderBase {
         public Uri getCourseMentorContentUri() {
             return courseMentorContentUri;
         }
+        public Uri getCourseMentorContentUri(long courseId, long mentorId) {
+            return ContentUris.withAppendedId(
+                ContentUris.withAppendedId(courseMentorContentUri, courseId),
+                mentorId
+            );
+        }
         CourseMentorContract() {
             Uri.Builder builder = new Uri.Builder()
                 .scheme(SCHEME_CONTENT)
@@ -77,12 +83,12 @@ public class CourseMentorProvider extends ContentProviderBase {
     private static final int COURSE_MENTOR_ALL = 1;
     private static final int COURSE_MENTOR_MENTOR_ID = 2;
     private static final int COURSE_MENTOR_COURSE_ID = 3;
-    private static final int COURSE_MENTOR_ID_COURSE_ID = 4;
+    private static final int COURSE_MENTOR_COURSE_ID_MENTOR_ID = 4;
 
     private static final UriMatcher uriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
     public static final CourseMentorContract CONTRACT = CourseMentorContract.INSTANCE;
     static {
-        uriMatcher.addURI(CONTRACT.authority, CONTRACT.courseMentorPath + "/#/#", COURSE_MENTOR_ID_COURSE_ID);
+        uriMatcher.addURI(CONTRACT.authority, CONTRACT.courseMentorPath + "/#/#", COURSE_MENTOR_COURSE_ID_MENTOR_ID);
         uriMatcher.addURI(CONTRACT.authority, CONTRACT.basePath + "/#", COURSE_MENTOR_COURSE_ID);
         uriMatcher.addURI(CONTRACT.authority, CONTRACT.mentorPath + "/#", COURSE_MENTOR_MENTOR_ID);
         uriMatcher.addURI(CONTRACT.authority, CONTRACT.basePath, COURSE_MENTOR_ALL);
@@ -106,7 +112,7 @@ public class CourseMentorProvider extends ContentProviderBase {
             case COURSE_MENTOR_COURSE_ID:
                 selection = COLUMN_COURSE_ID + " = " + ContentUris.parseId(uri);
                 break;
-            case COURSE_MENTOR_ID_COURSE_ID:
+            case COURSE_MENTOR_COURSE_ID_MENTOR_ID:
                 List<String> segments = uri.getPathSegments();
                 if (segments.get(0).equals(CONTRACT.courseMentorPath)) {
                     long courseId;
@@ -149,8 +155,11 @@ public class CourseMentorProvider extends ContentProviderBase {
     public int delete(@NonNull Uri uri, @Nullable String selection, @Nullable String[] selectionArgs) {
         int result;
         SQLiteDatabase db = getWritableDatabase();
+        Long courseId;
+        Long mentorId;
         switch(uriMatcher.match(uri)) {
             case COURSE_MENTOR_ALL:
+                // Remove all mentors from all courses. Notify all listeners for mentors attached to courses
                 result = db.delete(TABLE_COURSE_MENTOR, null, null);
                 if (result > 0) {
                     notifyChange(uri);
@@ -158,7 +167,8 @@ public class CourseMentorProvider extends ContentProviderBase {
                 }
                 break;
             case COURSE_MENTOR_MENTOR_ID:
-                long mentorId = ContentUris.parseId(uri);
+                // Remove given mentor from all courses. Notify all listeners for mentors attached to courses
+                mentorId = ContentUris.parseId(uri);
                 result = db.delete(TABLE_COURSE_MENTOR, COLUMN_MENTOR_ID+"="+mentorId, null);
                 if (result > 0) {
                     notifyChange(uri);
@@ -166,25 +176,34 @@ public class CourseMentorProvider extends ContentProviderBase {
                 }
                 break;
             case COURSE_MENTOR_COURSE_ID:
-                long courseId = ContentUris.parseId(uri);
+                // Remove all mentors from given course. Notify listeners for mentors attached to this specific course
+                courseId = ContentUris.parseId(uri);
                 result = db.delete(TABLE_COURSE_MENTOR, COLUMN_COURSE_ID+"="+courseId, null);
                 if (result > 0) {
                     notifyChange(uri);
                     notifyChange(MentorProvider.CONTRACT.getCourseUri(courseId));
                 }
                 break;
-            case COURSE_MENTOR_ID_COURSE_ID:
+            case COURSE_MENTOR_COURSE_ID_MENTOR_ID:
+                // Remove given mentor from given course. Notify listeners for mentors attached to this specific course.
                 List<String> segments = uri.getPathSegments();
-                if (segments.get(0).equalsIgnoreCase(CONTRACT.courseMentorPath)) {
+                String path = segments.get(0);
+                courseId = Long.valueOf(segments.get(1));
+//                mentorId = Long.valueOf(segments.get(2));
+                if (path.equals(CONTRACT.courseMentorPath)) {
                     String[] mentorCursorIds = new String[] { segments.get(1), segments.get(2) };
-                    result = db.delete(TABLE_COURSE_MENTOR, COLUMN_MENTOR_ID+"= ? AND "+COLUMN_COURSE_ID+"= ?", mentorCursorIds);
+                    result = db.delete(TABLE_COURSE_MENTOR, COLUMN_COURSE_ID+"= ? AND "+COLUMN_MENTOR_ID+"= ?", mentorCursorIds);
                     if (result > 0) {
                         notifyChange(uri);
-                        notifyChange(MentorProvider.CONTRACT.getCourseUri(Long.valueOf(mentorCursorIds[1])));
+                        notifyChange(MentorProvider.CONTRACT.getCourseUri(courseId));
                     }
                 }
+                else {
+                    throw new IllegalArgumentException("Invalid course mentor URI");
+                }
+                break;
             default:
-                throw new IllegalStateException();
+                throw new IllegalArgumentException("Invalid course mentor URI");
         }
         return result;
     }

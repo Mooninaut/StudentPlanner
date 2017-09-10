@@ -4,6 +4,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.CallSuper;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
@@ -19,7 +20,8 @@ import android.widget.ListView;
 import com.example.clement.studentplanner.database.ProviderContract;
 
 /**
- * Created by Clement on 8/29/2017.
+ * Child classes MUST implement a public no-argument constructor that calls
+ * super(ProviderContract contract, Class<H> hostInterface, int listViewId, int loaderId)
  */
 
 public abstract class ListingFragmentBase<A extends CursorAdapter, H> extends Fragment
@@ -27,38 +29,32 @@ public abstract class ListingFragmentBase<A extends CursorAdapter, H> extends Fr
     private Cursor cursor;
 //    private LoaderListener listener;
     private A adapter;
-    private H hostActivity;
+    private H hostContext;
     private Uri defaultContentUri;
     private String contentItemType;
     private Class<H> hostInterface;
     private int listViewId = Integer.MIN_VALUE;
     private int loaderId = Integer.MIN_VALUE;
 
-//    public abstract int getLoaderId();
-//    protected abstract Uri getDefaultContentUri();
-//    protected abstract String getContentItemType();
-//    protected abstract void setHostActivity(Context context); // must verify interface type
     protected abstract A createAdapter(Context context, Cursor cursor);
-//    protected abstract int getListViewId();
+
     protected ListingFragmentBase(ProviderContract contract, Class<H> hostInterface, int listViewId, int loaderId) {
         this.defaultContentUri = contract.getContentUri();
         this.contentItemType = contract.getContentItemType();
         this.hostInterface = hostInterface;
-//        this.itemClickListener = itemClickListener;
         this.listViewId = listViewId;
         this.loaderId = loaderId;
     }
     protected final Cursor getCursor() {
         return cursor;
     }
-/*    protected final A getAdapter() {
-        return adapter;
-    }*/
+
     @Override
-    public final void onAttach(Context context) {
+    @CallSuper
+    public void onAttach(Context context) {
         super.onAttach(context);
         if (hostInterface.isInstance(context)) {
-            hostActivity = hostInterface.cast(context);
+            hostContext = hostInterface.cast(context);
         }
         else {
             throw new IllegalStateException("Activity must implement "+hostInterface.getCanonicalName()+" interface");
@@ -71,13 +67,16 @@ public abstract class ListingFragmentBase<A extends CursorAdapter, H> extends Fr
     @Override
     public void onDetach() {
         super.onDetach();
-        hostActivity = null;
+        hostContext = null;
     }
-    protected final H getHostActivity() {
-        return hostActivity;
+
+    protected final H getHostContext() {
+        return hostContext;
     }
+
     public ListingFragmentBase() {
     }
+
     protected synchronized final Uri getContentUri() {
         Bundle arguments = getArguments();
         if (arguments == null) {
@@ -87,12 +86,7 @@ public abstract class ListingFragmentBase<A extends CursorAdapter, H> extends Fr
             return arguments.getParcelable(contentItemType);
         }
     }
-/*    protected synchronized final LoaderListener getListener() {
-        if (listener == null) {
-            listener = new LoaderListener();
-        }
-        return listener;
-    }*/
+
     protected final void initialize(Uri contentUri) {
         Bundle args = new Bundle();
         args.putParcelable(contentItemType, contentUri);
@@ -101,7 +95,8 @@ public abstract class ListingFragmentBase<A extends CursorAdapter, H> extends Fr
 
     @Nullable
     @Override
-    public final View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    @CallSuper
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         ListView listView = (ListView) inflater.inflate(listViewId, container, false);
         listView.setAdapter(adapter);
         listView.setOnItemClickListener(this);

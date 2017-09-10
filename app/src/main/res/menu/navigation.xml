@@ -13,7 +13,7 @@
 
     <item
         android:id="@+id/navigation_courses"
-        android:icon="@drawable/school"
+        android:icon="@drawable/mortarboard"
         android:title="@string/title_courses"/>
     <item
         android:id="@+id/navigation_assessments"

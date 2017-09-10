@@ -311,7 +311,7 @@ public class AssessmentDataEntryActivity extends AppCompatActivity implements
             );
         }
         if (resultUri != null) {
-            Intent result = new Intent("com.example.studentplanner.RESULT_ASSESSMENT", resultUri);
+            Intent result = new Intent("com.example.clement.studentplanner.RESULT_ASSESSMENT", resultUri);
             setResult(Activity.RESULT_OK, result);
         }
         finish();

@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.CalendarContract;
 import android.support.annotation.Nullable;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -97,6 +98,16 @@ public class AssessmentDetailActivity extends AppCompatActivity {
                 intent.setAction(Intent.ACTION_EDIT);
                 intent.setData(assessmentContentUri);
                 startActivityForResult(intent, EDIT_ASSESSMENT_REQUEST_CODE);
+                return true;
+            case R.id.reminder:
+                Assessment assessment = Util.getAssessment(this, assessmentContentUri);
+                intent = new Intent(Intent.ACTION_INSERT)
+                    .setData(CalendarContract.Events.CONTENT_URI)
+                    .putExtra(CalendarContract.EXTRA_EVENT_BEGIN_TIME, assessment.startMillis())
+                    .putExtra(CalendarContract.EXTRA_EVENT_END_TIME, assessment.endMillis())
+                    .putExtra(CalendarContract.Events.TITLE, assessment.name())
+                    .putExtra(CalendarContract.Events.DESCRIPTION, assessment.notes());
+                startActivity(intent);
                 return true;
         }
         return super.onOptionsItemSelected(item);

@@ -49,6 +49,8 @@
     <string name="type">Type</string>
     <string name="event_format">%1$s of %2$s %3$s</string>
     <string name="edit">Edit</string>
+    <string name="add_reminder">Add Reminder</string>
+    <string name="mentor_removed">Mentor %s removed</string>
     <plurals name="assessment">
         <item quantity="one">@string/assessment</item>
         <item quantity="other">@string/assessments</item>

@@ -12,6 +12,7 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 
 import com.example.clement.studentplanner.R;
@@ -42,6 +43,9 @@ public class MentorDataEntryActivity extends AppCompatActivity {
             throw new NullPointerException();
         }
         else if (action.equals(Intent.ACTION_EDIT)) {
+            setTitle(R.string.edit_mentor);
+            Button createButton = findViewById(R.id.create_button);
+            createButton.setText(R.string.save_changes);
             mentorContentUri = intent.getData();
             ContentResolver resolver = getContentResolver();
             if (resolver == null) {
@@ -50,7 +54,9 @@ public class MentorDataEntryActivity extends AppCompatActivity {
             Cursor cursor = null;
             try {
                 cursor = resolver.query(mentorContentUri, null, null, null, null);
-                courseMentor = MentorCursorAdapter.cursorToCourseMentor(cursor);
+                if (cursor != null && cursor.moveToFirst()) {
+                    courseMentor = MentorCursorAdapter.cursorToCourseMentor(cursor);
+                }
             } finally {
                 if (cursor != null) {
                     cursor.close();
@@ -83,25 +89,38 @@ public class MentorDataEntryActivity extends AppCompatActivity {
         courseMentor.phoneNumber(number.getText().toString().trim());
         Log.d(MentorDataEntryActivity.class.getSimpleName(), courseMentor.toString());
 
+        Intent result = new Intent();
         if (action.equals(Intent.ACTION_EDIT)) {
-            getContentResolver().update(
+            int rowsAffected = getContentResolver().update(
                 mentorContentUri,
                 MentorProvider.mentorToValues(courseMentor),
                 null,
                 null
             );
+            if (rowsAffected > 0) {
+                result.setData(mentorContentUri);
+                setResult(RESULT_OK, result);
+            }
         }
         else if (action.equals(Intent.ACTION_INSERT)) {
             Uri mentorUri = getContentResolver().insert(
                 MentorProvider.CONTRACT.contentUri,
                 MentorProvider.mentorToValues(courseMentor)
             );
+            if (mentorUri == null) {
+                throw new NullPointerException();
+            }
             long courseId = ContentUris.parseId(courseContentUri);
             long mentorId = ContentUris.parseId(mentorUri);
-            getContentResolver().insert(
+            Uri resultUri = getContentResolver().insert(
                 CourseMentorProvider.CONTRACT.contentUri,
                 CourseMentorProvider.courseMentorToValues(courseId, mentorId)
             );
+            if (resultUri == null) {
+                throw new NullPointerException();
+            }
+            result.setData(resultUri);
+            setResult(RESULT_OK, result);
         }
         finish();
     }

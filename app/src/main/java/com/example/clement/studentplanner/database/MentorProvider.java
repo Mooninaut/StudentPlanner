@@ -48,6 +48,12 @@ public class MentorProvider extends ContentProviderBase {
         public Uri getCourseUri(long id) {
             return ContentUris.withAppendedId(courseUri, id);
         }
+        public Uri getNoCourseUri() {
+            return noCourseUri;
+        }
+        public Uri getNoCourseUri(long id) {
+            return ContentUris.withAppendedId(noCourseUri, id);
+        }
         @Override
         public String getAuthority() {
             return authority;
@@ -60,8 +66,10 @@ public class MentorProvider extends ContentProviderBase {
         public final String authority = "com.example.clement.studentplanner.mentorprovider";
         public final String basePath = "mentor";
         public final String coursePath = "course";
+        public final String noCoursePath = "nocourse";
         public final Uri contentUri;
         public final Uri courseUri;
+        public final Uri noCourseUri;
         public final String contentItemType = "CourseMentor";
         CourseMentorContract() {
             Uri.Builder builder = new Uri.Builder()
@@ -69,18 +77,31 @@ public class MentorProvider extends ContentProviderBase {
                 .authority(authority);
             contentUri = builder.path(basePath).build();
             courseUri = builder.path(coursePath).build();
+            noCourseUri = builder.path(noCoursePath).build();
         }
     }
 
     private static final int MENTOR_ALL = 1;
     private static final int MENTOR_ID = 2;
     private static final int MENTOR_COURSE_ID = 3;
+    private static final int MENTOR_WITHOUT_COURSE_ID = 4;
+
+    private static final String COURSE_QUERY = "SELECT "+COLUMN_ID+","+COLUMN_NAME+","
+        +COLUMN_PHONE_NUMBER+","+COLUMN_EMAIL+" FROM "+TABLE_MENTOR+" LEFT JOIN "
+        +TABLE_COURSE_MENTOR+" ON "+TABLE_MENTOR+"."+COLUMN_ID+" = "+TABLE_COURSE_MENTOR
+        +"."+COLUMN_MENTOR_ID+" WHERE "+TABLE_COURSE_MENTOR+"."+COLUMN_COURSE_ID+" = ?";
+
+    private static final String NO_COURSE_QUERY = "SELECT "+COLUMN_ID+","+COLUMN_NAME+","
+        +COLUMN_PHONE_NUMBER+","+COLUMN_EMAIL+" FROM "+TABLE_MENTOR
+        +" WHERE NOT EXISTS ( SELECT 'x' FROM "+TABLE_COURSE_MENTOR+" WHERE "+TABLE_MENTOR+"."
+        +COLUMN_ID+" = "+TABLE_COURSE_MENTOR+"."+COLUMN_MENTOR_ID+" AND "+COLUMN_COURSE_ID+" = ?)";
 
     private static final UriMatcher uriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
     public static final CourseMentorContract CONTRACT = CourseMentorContract.INSTANCE;
     static {
         uriMatcher.addURI(CONTRACT.authority, CONTRACT.basePath + "/#", MENTOR_ID);
         uriMatcher.addURI(CONTRACT.authority, CONTRACT.coursePath + "/#", MENTOR_COURSE_ID);
+        uriMatcher.addURI(CONTRACT.authority, CONTRACT.noCoursePath + "/#", MENTOR_WITHOUT_COURSE_ID);
         uriMatcher.addURI(CONTRACT.authority, CONTRACT.basePath, MENTOR_ALL);
     }
     @Override
@@ -95,6 +116,7 @@ public class MentorProvider extends ContentProviderBase {
         Cursor cursor;
         ContentResolver resolver = getContext().getContentResolver();
         projection = COLUMNS_MENTOR;
+        long courseId;
         switch(uriMatcher.match(uri)) {
             case MENTOR_ID:
                 selection = COLUMN_ID + " = " + ContentUris.parseId(uri);
@@ -114,15 +136,18 @@ public class MentorProvider extends ContentProviderBase {
                 }
                 break;
             case MENTOR_COURSE_ID:
-                long courseId = ContentUris.parseId(uri);
-                cursor = getReadableDatabase().rawQuery("SELECT "+COLUMN_ID+","+COLUMN_NAME+","
-                    +COLUMN_PHONE_NUMBER+","+COLUMN_EMAIL+" FROM "+TABLE_MENTOR+" JOIN "
-                    +TABLE_COURSE_MENTOR+" ON "+TABLE_MENTOR+"."+COLUMN_ID+" = "+TABLE_COURSE_MENTOR
-                    +"."+COLUMN_MENTOR_ID+" WHERE "+TABLE_COURSE_MENTOR+"."+COLUMN_COURSE_ID+" = ?",
-                    new String[] { Long.toString(courseId) }
-                );
+                courseId = ContentUris.parseId(uri);
+                cursor = getReadableDatabase().rawQuery(COURSE_QUERY, new String[] { Long.toString(courseId) });
                 if (cursor != null) {
                     cursor.setNotificationUri(resolver, uri);
+                }
+                break;
+            case MENTOR_WITHOUT_COURSE_ID:
+                courseId = ContentUris.parseId(uri);
+                cursor = getReadableDatabase().rawQuery(NO_COURSE_QUERY, new String[] { Long.toString(courseId) });
+                if (cursor != null) {
+                    // Same listeners care about notifications to (X) and (not-X), so just listen to (X).
+                    cursor.setNotificationUri(resolver, CONTRACT.getCourseUri(courseId));
                 }
                 break;
             default:

@@ -74,7 +74,6 @@ public class CourseProvider extends ContentProviderBase {
     private static final UriMatcher uriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
     public static final CourseContract CONTRACT = CourseContract.INSTANCE;
     static {
-
         uriMatcher.addURI(CONTRACT.authority, CONTRACT.basePath + "/#", COURSE_ID);
         uriMatcher.addURI(CONTRACT.authority, EventProvider.CONTRACT.basePath, COURSE_EVENT);
         uriMatcher.addURI(CONTRACT.authority, TermProvider.CONTRACT.basePath + "/#", COURSE_TERM);
