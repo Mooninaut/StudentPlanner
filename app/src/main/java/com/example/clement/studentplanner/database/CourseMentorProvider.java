@@ -54,7 +54,7 @@ public class CourseMentorProvider extends ContentProviderBase {
         public final Uri contentUri;
         public final Uri mentorContentUri;
         public final Uri courseMentorContentUri;
-        public final String contentItemType = "CourseMentor";
+        public final String contentItemType = "Mentor";
         public Uri getMentorContentUri() {
             return mentorContentUri;
         }
@@ -212,7 +212,7 @@ public class CourseMentorProvider extends ContentProviderBase {
     @Override
     public Uri insert(@NonNull Uri uri, @Nullable ContentValues values) {
         Uri result = super.insert(uri, values);
-        if (result != null) {
+        if (result != null && values != null) {
             notifyChange(MentorProvider.CONTRACT.getCourseUri(values.getAsLong(COLUMN_COURSE_ID)));
         }
         return result;

@@ -8,7 +8,7 @@ import java.util.Locale;
  * Created by Clement on 8/6/2017.
  */
 
-public class Term extends AcademicEvent {
+public class Term extends ScheduleItem {
     private int number;
 
     public Term() {

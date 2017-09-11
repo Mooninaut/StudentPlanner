@@ -8,7 +8,7 @@ import java.util.Locale;
  * Created by Clement on 8/8/2017.
  */
 
-public class Course extends AcademicEvent {
+public class Course extends ScheduleItem {
     public enum Status {
         IN_PROGRESS(1), COMPLETED(2), DROPPED(3), PLANNED(4), NONE(5);
         private final int value;

@@ -19,7 +19,7 @@ import android.view.View;
 import android.widget.Toast;
 
 import com.example.clement.studentplanner.data.Course;
-import com.example.clement.studentplanner.data.CourseMentor;
+import com.example.clement.studentplanner.data.Mentor;
 import com.example.clement.studentplanner.database.AssessmentProvider;
 import com.example.clement.studentplanner.database.CourseCursorAdapter;
 import com.example.clement.studentplanner.database.CourseMentorProvider;
@@ -34,17 +34,15 @@ import com.example.clement.studentplanner.input.MentorPickerActivity;
  * An activity representing a single Course detail screen.
  */
 public class CourseDetailActivity extends AppCompatActivity
-    implements AssessmentListingFragment.HostActivity, MentorListingFragment.HostActivity {
+    implements //AssessmentListingFragment.HostActivity,
+    FragmentItemListener.OnClick, FragmentItemListener.OnLongClick {
     private AssessmentListingFragment assessmentFragment;
     private MentorListingFragment mentorFragment;
 //    private CourseLoaderListener courseLoaderListener;
 //    private Course course;
     private Uri courseContentUri;
 //    private static final int COURSE_LOADER_ID = 301;
-    private static final int CREATE_ASSESSMENT_REQUEST_CODE = 0x66; // arbitrary
-    private static final int EDIT_COURSE_REQUEST_CODE = 0x67;
-    private static final int EDIT_MENTOR_REQUEST_CODE = 0x68;
-    private static final int PICK_MENTOR_REQUEST_CODE = 0x69;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -79,7 +77,7 @@ public class CourseDetailActivity extends AppCompatActivity
 
         assessmentFragment = AssessmentListingFragment.newInstance(assessmentContentUri);
         fragmentManager.beginTransaction()
-            .replace(R.id.assessment_list_fragment, assessmentFragment)
+            .replace(R.id.assessment_list_fragment, assessmentFragment, Util.Tag.ASSESSMENT)
             .commit();
 
         // Initialize mentor list fragment
@@ -87,9 +85,8 @@ public class CourseDetailActivity extends AppCompatActivity
 
         mentorFragment = MentorListingFragment.newInstance(mentorContentUri);
         fragmentManager.beginTransaction()
-            .replace(R.id.mentor_list_fragment, mentorFragment)
+            .replace(R.id.mentor_list_fragment, mentorFragment, Util.Tag.MENTOR)
             .commit();
-
     }
     protected void initializeCourseView(Uri courseUri) {
         Cursor cursor = null;
@@ -128,13 +125,13 @@ public class CourseDetailActivity extends AppCompatActivity
                 intent = new Intent(this, AssessmentDataEntryActivity.class);
                 intent.setAction(Intent.ACTION_INSERT);
                 intent.setData(courseContentUri);
-                startActivityForResult(intent, CREATE_ASSESSMENT_REQUEST_CODE);
+                startActivityForResult(intent, Util.RequestCode.ADD_ASSESSMENT);
                 return true;
             case R.id.edit:
                 intent = new Intent(this, CourseDataEntryActivity.class);
                 intent.setAction(Intent.ACTION_EDIT);
                 intent.setData(courseContentUri);
-                startActivityForResult(intent, EDIT_COURSE_REQUEST_CODE);
+                startActivityForResult(intent, Util.RequestCode.EDIT_COURSE);
                 return true;
             case R.id.reminder:
                 Course course = Util.getCourse(this, courseContentUri);
@@ -154,7 +151,7 @@ public class CourseDetailActivity extends AppCompatActivity
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == CREATE_ASSESSMENT_REQUEST_CODE) {
+        if (requestCode == Util.RequestCode.ADD_ASSESSMENT) {
             if (resultCode == Activity.RESULT_OK) {
                 Uri assessmentUri = data.getData();
                 Intent intent = new Intent(this, AssessmentDetailActivity.class);
@@ -163,12 +160,12 @@ public class CourseDetailActivity extends AppCompatActivity
                 startActivity(intent);
             }
         }
-        else if (requestCode == EDIT_COURSE_REQUEST_CODE) {
+        else if (requestCode == Util.RequestCode.EDIT_COURSE) {
             if (resultCode == Activity.RESULT_OK) {
                 initializeCourseView(courseContentUri);
             }
         }
-        else if (requestCode == PICK_MENTOR_REQUEST_CODE) {
+        else if (requestCode == Util.RequestCode.PICK_MENTOR) {
             if (resultCode == Activity.RESULT_OK) {
                 onMentorToggled(ContentUris.parseId(data.getData()));
             }
@@ -187,14 +184,6 @@ public class CourseDetailActivity extends AppCompatActivity
         courseContentUri = savedInstanceState.getParcelable(CourseProvider.CONTRACT.contentItemType);
     }
 
-    @Override
-    public void onAssessmentListFragmentInteraction(long assessmentId) {
-        Intent intent = new Intent(this, AssessmentDetailActivity.class);
-        intent.setAction(Intent.ACTION_VIEW);
-        intent.setData(AssessmentProvider.CONTRACT.getContentUri(assessmentId));
-        startActivity(intent);
-    }
-
     public void addAssessment(View view) {
         Intent intent = new Intent(this, AssessmentDataEntryActivity.class);
         intent.setAction(Intent.ACTION_INSERT);
@@ -206,16 +195,9 @@ public class CourseDetailActivity extends AppCompatActivity
         Intent intent = new Intent(this, MentorPickerActivity.class);
         intent.setAction(Intent.ACTION_PICK);
         intent.setData(courseContentUri);
-        startActivityForResult(intent, PICK_MENTOR_REQUEST_CODE);
+        startActivityForResult(intent, Util.RequestCode.PICK_MENTOR);
     }
 
-    @Override
-    public void onMentorSelected(long mentorId) {
-        Intent intent = new Intent(this, MentorDataEntryActivity.class);
-        intent.setAction(Intent.ACTION_EDIT);
-        intent.setData(MentorProvider.CONTRACT.getContentUri(mentorId));
-        startActivity(intent);
-    }
 
     /**
      * Add mentor to this course, or remove mentor from this course (but do not delete it from the database).
@@ -228,7 +210,7 @@ public class CourseDetailActivity extends AppCompatActivity
         try {
             cursor = getContentResolver().query(courseMentorContentUri, null, null, null, null);
             if (cursor != null && cursor.moveToFirst()) {
-                CourseMentor mentor = Util.getMentor(this, mentorId);
+                Mentor mentor = Util.getMentor(this, mentorId);
                 if (mentor != null) {
                     Toast.makeText(this, getResources().getString(R.string.mentor_removed, mentor.name()), Toast.LENGTH_LONG).show();
                 }
@@ -244,4 +226,45 @@ public class CourseDetailActivity extends AppCompatActivity
             }
         }
     }
+
+    @Override
+    public void onFragmentItemClick(long itemId, String tag) {
+        Intent intent;
+        switch (tag) {
+            case Util.Tag.MENTOR:
+                intent = new Intent(this, MentorDataEntryActivity.class);
+                intent.setAction(Intent.ACTION_EDIT);
+                intent.setData(MentorProvider.CONTRACT.getContentUri(itemId));
+                startActivity(intent);
+                break;
+            case Util.Tag.ASSESSMENT:
+                intent = new Intent(this, AssessmentDetailActivity.class);
+                intent.setAction(Intent.ACTION_VIEW);
+                intent.setData(AssessmentProvider.CONTRACT.getContentUri(itemId));
+                startActivity(intent);
+                break;
+            default:
+                throw new IllegalStateException("Unknown tag "+tag);
+        }
+    }
+
+    @Override
+    public void onFragmentItemLongClick(long itemId, String tag) {
+        switch(tag) {
+            case Util.Tag.MENTOR:
+                onMentorToggled(itemId);
+                break;
+            case Util.Tag.ASSESSMENT:
+                Toast.makeText(this, "Deleting assessments is not supported yet", Toast.LENGTH_SHORT).show();
+                break;
+            default:
+                throw new IllegalStateException("Unknown tag "+tag);
+        }
+    }
+
+/*    @Override
+    public void onAssessmentListFragmentInteraction(long assessmentId) {
+        onFragmentItemClick(assessmentId, TAG_ASSESSMENT);
+        Toast.makeText(this, "Fixme: remove onAssessmentListFragmentInteraction", Toast.LENGTH_SHORT).show();
+    }*/
 }

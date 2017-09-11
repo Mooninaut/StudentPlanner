@@ -10,7 +10,7 @@ import java.util.TimeZone;
  * Created by Clement on 8/13/2017.
  */
 
-public abstract class AcademicEvent {
+public abstract class ScheduleItem implements HasId {
     public static final long NO_ID = -1;
     private static final String TIME_PARADOX = "startMillis must be less than or equal to endMillis";
     private long id = NO_ID;
@@ -23,25 +23,26 @@ public abstract class AcademicEvent {
     @NonNull
     private String name = "";
 
-    public AcademicEvent(@NonNull AcademicEvent other) {
+    public ScheduleItem(@NonNull ScheduleItem other) {
         this.id = other.id();
         this.startMillis(other.startMillis());
         this.endMillis(other.endMillis());
         this.name = other.name();
     }
-    public AcademicEvent(@NonNull String name, long startMillis, long endMillis) {
+    public ScheduleItem(@NonNull String name, long startMillis, long endMillis) {
         if (startMillis > endMillis) {
             throw new IllegalArgumentException(TIME_PARADOX);
         }
         this.name = name;
         this.startEndMillis(startMillis, endMillis);
     }
-    public AcademicEvent(long id, @NonNull String name, long startMillis, long endMillis) {
+    public ScheduleItem(long id, @NonNull String name, long startMillis, long endMillis) {
         this(name, startMillis, endMillis);
         this.id = id;
     }
-    public AcademicEvent() {
+    public ScheduleItem() {
     }
+    @Override
     public long id() {
         return id;
     }

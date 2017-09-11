@@ -14,6 +14,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.clement.studentplanner.data.Assessment;
 import com.example.clement.studentplanner.database.AssessmentCursorAdapter;
@@ -25,7 +26,6 @@ import com.example.clement.studentplanner.input.AssessmentDataEntryActivity;
 
 public class AssessmentDetailActivity extends AppCompatActivity {
     private Uri assessmentContentUri;
-    private static final int EDIT_ASSESSMENT_REQUEST_CODE = 0x77; // arbitrary
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -42,6 +42,10 @@ public class AssessmentDetailActivity extends AppCompatActivity {
 
         assessmentContentUri = getIntent().getData();
 
+        updateAssessment();
+    }
+
+    private void updateAssessment() {
         Cursor cursor = null;
         try {
             cursor = getContentResolver().query(assessmentContentUri, null, null, null, null);
@@ -69,14 +73,22 @@ public class AssessmentDetailActivity extends AppCompatActivity {
                 cursor.close();
             }
         }
-
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == EDIT_ASSESSMENT_REQUEST_CODE) {
+        if (requestCode == Util.RequestCode.EDIT_ASSESSMENT) {
             if (resultCode == Activity.RESULT_OK) {
-                // TODO FIXME refresh Assessment display
+                updateAssessment();
+            }
+        }
+        else if (requestCode == Util.RequestCode.ADD_CALENDAR_EVENT) {
+            if (resultCode == Activity.RESULT_OK) {
+                Toast.makeText(this, "Reminder added!", Toast.LENGTH_SHORT).show();
+            }
+            else {
+                String result = data == null ? "Null" : data.getData().toString();
+                Toast.makeText(this, "Result code: "+resultCode+" Data: "+result, Toast.LENGTH_LONG).show();
             }
         }
     }
@@ -97,7 +109,7 @@ public class AssessmentDetailActivity extends AppCompatActivity {
                 Intent intent = new Intent(this, AssessmentDataEntryActivity.class);
                 intent.setAction(Intent.ACTION_EDIT);
                 intent.setData(assessmentContentUri);
-                startActivityForResult(intent, EDIT_ASSESSMENT_REQUEST_CODE);
+                startActivityForResult(intent, Util.RequestCode.EDIT_ASSESSMENT);
                 return true;
             case R.id.reminder:
                 Assessment assessment = Util.getAssessment(this, assessmentContentUri);
@@ -107,7 +119,9 @@ public class AssessmentDetailActivity extends AppCompatActivity {
                     .putExtra(CalendarContract.EXTRA_EVENT_END_TIME, assessment.endMillis())
                     .putExtra(CalendarContract.Events.TITLE, assessment.name())
                     .putExtra(CalendarContract.Events.DESCRIPTION, assessment.notes());
-                startActivity(intent);
+                if (intent.resolveActivity(getPackageManager()) != null) {
+                    startActivityForResult(intent, Util.RequestCode.ADD_CALENDAR_EVENT);
+                }
                 return true;
         }
         return super.onOptionsItemSelected(item);

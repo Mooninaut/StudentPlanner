@@ -9,7 +9,7 @@ import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import com.example.clement.studentplanner.data.CourseMentor;
+import com.example.clement.studentplanner.data.Mentor;
 
 import static android.content.ContentResolver.SCHEME_CONTENT;
 import static com.example.clement.studentplanner.database.StorageHelper.COLUMNS_MENTOR;
@@ -70,7 +70,7 @@ public class MentorProvider extends ContentProviderBase {
         public final Uri contentUri;
         public final Uri courseUri;
         public final Uri noCourseUri;
-        public final String contentItemType = "CourseMentor";
+        public final String contentItemType = "Mentor";
         CourseMentorContract() {
             Uri.Builder builder = new Uri.Builder()
                 .scheme(SCHEME_CONTENT)
@@ -89,12 +89,14 @@ public class MentorProvider extends ContentProviderBase {
     private static final String COURSE_QUERY = "SELECT "+COLUMN_ID+","+COLUMN_NAME+","
         +COLUMN_PHONE_NUMBER+","+COLUMN_EMAIL+" FROM "+TABLE_MENTOR+" LEFT JOIN "
         +TABLE_COURSE_MENTOR+" ON "+TABLE_MENTOR+"."+COLUMN_ID+" = "+TABLE_COURSE_MENTOR
-        +"."+COLUMN_MENTOR_ID+" WHERE "+TABLE_COURSE_MENTOR+"."+COLUMN_COURSE_ID+" = ?";
+        +"."+COLUMN_MENTOR_ID+" WHERE "+TABLE_COURSE_MENTOR+"."+COLUMN_COURSE_ID+" = ?"
+        +" ORDER BY "+COLUMN_ID+" ASC";
 
     private static final String NO_COURSE_QUERY = "SELECT "+COLUMN_ID+","+COLUMN_NAME+","
         +COLUMN_PHONE_NUMBER+","+COLUMN_EMAIL+" FROM "+TABLE_MENTOR
         +" WHERE NOT EXISTS ( SELECT 'x' FROM "+TABLE_COURSE_MENTOR+" WHERE "+TABLE_MENTOR+"."
-        +COLUMN_ID+" = "+TABLE_COURSE_MENTOR+"."+COLUMN_MENTOR_ID+" AND "+COLUMN_COURSE_ID+" = ?)";
+        +COLUMN_ID+" = "+TABLE_COURSE_MENTOR+"."+COLUMN_MENTOR_ID+" AND "+COLUMN_COURSE_ID+" = ?)"
+        +" ORDER BY "+COLUMN_ID+" ASC";
 
     private static final UriMatcher uriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
     public static final CourseMentorContract CONTRACT = CourseMentorContract.INSTANCE;
@@ -163,7 +165,7 @@ public class MentorProvider extends ContentProviderBase {
     }
 
     @NonNull
-    public static ContentValues mentorToValues(@NonNull CourseMentor mentor) {
+    public static ContentValues mentorToValues(@NonNull Mentor mentor) {
         ContentValues values = new ContentValues();
         values.put(COLUMN_PHONE_NUMBER, mentor.phoneNumber());
         values.put(COLUMN_NAME, mentor.name());
@@ -172,6 +174,16 @@ public class MentorProvider extends ContentProviderBase {
             values.put(COLUMN_ID, mentor.id());
         }
         return values;
+    }
+
+    @Override
+    public int update(@NonNull Uri uri, @Nullable ContentValues values, @Nullable String selection, @Nullable String[] selectionArgs) {
+        long mentorId = ContentUris.parseId(uri);
+        int result = super.update(uri, values, selection, selectionArgs);
+        if (result > 0) {
+            notifyChange(CONTRACT.courseUri);
+        }
+        return result;
     }
 
     @NonNull

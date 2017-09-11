@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.example.clement.studentplanner.R;
+import com.example.clement.studentplanner.data.Event;
 
 import java.text.DateFormat;
 import java.util.Date;
@@ -19,8 +20,8 @@ import static com.example.clement.studentplanner.database.StorageHelper.COLUMN_E
 import static com.example.clement.studentplanner.database.StorageHelper.COLUMN_ID;
 import static com.example.clement.studentplanner.database.StorageHelper.COLUMN_NAME;
 import static com.example.clement.studentplanner.database.StorageHelper.COLUMN_START;
+import static com.example.clement.studentplanner.database.StorageHelper.COLUMN_TERMINUS;
 import static com.example.clement.studentplanner.database.StorageHelper.COLUMN_TIME;
-import static com.example.clement.studentplanner.database.StorageHelper.COLUMN_TYPE;
 
 /**
  * Created by Clement on 8/13/2017.
@@ -51,20 +52,20 @@ public class EventCursorAdapter extends CursorAdapter {
         String eventName = cursor.getString(cursor.getColumnIndex(COLUMN_NAME));
 //        int eventNumber = cursor.getInt(    cursor.getColumnIndex(StorageHelper.COLUMN_NUMBER));
 //        int    eventId   = cursor.getInt(   cursor.getColumnIndex(COLUMN_ID));
-        String eventType = cursor.getString(cursor.getColumnIndex(COLUMN_TYPE));
+        String eventTerminus = cursor.getString(cursor.getColumnIndex(COLUMN_TERMINUS));
         String eventTypeIcon;
-        String beginOrEnd;
-        switch (eventType) {
+        String terminus;
+        switch (eventTerminus) {
             case COLUMN_START:
-                beginOrEnd = "Start";
-//                eventType = context.getResources().getString(R.string.start);
+                terminus = context.getResources().getString(R.string.start);
+//                eventTerminus = context.getResources().getString(R.string.start);
                 eventTypeIcon = context.getResources().getString(R.string.go);
                 setViewBackground(eventTV, context.getResources().getDrawable(R.drawable.start_circle));
                 eventTV.setTextSize(18f);
                 break;
             case COLUMN_END:
-                beginOrEnd = "End";
-//                eventType = context.getResources().getString(R.string.end);
+                terminus = context.getResources().getString(R.string.end);
+//                eventTerminus = context.getResources().getString(R.string.end);
                 eventTypeIcon = context.getResources().getString(R.string.stop);
                 setViewBackground(eventTV, context.getResources().getDrawable(R.drawable.end_circle));
                 eventTV.setTextSize(10f);
@@ -96,8 +97,8 @@ public class EventCursorAdapter extends CursorAdapter {
         }
         timeTV.setText(showTime ? TIME_FORMAT.format(eventTime) : "");
         dateTV.setText(DATE_FORMAT.format(eventTime));
-//        nameTV.setText(prefix+" "+eventName);
-        nameTV.setText(String.format(context.getResources().getString(R.string.event_format), beginOrEnd, prefix, eventName));
+
+        nameTV.setText(context.getResources().getString(R.string.event_format, terminus, prefix, eventName));
     }
 
     public static void setViewBackground(View view, Drawable drawable) {
@@ -107,5 +108,14 @@ public class EventCursorAdapter extends CursorAdapter {
         else {
             view.setBackgroundDrawable(drawable);
         }
+    }
+
+    public static Event cursorToEvent(Cursor cursor, Context context) {
+        return new Event(
+            cursor.getLong(cursor.getColumnIndex(COLUMN_ID)),
+            cursor.getString(cursor.getColumnIndex(COLUMN_NAME)),
+            cursor.getLong(cursor.getColumnIndex(COLUMN_TIME)),
+            Event.Terminus.of(cursor.getString(cursor.getColumnIndex(COLUMN_TERMINUS)))
+        );
     }
 }

@@ -2,24 +2,12 @@
 <android.support.constraint.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:id="@+id/course_detail"
+    android:id="@+id/course_detail_container"
     android:background="@color/colorLightGray"
     >
-    <View
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:background="@color/colorCourseBackground"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/toolbar"
-        app:layout_constraintBottom_toTopOf="@+id/mentor_header"
-        android:layout_marginTop="@dimen/margin_tiny"
-        android:layout_marginBottom="@dimen/margin_tiny"
 
-        />
     <include layout="@layout/toolbar"
         android:id="@+id/toolbar"
         android:layout_height="wrap_content"
@@ -28,6 +16,33 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         />
+    <ScrollView
+        android:id="@+id/scrollview"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/toolbar"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        >
+    <android.support.constraint.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/course_detail"
+        android:background="@color/colorLightGray"
+        >
+        <View
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:background="@color/colorCourseBackground"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toTopOf="@+id/mentor_header"
+            android:layout_marginTop="@dimen/margin_tiny"
+            android:layout_marginBottom="@dimen/margin_tiny"
+
+            />
     <TextView
         android:id="@+id/course_number_text_view"
         android:textSize="20sp"
@@ -45,7 +60,7 @@
         android:text="12"
         app:layout_constraintBottom_toTopOf="@+id/mentor_header"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/toolbar"
+        app:layout_constraintTop_toTopOf="parent"
         />
 
     <TextView
@@ -65,7 +80,7 @@
         app:layout_constraintBottom_toTopOf="@+id/mentor_header"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toLeftOf="@+id/course_start_text_view"
-        app:layout_constraintTop_toBottomOf="@+id/toolbar"
+        app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:autoSizeTextType="uniform"
         app:autoSizeMinTextSize="12sp"
@@ -82,7 +97,7 @@
         android:textAppearance="@style/TextAppearance.AppCompat.Inverse"
         android:layout_marginTop="@dimen/margin_large"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/toolbar"
+        app:layout_constraintTop_toTopOf="parent"
         />
 
     <TextView
@@ -120,7 +135,7 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         android:layout_width="0dp"
-        android:layout_height="0dp"
+        android:layout_height="wrap_content"
         android:layout_weight="0">
     </FrameLayout>
 
@@ -147,7 +162,7 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         android:layout_width="0dp"
-        android:layout_height="0dp"
+        android:layout_height="wrap_content"
         android:layout_weight="0">
     </FrameLayout>
 
@@ -158,6 +173,7 @@
         app:layout_constraintDimensionRatio="1"
         android:layout_marginBottom="0dp"
         android:layout_marginRight="0dp"
+        android:layout_marginEnd="0dp"
         android:layout_marginTop="0dp"
         android:background="@android:color/transparent"
         app:layout_constraintBottom_toBottomOf="@+id/mentor_header"
@@ -178,4 +194,6 @@
         app:layout_constraintTop_toTopOf="@id/assessment_header"
         app:layout_constraintRight_toRightOf="parent"
         />
+    </android.support.constraint.ConstraintLayout>
+    </ScrollView>
 </android.support.constraint.ConstraintLayout>

@@ -11,6 +11,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 
+import com.example.clement.studentplanner.FragmentItemListener;
 import com.example.clement.studentplanner.MentorListingFragment;
 import com.example.clement.studentplanner.R;
 import com.example.clement.studentplanner.database.MentorProvider;
@@ -19,11 +20,12 @@ import com.example.clement.studentplanner.database.MentorProvider;
  * Created by Clement on 9/9/2017.
  */
 
-public class MentorPickerActivity extends AppCompatActivity implements MentorListingFragment.HostActivity {
+public class MentorPickerActivity extends AppCompatActivity
+    implements FragmentItemListener.OnClick {
 
 //    private Uri courseUri;
     private static final int ADD_MENTOR_REQUEST_CODE = 777;
-
+    private static final String TAG = "mentor";
     public MentorPickerActivity() {}
 
 //    public static MentorPickerActivity newInstance(Uri courseUri) {
@@ -33,20 +35,7 @@ public class MentorPickerActivity extends AppCompatActivity implements MentorLis
 //        fragment.setArguments(args);
 //        return fragment;
 //    }
-    @Override
-    public void onMentorSelected(long mentorId) {
-        Intent result = new Intent("com.example.clement.studentplanner.RESULT_MENTOR",
-            MentorProvider.CONTRACT.getContentUri(mentorId)
-        );
 
-        setResult(Activity.RESULT_OK, result);
-        finish();
-    }
-
-    @Override
-    public void onMentorToggled(long mentorId) {
-        // derp
-    }
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -83,13 +72,24 @@ public class MentorPickerActivity extends AppCompatActivity implements MentorLis
         Uri mentorWithoutCourseUri = MentorProvider.CONTRACT.getNoCourseUri(courseId);
         MentorListingFragment fragment = MentorListingFragment.newInstance(mentorWithoutCourseUri);
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-        transaction.replace(R.id.mentor_picker_frame, fragment, "mentor");
+        transaction.replace(R.id.mentor_picker_frame, fragment, TAG);
         transaction.commit();
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == ADD_MENTOR_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
+            finish();
+        }
+    }
+
+    @Override
+    public void onFragmentItemClick(long mentorId, String tag) {
+        if (tag.equals(TAG)) {
+            Intent result = new Intent("com.example.clement.studentplanner.RESULT_MENTOR",
+                MentorProvider.CONTRACT.getContentUri(mentorId)
+            );
+            setResult(Activity.RESULT_OK, result);
             finish();
         }
     }

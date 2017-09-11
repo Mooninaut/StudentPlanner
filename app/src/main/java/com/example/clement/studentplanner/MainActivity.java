@@ -1,6 +1,5 @@
 package com.example.clement.studentplanner;
 
-
 import android.app.Activity;
 import android.content.ContentUris;
 import android.content.ContentValues;
@@ -35,18 +34,16 @@ import com.example.clement.studentplanner.input.TermDataEntryActivity;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 
+import static com.example.clement.studentplanner.Util.Tag.ASSESSMENT;
+import static com.example.clement.studentplanner.Util.Tag.COURSE;
+import static com.example.clement.studentplanner.Util.Tag.TERM;
 
 public class MainActivity extends AppCompatActivity
     implements EventListingFragment.HostActivity,
     TermListingFragment.HostActivity,
     CourseListingFragment.HostActivity,
-    AssessmentListingFragment.HostActivity {
-    private final String EVENT_TAG = "event";
-    private final String COURSE_TAG = "course";
-    private final String ASSESSMENT_TAG = "assessment";
-    private final String TERM_TAG = "term";
-
-    private static final int CREATE_TERM_REQUEST_CODE = 0x77; // arbitrary
+    /*AssessmentListingFragment.HostActivity */
+    FragmentItemListener.OnClick, FragmentItemListener.OnLongClick {
 
 //    private final EventCursorAdapter eventCursorAdapter = new EventCursorAdapter(this, null, 0);
 //    private final TermCursorAdapter termCursorAdapter = new TermCursorAdapter(this, null, 0);
@@ -70,7 +67,7 @@ public class MainActivity extends AppCompatActivity
 
         eventListingFragment = new EventListingFragment();
         fragmentManager = getSupportFragmentManager();
-        switchToFragment(eventListingFragment, EVENT_TAG);
+        switchToFragment(eventListingFragment, Util.Tag.EVENT);
 
         Toolbar myToolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(myToolbar);
@@ -122,7 +119,7 @@ public class MainActivity extends AppCompatActivity
         Intent intent = new Intent(this, TermDataEntryActivity.class);
         intent.setAction(Intent.ACTION_INSERT);
         intent.setData(TermProvider.CONTRACT.contentUri);
-        startActivityForResult(intent, CREATE_TERM_REQUEST_CODE);
+        startActivityForResult(intent, Util.RequestCode.ADD_TERM);
     }
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -145,7 +142,7 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == CREATE_TERM_REQUEST_CODE) {
+        if (requestCode == Util.RequestCode.ADD_TERM) {
             if (resultCode == Activity.RESULT_OK) {
                 Uri termUri = data.getData();
                 launchTermDetailActivity(ContentUris.parseId(termUri));
@@ -297,9 +294,29 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
+    public void onFragmentItemClick(long itemId, String tag) {
+        switch (tag) {
+            case ASSESSMENT:
+                launchAssessmentDetailActivity(itemId);
+                break;
+            case TERM:
+                launchTermDetailActivity(itemId);
+                break;
+            case COURSE:
+                launchCourseDetailActivity(itemId);
+                break;
+        }
+    }
+
+    @Override
+    public void onFragmentItemLongClick(long itemId, String tag) {
+
+    }
+
+/*    @Override
     public void onAssessmentListFragmentInteraction(long assessmentId) {
         launchAssessmentDetailActivity(assessmentId);
-    }
+    }*/
 
     private class BottomNavigationListener implements BottomNavigationView.OnNavigationItemSelectedListener {
         @Override
@@ -308,19 +325,19 @@ public class MainActivity extends AppCompatActivity
             switch (item.getItemId()) {
                 case R.id.navigation_home:
 //                    activity = MainActivity.class;
-                    switchToFragment(eventListingFragment, EVENT_TAG);
+                    switchToFragment(eventListingFragment, Util.Tag.EVENT);
                     return true;
                 case R.id.navigation_terms:
 //                    termListingFragment.setArguments(null);
-                    switchToFragment(getTermListingFragment(), TERM_TAG);
+                    switchToFragment(getTermListingFragment(), Util.Tag.TERM);
                     return true;
                 case R.id.navigation_courses:
 //                    courseListingFragment.setArguments(null);
-                    switchToFragment(getCourseListingFragment(), COURSE_TAG);
+                    switchToFragment(getCourseListingFragment(), Util.Tag.COURSE);
                     return true;
                 case R.id.navigation_assessments:
 //                    assessmentListingFragment.setArguments(null);
-                    switchToFragment(getAssessmentListingFragment(), ASSESSMENT_TAG);
+                    switchToFragment(getAssessmentListingFragment(), ASSESSMENT);
                     return true;
                 default:
                     return false;

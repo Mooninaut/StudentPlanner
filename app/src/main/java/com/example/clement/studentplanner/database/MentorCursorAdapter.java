@@ -12,7 +12,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.example.clement.studentplanner.R;
-import com.example.clement.studentplanner.data.CourseMentor;
+import com.example.clement.studentplanner.data.Mentor;
 
 import static com.example.clement.studentplanner.database.StorageHelper.COLUMN_EMAIL;
 import static com.example.clement.studentplanner.database.StorageHelper.COLUMN_ID;
@@ -38,22 +38,22 @@ public class MentorCursorAdapter extends CursorAdapter {
 
     @Override
     public void bindView(View view, Context context, Cursor cursor) {
-        CourseMentor courseMentor = cursorToCourseMentor(cursor);
+        Mentor mentor = cursorToCourseMentor(cursor);
 
-        Log.d("CourseMentorCursorAdapt", "Id: "+courseMentor.id());
+        Log.d("CourseMentorCursorAdapt", "Id: "+ mentor.id());
 
         TextView nameTV = (TextView) view.findViewById(R.id.mentor_name_text_view);
         TextView emailTV = (TextView) view.findViewById(R.id.mentor_email_text_view);
         TextView phoneTV = (TextView) view.findViewById(R.id.mentor_phone_number_text_view);
 
-        nameTV.setText(courseMentor.name());
-        emailTV.setText(courseMentor.emailAddress());
-        phoneTV.setText(courseMentor.phoneNumber());
+        nameTV.setText(mentor.name());
+        emailTV.setText(mentor.emailAddress());
+        phoneTV.setText(mentor.phoneNumber());
 
     }
 
-    public static CourseMentor cursorToCourseMentor(Cursor cursor) {
-        return new CourseMentor(
+    public static Mentor cursorToCourseMentor(Cursor cursor) {
+        return new Mentor(
             cursor.getLong(cursor.getColumnIndex(COLUMN_ID)),
             cursor.getString(cursor.getColumnIndex(COLUMN_NAME)),
             cursor.getString(cursor.getColumnIndex(COLUMN_PHONE_NUMBER)),
@@ -62,7 +62,7 @@ public class MentorCursorAdapter extends CursorAdapter {
     }
     @Override
     @Nullable
-    public CourseMentor getItem(int position) {
+    public Mentor getItem(int position) {
         Cursor cursor = getCursor();
         if (cursor.moveToPosition(position)) {
             return cursorToCourseMentor(cursor);

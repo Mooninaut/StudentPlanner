@@ -8,32 +8,33 @@ import java.util.Locale;
  * Created by Clement on 9/4/2017.
  */
 
-public class CourseMentor {
+public class Mentor implements HasId {
     public static final long NO_ID = -1;
     private long id = NO_ID;
     private @NonNull String name = "";
     private @NonNull String phoneNumber = "";
     private @NonNull String emailAddress = "";
 
-    public CourseMentor() {}
+    public Mentor() {}
 
-    public CourseMentor(@NonNull CourseMentor other) {
+    public Mentor(@NonNull Mentor other) {
         this.id = other.id();
         this.name = other.name();
         this.phoneNumber = other.phoneNumber();
         this.emailAddress = other.emailAddress();
     }
-    public CourseMentor(long id, @NonNull String name, @NonNull String phoneNumber, @NonNull String emailAddress) {
+    public Mentor(long id, @NonNull String name, @NonNull String phoneNumber, @NonNull String emailAddress) {
         this.id = id;
         this.name = name;
         this.phoneNumber = phoneNumber;
         this.emailAddress = emailAddress;
     }
-    public CourseMentor(@NonNull String name, @NonNull String phoneNumber, @NonNull String emailAddress) {
+    public Mentor(@NonNull String name, @NonNull String phoneNumber, @NonNull String emailAddress) {
         this.name = name;
         this.phoneNumber = phoneNumber;
         this.emailAddress = emailAddress;
     }
+    @Override
     public long id() {
         return id;
     }

@@ -11,7 +11,7 @@ import java.util.Locale;
  * Created by Clement on 8/8/2017.
  */
 
-public class Assessment extends AcademicEvent {
+public class Assessment extends ScheduleItem {
     public enum Type {
         PERFORMANCE(1), OBJECTIVE(2), NONE(0);
         private final int value;
@@ -43,7 +43,7 @@ public class Assessment extends AcademicEvent {
         }
     }
     //private String name;
-    private long courseId = AcademicEvent.NO_ID;
+    private long courseId = ScheduleItem.NO_ID;
     @NonNull
     private Type type = Type.NONE;
     //private long startMillis;
@@ -69,14 +69,14 @@ public class Assessment extends AcademicEvent {
 
     public Assessment(@NonNull String name, long startMillis, long endMillis,
                       long courseId, @NonNull Type type, @NonNull String notes) {
-        super(AcademicEvent.NO_ID, name, startMillis, endMillis);
+        super(ScheduleItem.NO_ID, name, startMillis, endMillis);
         this.type = type;
         this.notes = notes;
         this.courseId = courseId;
     }
     public Assessment(@NonNull String name, long startMillis, long endMillis,
                       @NonNull Course course, @NonNull Type type, @NonNull String notes) {
-        super(AcademicEvent.NO_ID, name, startMillis, endMillis);
+        super(ScheduleItem.NO_ID, name, startMillis, endMillis);
         this.type = type;
         this.notes = notes;
         this.courseId = course.id();

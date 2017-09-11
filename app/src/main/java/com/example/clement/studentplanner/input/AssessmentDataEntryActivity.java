@@ -48,6 +48,7 @@ public class AssessmentDataEntryActivity extends AppCompatActivity implements
     private TextView dateView;
     private Course course;
     SparseIntArray typeToSpinnerPosition;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

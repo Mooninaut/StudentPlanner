@@ -3,18 +3,16 @@ package com.example.clement.studentplanner;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
-import android.view.View;
-import android.widget.AdapterView;
 
-import com.example.clement.studentplanner.database.AssessmentCursorAdapter;
 import com.example.clement.studentplanner.database.AssessmentProvider;
+import com.example.clement.studentplanner.database.AssessmentRecyclerAdapter;
 
 /**
  * Created by Clement on 8/23/2017.
  */
 
-public class AssessmentListingFragment extends
-    ListingFragmentBase<AssessmentCursorAdapter, AssessmentListingFragment.HostActivity> {
+public class AssessmentListingFragment
+    extends RecyclerListingFragmentBase<AssessmentRecyclerAdapter> {
 
     //    private Cursor assessmentCursor;
 //    private AssessmentLoaderListener assessmentLoaderListener;
@@ -32,8 +30,8 @@ public class AssessmentListingFragment extends
      */
     public AssessmentListingFragment() {
         super(AssessmentProvider.CONTRACT,
-            HostActivity.class,
-            R.layout.assessment_list_view,
+//            HostActivity.class,
+            R.layout.assessment_recycler_view,
             ASSESSMENT_LOADER_ID
         );
     }
@@ -43,8 +41,11 @@ public class AssessmentListingFragment extends
         fragment.initialize(contentUri);
         return fragment;
     }
-
     @Override
+    protected AssessmentRecyclerAdapter createAdapter(Context context, Cursor cursor) {
+        return new AssessmentRecyclerAdapter(context, cursor, this, this);
+    }
+/*    @Override
     protected AssessmentCursorAdapter createAdapter(Context context, Cursor cursor) {
         return new AssessmentCursorAdapter(context, cursor, 0);
     }
@@ -56,5 +57,5 @@ public class AssessmentListingFragment extends
 
     public interface HostActivity {
         void onAssessmentListFragmentInteraction(long assessmentId);
-    }
+    }*/
 }

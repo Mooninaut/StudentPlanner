@@ -16,14 +16,14 @@ import android.widget.Button;
 import android.widget.EditText;
 
 import com.example.clement.studentplanner.R;
-import com.example.clement.studentplanner.data.CourseMentor;
+import com.example.clement.studentplanner.data.Mentor;
 import com.example.clement.studentplanner.database.CourseMentorProvider;
 import com.example.clement.studentplanner.database.MentorCursorAdapter;
 import com.example.clement.studentplanner.database.MentorProvider;
 
 public class MentorDataEntryActivity extends AppCompatActivity {
 
-    private CourseMentor courseMentor = new CourseMentor();
+    private Mentor mentor = new Mentor();
     private Uri mentorContentUri;
     private Uri courseContentUri;
     private String action;
@@ -55,16 +55,16 @@ public class MentorDataEntryActivity extends AppCompatActivity {
             try {
                 cursor = resolver.query(mentorContentUri, null, null, null, null);
                 if (cursor != null && cursor.moveToFirst()) {
-                    courseMentor = MentorCursorAdapter.cursorToCourseMentor(cursor);
+                    mentor = MentorCursorAdapter.cursorToCourseMentor(cursor);
                 }
             } finally {
                 if (cursor != null) {
                     cursor.close();
                 }
             }
-            ((EditText)findViewById(R.id.edit_name)).setText(courseMentor.name());
-            ((EditText)findViewById(R.id.edit_number)).setText(courseMentor.phoneNumber());
-            ((EditText)findViewById(R.id.edit_email)).setText(courseMentor.emailAddress());
+            ((EditText)findViewById(R.id.edit_name)).setText(mentor.name());
+            ((EditText)findViewById(R.id.edit_number)).setText(mentor.phoneNumber());
+            ((EditText)findViewById(R.id.edit_email)).setText(mentor.emailAddress());
         }
         else if (action.equals(Intent.ACTION_INSERT)) {
             courseContentUri = intent.getData();
@@ -84,16 +84,16 @@ public class MentorDataEntryActivity extends AppCompatActivity {
         EditText number = (EditText) findViewById(R.id.edit_number);
         EditText email = (EditText) findViewById(R.id.edit_email);
 
-        courseMentor.name(name.getText().toString().trim());
-        courseMentor.emailAddress(email.getText().toString().trim());
-        courseMentor.phoneNumber(number.getText().toString().trim());
-        Log.d(MentorDataEntryActivity.class.getSimpleName(), courseMentor.toString());
+        mentor.name(name.getText().toString().trim());
+        mentor.emailAddress(email.getText().toString().trim());
+        mentor.phoneNumber(number.getText().toString().trim());
+        Log.d(MentorDataEntryActivity.class.getSimpleName(), mentor.toString());
 
         Intent result = new Intent();
         if (action.equals(Intent.ACTION_EDIT)) {
             int rowsAffected = getContentResolver().update(
                 mentorContentUri,
-                MentorProvider.mentorToValues(courseMentor),
+                MentorProvider.mentorToValues(mentor),
                 null,
                 null
             );
@@ -105,7 +105,7 @@ public class MentorDataEntryActivity extends AppCompatActivity {
         else if (action.equals(Intent.ACTION_INSERT)) {
             Uri mentorUri = getContentResolver().insert(
                 MentorProvider.CONTRACT.contentUri,
-                MentorProvider.mentorToValues(courseMentor)
+                MentorProvider.mentorToValues(mentor)
             );
             if (mentorUri == null) {
                 throw new NullPointerException();

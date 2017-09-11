@@ -7,6 +7,8 @@ import android.provider.BaseColumns;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
+import com.example.clement.studentplanner.data.Event.Type;
+
 import java.util.ArrayList;
 
 /**
@@ -14,11 +16,9 @@ import java.util.ArrayList;
  */
 
 public class StorageHelper extends SQLiteOpenHelper {
-    public enum Type {
-        TERM, COURSE, ASSESSMENT, NONE
-    }
 
-    public static final int DATABASE_VERSION = 18;
+
+    public static final int DATABASE_VERSION = 19;
     public static final String TABLE_TERM = "term";
     public static final String COLUMN_ID = BaseColumns._ID;
     public static final String COLUMN_NAME = "name";
@@ -33,6 +33,7 @@ public class StorageHelper extends SQLiteOpenHelper {
     public static final String COLUMN_FILE_NAME = "file_name";
     public static final String COLUMN_PHONE_NUMBER = "phone";
     public static final String COLUMN_EMAIL = "email";
+    public static final String COLUMN_TERMINUS = "terminus";
 
     public static final String[] COLUMNS_TERM = {
         COLUMN_ID, COLUMN_NAME, COLUMN_START, COLUMN_END, COLUMN_NUMBER
@@ -69,13 +70,13 @@ public class StorageHelper extends SQLiteOpenHelper {
     };
 
     public static final String[] COLUMNS_EVENT = {
-        COLUMN_ID, COLUMN_NAME, COLUMN_TIME, COLUMN_TYPE
+        COLUMN_ID, COLUMN_NAME, COLUMN_TIME, COLUMN_TERMINUS
     };
     public static final String VIEW_EVENT = "eventView";
     private static final String SELECT_EVENT_START = "SELECT "+COLUMN_ID+"*2 AS "+COLUMN_ID+", "
-        +COLUMN_NAME+", "+COLUMN_START+" AS "+COLUMN_TIME+", '"+COLUMN_START+"' AS "+COLUMN_TYPE+" FROM ";
+        +COLUMN_NAME+", "+COLUMN_START+" AS "+COLUMN_TIME+", '"+COLUMN_START+"' AS "+COLUMN_TERMINUS+" FROM ";
     private static final String SELECT_EVENT_END = "SELECT "+COLUMN_ID+"*2+1 AS "+COLUMN_ID+", "
-        +COLUMN_NAME+", "+COLUMN_END+" AS "+COLUMN_TIME+", '"+COLUMN_END+"' AS "+COLUMN_TYPE+" FROM ";
+        +COLUMN_NAME+", "+COLUMN_END+" AS "+COLUMN_TIME+", '"+COLUMN_END+"' AS "+COLUMN_TERMINUS+" FROM ";
     public static final int TERM_ID_OFFSET = 10_000_000;
     public static final int COURSE_ID_OFFSET = 20_000_000;
     public static final int ASSESSMENT_ID_OFFSET = 30_000_000;
