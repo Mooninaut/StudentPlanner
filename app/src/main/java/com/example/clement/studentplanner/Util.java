@@ -1,9 +1,17 @@
 package com.example.clement.studentplanner;
 
+import android.app.Activity;
 import android.content.ContentUris;
 import android.content.Context;
+import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
+import android.graphics.Bitmap;
 import android.net.Uri;
+import android.os.Bundle;
+import android.provider.MediaStore;
+import android.support.annotation.Nullable;
+import android.support.v4.content.FileProvider;
 
 import com.example.clement.studentplanner.data.Assessment;
 import com.example.clement.studentplanner.data.Course;
@@ -21,6 +29,12 @@ import com.example.clement.studentplanner.database.MentorProvider;
 import com.example.clement.studentplanner.database.StorageHelper;
 import com.example.clement.studentplanner.database.TermCursorAdapter;
 import com.example.clement.studentplanner.database.TermProvider;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 
 /**
  * Created by Clement on 9/9/2017.
@@ -157,5 +171,58 @@ public final class Util {
     }
     public static Assessment getAssessment(Context context, Uri assessmentUri) {
         return getAssessment(context, ContentUris.parseId(assessmentUri));
+    }
+
+    public static class Photo {
+        public static boolean capture(Activity activity, int requestCode) {
+            boolean taken = false;
+            if (activity.getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA)) {
+                Intent capturePhotoIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                if (capturePhotoIntent.resolveActivity(activity.getPackageManager()) != null) {
+                    activity.startActivityForResult(capturePhotoIntent, requestCode);
+                    taken = true;
+                }
+            }
+            return taken;
+        }
+
+        public static boolean capture(Activity activity) {
+            return capture(activity, RequestCode.ADD_PHOTO);
+        }
+
+        public static Uri storeThumbnail(Context context, int resultCode, Intent data, String name) {
+            if (resultCode == Activity.RESULT_OK && data != null) {
+                Bundle extras = data.getExtras();
+                Bitmap thumbnailBitmap = (Bitmap) extras.get("data");
+                File file = null;
+                try {
+                    file = openFile(context, name);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                if (file != null) {
+                    Uri photoUri = FileProvider.getUriForFile(context, "com.example.clement.studentplanner.fileprovider", file);
+                    try {
+                        OutputStream out = new FileOutputStream(file);
+                        thumbnailBitmap.compress(Bitmap.CompressFormat.JPEG, 50, out);
+                        return photoUri;
+                    } catch (FileNotFoundException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+            return null;
+        }
+
+        @Nullable
+        public static File openFile(Context context, String name) throws IOException {
+            String imageFileName = "PHOTO_"+name;
+            File storageDir = new File(context.getFilesDir(), "pics");
+            if (storageDir.exists() || storageDir.mkdir()) {
+                File imageFile = File.createTempFile(imageFileName, ".jpg", storageDir);
+                return imageFile;
+            }
+            return null;
+        }
     }
 }

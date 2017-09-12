@@ -29,6 +29,7 @@ import com.example.clement.studentplanner.input.AssessmentDataEntryActivity;
 import com.example.clement.studentplanner.input.CourseDataEntryActivity;
 import com.example.clement.studentplanner.input.MentorDataEntryActivity;
 import com.example.clement.studentplanner.input.MentorPickerActivity;
+import com.example.clement.studentplanner.input.PhotoCaptureActivity;
 
 /**
  * An activity representing a single Course detail screen.
@@ -121,11 +122,16 @@ public class CourseDetailActivity extends AppCompatActivity
             case android.R.id.home:
                 finish();
                 return true;
-            case R.id.add:
+/*            case R.id.add:
                 intent = new Intent(this, AssessmentDataEntryActivity.class);
                 intent.setAction(Intent.ACTION_INSERT);
                 intent.setData(courseContentUri);
                 startActivityForResult(intent, Util.RequestCode.ADD_ASSESSMENT);
+                return true;*/
+            case R.id.take_photo:
+                intent = new Intent(this, PhotoCaptureActivity.class);
+                intent.setAction(Intent.ACTION_INSERT);
+                startActivityForResult(intent, Util.RequestCode.ADD_PHOTO);
                 return true;
             case R.id.edit:
                 intent = new Intent(this, CourseDataEntryActivity.class);
@@ -145,7 +151,8 @@ public class CourseDetailActivity extends AppCompatActivity
                 startActivity(intent);
                 return true;
             default:
-                return super.onOptionsItemSelected(item);
+//                return super.onOptionsItemSelected(item);
+                throw new UnsupportedOperationException();
         }
     }
 
@@ -261,10 +268,4 @@ public class CourseDetailActivity extends AppCompatActivity
                 throw new IllegalStateException("Unknown tag "+tag);
         }
     }
-
-/*    @Override
-    public void onAssessmentListFragmentInteraction(long assessmentId) {
-        onFragmentItemClick(assessmentId, TAG_ASSESSMENT);
-        Toast.makeText(this, "Fixme: remove onAssessmentListFragmentInteraction", Toast.LENGTH_SHORT).show();
-    }*/
 }

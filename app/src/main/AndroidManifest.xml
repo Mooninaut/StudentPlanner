@@ -1,8 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.clement.studentplanner">
-    <uses-feature android:name="android.hardware.camera"/>
+
+    <uses-feature
+        android:name="android.hardware.camera"
+        android:required="false"/>
+
     <uses-permission android:name="android.permission.CAMERA"/>
+    <uses-permission
+        android:name="android.permission.WRITE_EXTERNAL_STORAGE"
+        android:maxSdkVersion="18"/>
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -10,8 +18,9 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-
-        <activity android:name=".MainActivity" android:configChanges="orientation|screenSize">
+        <activity
+            android:name=".MainActivity"
+            android:configChanges="orientation|screenSize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
 
@@ -45,6 +54,16 @@
             android:enabled="true"
             android:exported="false"/>
         <provider
+            android:name="android.support.v4.content.FileProvider"
+            android:authorities="com.example.clement.studentplanner.fileprovider"
+            android:enabled="true"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths"/>
+        </provider>
+        <provider
             android:name=".database.MentorProvider"
             android:authorities="com.example.clement.studentplanner.mentorprovider"
             android:enabled="true"
@@ -54,12 +73,13 @@
             android:authorities="com.example.clement.studentplanner.coursementorprovider"
             android:enabled="true"
             android:exported="false"/>
+
         <activity
             android:name=".CourseDetailActivity"
             android:label="@string/title_course_detail"
+            android:launchMode="singleTop"
             android:parentActivityName=".MainActivity"
-            android:theme="@style/AppTheme"
-            android:launchMode="singleTop">
+            android:theme="@style/AppTheme">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.example.clement.studentplanner.MainActivity"/>
@@ -67,9 +87,9 @@
         <activity
             android:name=".TermDetailActivity"
             android:label="Term Detail"
+            android:launchMode="singleTop"
             android:parentActivityName=".MainActivity"
-            android:theme="@style/AppTheme"
-            android:launchMode="singleTop">
+            android:theme="@style/AppTheme">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.example.clement.studentplanner.MainActivity"/>
@@ -77,9 +97,9 @@
         <activity
             android:name=".AssessmentDetailActivity"
             android:label="Assessment Detail"
+            android:launchMode="singleTop"
             android:parentActivityName=".MainActivity"
-            android:theme="@style/AppTheme"
-            android:launchMode="singleTop">
+            android:theme="@style/AppTheme">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.example.clement.studentplanner.MainActivity"/>
@@ -87,9 +107,9 @@
         <activity
             android:name=".input.AssessmentDataEntryActivity"
             android:label="Add Assessment"
+            android:launchMode="singleTop"
             android:parentActivityName=".CourseDetailActivity"
-            android:theme="@style/AppTheme"
-            android:launchMode="singleTop">
+            android:theme="@style/AppTheme">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.example.clement.studentplanner.CourseDetailActivity"/>
@@ -97,9 +117,9 @@
         <activity
             android:name=".input.TermDataEntryActivity"
             android:label="Add Term"
+            android:launchMode="singleTop"
             android:parentActivityName=".MainActivity"
-            android:theme="@style/AppTheme"
-            android:launchMode="singleTop">
+            android:theme="@style/AppTheme">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.example.clement.studentplanner.MainActivity"/>
@@ -107,9 +127,9 @@
         <activity
             android:name=".input.CourseDataEntryActivity"
             android:label="Add Course"
+            android:launchMode="singleTop"
             android:parentActivityName=".TermDetailActivity"
-            android:theme="@style/AppTheme"
-            android:launchMode="singleTop">
+            android:theme="@style/AppTheme">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.example.clement.studentplanner.TermDetailActivity"/>
@@ -117,9 +137,9 @@
         <activity
             android:name=".input.MentorDataEntryActivity"
             android:label="Add Course Mentor"
+            android:launchMode="singleTop"
             android:parentActivityName=".CourseDetailActivity"
-            android:theme="@style/AppTheme"
-            android:launchMode="singleTop">
+            android:theme="@style/AppTheme">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.example.clement.studentplanner.CourseDetailActivity"/>
@@ -127,12 +147,22 @@
         <activity
             android:name=".input.MentorPickerActivity"
             android:label="Choose Course Mentor"
+            android:launchMode="singleTop"
             android:parentActivityName=".CourseDetailActivity"
-            android:theme="@style/AppTheme"
-            android:launchMode="singleTop">
+            android:theme="@style/AppTheme">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.example.clement.studentplanner.CourseDetailActivity"/>
         </activity>
+        <activity
+            android:name=".input.PhotoCaptureActivity"
+            android:label="@string/title_activity_photo_capture"
+            android:parentActivityName=".MainActivity"
+            android:theme="@style/AppTheme">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.example.clement.studentplanner.MainActivity"/>
+        </activity>
     </application>
+
 </manifest>

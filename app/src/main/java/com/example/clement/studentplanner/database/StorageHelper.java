@@ -18,7 +18,7 @@ import java.util.ArrayList;
 public class StorageHelper extends SQLiteOpenHelper {
 
 
-    public static final int DATABASE_VERSION = 19;
+    public static final int DATABASE_VERSION = 20;
     public static final String TABLE_TERM = "term";
     public static final String COLUMN_ID = BaseColumns._ID;
     public static final String COLUMN_NAME = "name";
@@ -30,7 +30,7 @@ public class StorageHelper extends SQLiteOpenHelper {
     public static final String COLUMN_TYPE = "type";
     public static final String COLUMN_NOTES = "notes";
     public static final String COLUMN_STATUS = "status";
-    public static final String COLUMN_FILE_NAME = "file_name";
+    public static final String COLUMN_FILE_URI = "file_uri";
     public static final String COLUMN_PHONE_NUMBER = "phone";
     public static final String COLUMN_EMAIL = "email";
     public static final String COLUMN_TERMINUS = "terminus";
@@ -53,7 +53,7 @@ public class StorageHelper extends SQLiteOpenHelper {
     public static final String TABLE_PHOTO = "photo";
     public static final String COLUMN_ASSESSMENT_ID = TABLE_ASSESSMENT + BaseColumns._ID;
     public static final String[] COLUMNS_PHOTO = {
-        COLUMN_ID, COLUMN_ASSESSMENT_ID, COLUMN_FILE_NAME
+        COLUMN_ID, COLUMN_ASSESSMENT_ID, COLUMN_FILE_URI
     };
 
     public static final String TABLE_MENTOR = "mentor";
@@ -120,7 +120,7 @@ public class StorageHelper extends SQLiteOpenHelper {
             COLUMN_END+", "+COLUMN_COURSE_ID+", "+COLUMN_TYPE+", "+COLUMN_NOTES+") VALUES ("+ ASSESSMENT_ID_OFFSET +", 'C', 3, 3, "+COURSE_ID_OFFSET+", 3, 'C');");
         schema.add("CREATE TABLE "+TABLE_PHOTO+"("+COLUMN_ID+" INTEGER PRIMARY KEY AUTOINCREMENT, "+
             COLUMN_ASSESSMENT_ID+" INTEGER REFERENCES "+TABLE_ASSESSMENT+"("+COLUMN_ID+"), "+
-            COLUMN_FILE_NAME+" TEXT)");
+            COLUMN_FILE_URI +" TEXT)");
 
         schema.add("CREATE TABLE "+TABLE_MENTOR+"("+COLUMN_ID+" INTEGER PRIMARY KEY AUTOINCREMENT, "+
             COLUMN_NAME+" TEXT, "+COLUMN_PHONE_NUMBER+" TEXT, "+COLUMN_EMAIL+" TEXT)");

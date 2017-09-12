@@ -2,6 +2,7 @@ package com.example.clement.studentplanner.database;
 
 import android.content.ContentResolver;
 import android.content.ContentUris;
+import android.content.ContentValues;
 import android.content.UriMatcher;
 import android.database.Cursor;
 import android.net.Uri;
@@ -115,6 +116,17 @@ public class PhotoProvider extends ContentProviderBase {
             cursor.setNotificationUri(resolver, uri);
         }
         return cursor;
+    }
+
+    @Nullable
+    @Override
+    public Uri insert(@NonNull Uri uri, @Nullable ContentValues values) {
+        return super.insert(uri, values);
+    }
+
+    @Override
+    public int delete(@NonNull Uri uri, @Nullable String selection, @Nullable String[] selectionArgs) {
+        return super.delete(uri, selection, selectionArgs);
     }
 
     @Nullable

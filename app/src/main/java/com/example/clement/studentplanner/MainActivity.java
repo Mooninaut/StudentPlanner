@@ -161,8 +161,8 @@ public class MainActivity extends AppCompatActivity
     }
     private void insertSampleData() {
         deleteSampleData();
-        final int terms[] = {1, 2, 3, 4, 5};
-        final int courses[] = {1, 2, 3, 4, 5, 6};
+        final int terms[] = {1, 2/*, 3, 4, 5*/};
+        final int courses[] = {1, 2, 3/*, 4, 5, 6*/};
         final Assessment.Type assessments[] = { Assessment.Type.PERFORMANCE, Assessment.Type.OBJECTIVE };
 
         final Calendar termStart = new GregorianCalendar(2015, Calendar.APRIL, 1);
@@ -175,7 +175,7 @@ public class MainActivity extends AppCompatActivity
             Calendar courseStart = (Calendar) termStart.clone();
             courseStart.set(Calendar.HOUR_OF_DAY, 6);
             Calendar courseEnd = (Calendar) termStart.clone();
-            courseEnd.add(Calendar.MONTH, 1);
+            courseEnd.add(Calendar.MONTH, 2);
             courseEnd.add(Calendar.DATE, -1);
             courseEnd.set(Calendar.HOUR_OF_DAY, 22);
             for (final int courseNumber : courses) {
@@ -205,9 +205,9 @@ public class MainActivity extends AppCompatActivity
                     assessmentStart.set(Calendar.HOUR_OF_DAY, 16);
                     assessmentEnd.set(Calendar.HOUR_OF_DAY, 18);
                 }
-                courseStart.add(Calendar.MONTH, 1);
+                courseStart.add(Calendar.MONTH, 2);
                 courseEnd.add(Calendar.DATE, 1);
-                courseEnd.add(Calendar.MONTH, 1);
+                courseEnd.add(Calendar.MONTH, 2);
                 courseEnd.add(Calendar.DATE, -1);
             }
             termStart.add(Calendar.MONTH, 6);

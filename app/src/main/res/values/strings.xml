@@ -85,4 +85,6 @@
         <item>2</item>
         <item>1</item>
     </integer-array>
+    <string name="title_activity_photo_capture">Take Photo</string>
+    <string name="take_photo">Take Photo</string>
 </resources>
