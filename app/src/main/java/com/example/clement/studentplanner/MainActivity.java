@@ -45,11 +45,6 @@ public class MainActivity extends AppCompatActivity
     /*AssessmentListingFragment.HostActivity */
     FragmentItemListener.OnClick, FragmentItemListener.OnLongClick {
 
-//    private final EventCursorAdapter eventCursorAdapter = new EventCursorAdapter(this, null, 0);
-//    private final TermCursorAdapter termCursorAdapter = new TermCursorAdapter(this, null, 0);
-//    private final CourseCursorAdapter courseCursorAdapter = new CourseCursorAdapter(this, null, 0);
-//    private final AssessmentCursorAdapter assessmentCursorAdapter = new AssessmentCursorAdapter(this, null, 0);
-
     private EventListingFragment eventListingFragment;
     private TermListingFragment termListingFragment;
     private CourseListingFragment courseListingFragment;

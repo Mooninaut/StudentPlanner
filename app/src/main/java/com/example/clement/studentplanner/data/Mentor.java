@@ -9,7 +9,6 @@ import java.util.Locale;
  */
 
 public class Mentor implements HasId {
-    public static final long NO_ID = -1;
     private long id = NO_ID;
     private @NonNull String name = "";
     private @NonNull String phoneNumber = "";

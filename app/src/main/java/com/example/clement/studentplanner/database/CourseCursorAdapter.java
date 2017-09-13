@@ -29,6 +29,7 @@ import static com.example.clement.studentplanner.database.StorageHelper.COLUMN_T
 
 public class CourseCursorAdapter extends CursorAdapter {
 
+    public static final int PHOTO_LOADER_ID = 1000; // worth a thousand words
     private static DateFormat dateFormat = DateFormat.getDateInstance();
 
     public CourseCursorAdapter(Context context, Cursor cursor, int flags) {

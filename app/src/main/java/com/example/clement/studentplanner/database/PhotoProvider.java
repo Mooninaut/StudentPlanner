@@ -9,9 +9,13 @@ import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import com.example.clement.studentplanner.data.Photo;
+
 import static android.content.ContentResolver.SCHEME_CONTENT;
 import static com.example.clement.studentplanner.database.StorageHelper.COLUMNS_PHOTO;
+import static com.example.clement.studentplanner.database.StorageHelper.COLUMN_FILE_URI;
 import static com.example.clement.studentplanner.database.StorageHelper.COLUMN_ID;
+import static com.example.clement.studentplanner.database.StorageHelper.COLUMN_PARENT_URI;
 import static com.example.clement.studentplanner.database.StorageHelper.TABLE_PHOTO;
 
 /**
@@ -19,6 +23,8 @@ import static com.example.clement.studentplanner.database.StorageHelper.TABLE_PH
  */
 
 public class PhotoProvider extends ContentProviderBase {
+
+
     public enum PhotoContract implements ProviderContract {
         INSTANCE;
         @Override
@@ -133,5 +139,15 @@ public class PhotoProvider extends ContentProviderBase {
     @Override
     public String getType(@NonNull Uri uri) {
         return null;
+    }
+
+    public static ContentValues photoToValues(@NonNull Photo photo) {
+        ContentValues values = new ContentValues();
+        values.put(COLUMN_PARENT_URI, photo.parentUri().toString());
+        values.put(COLUMN_FILE_URI, photo.fileUri().toString());
+        if (photo.hasId()) {
+            values.put(COLUMN_ID, photo.id());
+        }
+        return values;
     }
 }

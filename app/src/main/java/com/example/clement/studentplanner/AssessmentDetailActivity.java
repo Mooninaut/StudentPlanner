@@ -55,13 +55,6 @@ public class AssessmentDetailActivity extends AppCompatActivity {
                 Assessment assessment = assessmentAdapter.getItem(0);
 
                 if (assessment != null) {
-/*
-                    Course course = StorageAdapter.getCourse(getContentResolver(), assessment.courseId());
-                    if (course != null) {
-                        TextView courseNameTV = (TextView) findViewById(R.id.assessment_course_name_view);
-                        courseNameTV.setText(course.name());
-                    }
-*/
                     TextView assessmentTypeTV = (TextView) findViewById(R.id.assessment_type_view);
                     assessmentTypeTV.setText(assessment.type().getString(this));
                     TextView assessmentNotesTV = (TextView) findViewById(R.id.assessment_notes_view);

@@ -67,7 +67,6 @@ public class Event implements HasId {
         this.timeInMillis = timeInMillis;
         this.terminus = terminus;
     }
-    public static final long NO_ID = -1;
     private long id = NO_ID;
     private long timeInMillis = Long.MIN_VALUE;
     @NonNull
@@ -103,6 +102,8 @@ public class Event implements HasId {
     public void id(long id) {
         this.id = id;
     }
+    @Override
+    public boolean hasId() { return id != NO_ID; }
     @NonNull
     public Terminus terminus() {
         return terminus;

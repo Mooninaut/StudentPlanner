@@ -6,4 +6,6 @@ package com.example.clement.studentplanner.data;
 
 public interface HasId {
     long id();
+    boolean hasId();
+    long NO_ID = -1;
 }

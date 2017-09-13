@@ -11,7 +11,6 @@ import java.util.TimeZone;
  */
 
 public abstract class ScheduleItem implements HasId {
-    public static final long NO_ID = -1;
     private static final String TIME_PARADOX = "startMillis must be less than or equal to endMillis";
     private long id = NO_ID;
     private Calendar startMillis = Calendar.getInstance(TimeZone.getDefault());

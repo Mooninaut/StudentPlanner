@@ -8,5 +8,5 @@
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context="com.example.clement.studentplanner.input.PhotoCaptureActivity"
     tools:showIn="@layout/photo_capture_activity">
-
+    <include layout="@layout/note_list_item"/>
 </android.support.constraint.ConstraintLayout>
