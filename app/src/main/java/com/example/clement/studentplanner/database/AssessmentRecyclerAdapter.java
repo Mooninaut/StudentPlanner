@@ -29,6 +29,7 @@ public class AssessmentRecyclerAdapter extends RecyclerCursorAdapterBase<Assessm
         this.context = context;
         this.onClickListener = onClickListener;
         this.onLongClickListener = onLongClickListener;
+        setHasStableIds(true);
     }
 
     @Override

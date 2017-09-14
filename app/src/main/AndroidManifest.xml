@@ -157,6 +157,16 @@
         <activity
             android:name=".input.PhotoCaptureActivity"
             android:label="@string/title_activity_photo_capture"
+            android:launchMode="singleTop"
+            android:parentActivityName=".MainActivity"
+            android:theme="@style/AppTheme">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.example.clement.studentplanner.MainActivity"/>
+        </activity>
+        <activity android:name=".PhotoViewActivity"
+            android:label="@string/view_photo"
+            android:launchMode="singleTop"
             android:parentActivityName=".MainActivity"
             android:theme="@style/AppTheme">
             <meta-data
