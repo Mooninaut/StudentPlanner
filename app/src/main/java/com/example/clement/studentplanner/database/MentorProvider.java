@@ -76,8 +76,8 @@ public class MentorProvider extends ContentProviderBase {
                 .scheme(SCHEME_CONTENT)
                 .authority(authority);
             contentUri = builder.path(basePath).build();
-            courseUri = builder.path(coursePath).build();
-            noCourseUri = builder.path(noCoursePath).build();
+            courseUri = contentUri.buildUpon().appendPath(coursePath).build();
+            noCourseUri = contentUri.buildUpon().appendPath(noCoursePath).build();
         }
     }
 
@@ -102,8 +102,10 @@ public class MentorProvider extends ContentProviderBase {
     public static final CourseMentorContract CONTRACT = CourseMentorContract.INSTANCE;
     static {
         uriMatcher.addURI(CONTRACT.authority, CONTRACT.basePath + "/#", MENTOR_ID);
-        uriMatcher.addURI(CONTRACT.authority, CONTRACT.coursePath + "/#", MENTOR_COURSE_ID);
-        uriMatcher.addURI(CONTRACT.authority, CONTRACT.noCoursePath + "/#", MENTOR_WITHOUT_COURSE_ID);
+        uriMatcher.addURI(CONTRACT.authority,
+            CONTRACT.basePath+"/"+CONTRACT.coursePath + "/#", MENTOR_COURSE_ID);
+        uriMatcher.addURI(CONTRACT.authority,
+            CONTRACT.basePath+"/"+CONTRACT.noCoursePath + "/#", MENTOR_WITHOUT_COURSE_ID);
         uriMatcher.addURI(CONTRACT.authority, CONTRACT.basePath, MENTOR_ALL);
     }
     @Override

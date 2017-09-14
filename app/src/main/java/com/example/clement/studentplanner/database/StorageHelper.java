@@ -17,12 +17,10 @@ import java.util.ArrayList;
 
 public class StorageHelper extends SQLiteOpenHelper {
 
-
     public static final int DATABASE_VERSION = 21;
     public static final String TABLE_TERM = "term";
     public static final String COLUMN_ID = BaseColumns._ID;
     public static final String COLUMN_NAME = "name";
-//    public static final String COLUMN_EVENT_ID = "event_id";
     public static final String COLUMN_NUMBER = "number";
     public static final String COLUMN_START = "start";
     public static final String COLUMN_END = "end";
@@ -93,15 +91,11 @@ public class StorageHelper extends SQLiteOpenHelper {
         schema.add("DROP TABLE IF EXISTS "+TABLE_TERM);
         schema.add("DROP TABLE IF EXISTS "+TABLE_MENTOR);
         schema.add("DROP TABLE IF EXISTS "+TABLE_COURSE_MENTOR);
-//        schema.add("DROP TABLE IF EXISTS event");
-//        schema.add("CREATE TABLE event (_id INTEGER PRIMARY KEY, name TEXT, start INTEGER, end INTEGER)");
-//        schema.add("CREATE TABLE term (_id INTEGER PRIMARY KEY, event_id INTEGER REFERENCES event(_id))");
 
         schema.add("CREATE TABLE "+TABLE_TERM+" ("+COLUMN_ID+" INTEGER PRIMARY KEY AUTOINCREMENT, "+
             COLUMN_NAME+" TEXT, "+COLUMN_START+" INTEGER, "+COLUMN_END+" INTEGER, "+COLUMN_NUMBER+" INTEGER)");
         schema.add("INSERT INTO "+TABLE_TERM+" ("+COLUMN_ID+", "+COLUMN_NAME+", "+COLUMN_START+", "+
             COLUMN_END+", "+COLUMN_NUMBER+") VALUES ("+ TERM_ID_OFFSET +", 'A', 1, 1, 1);");
-//        schema.add("CREATE TABLE course (_id INTEGER PRIMARY KEY, event_id INTEGER REFERENCES event(_id), term_id INTEGER REFERENCES term(_id), status INTEGER)");
 
         schema.add("CREATE TABLE "+TABLE_COURSE+ "("+COLUMN_ID+" INTEGER PRIMARY KEY AUTOINCREMENT, "+
             COLUMN_NAME+" TEXT, "+COLUMN_START+" INTEGER, "+COLUMN_END+" INTEGER, " +
@@ -109,8 +103,6 @@ public class StorageHelper extends SQLiteOpenHelper {
             COLUMN_STATUS+" INTEGER, "+COLUMN_NOTES+" TEXT)");
         schema.add("INSERT INTO "+TABLE_COURSE+" ("+COLUMN_ID+", "+COLUMN_NAME+", "+COLUMN_START+", "+
             COLUMN_END+", "+COLUMN_TERM_ID+", "+COLUMN_STATUS+") VALUES ("+ COURSE_ID_OFFSET +", 'B', 2, 2, "+TERM_ID_OFFSET+", 2);");
-
-//        schema.add("CREATE TABLE assessment(_id INTEGER PRIMARY KEY, event_id INTEGER REFERENCES event(_id), course_id INTEGER REFERENCES course(_id), type INTEGER, notes TEXT)");
 
         schema.add("CREATE TABLE "+TABLE_ASSESSMENT+"("+COLUMN_ID+" INTEGER PRIMARY KEY AUTOINCREMENT, "+
             COLUMN_NAME+" TEXT, "+COLUMN_START+" INTEGER, "+COLUMN_END+" INTEGER, "+
@@ -139,10 +131,6 @@ public class StorageHelper extends SQLiteOpenHelper {
 
         CREATE_DATABASE = schema.toArray(new String[schema.size()]);
     }
-//    private static final String CREATE_COURSE_TABLE = String.format(
-//        "CREATE TABLE %s (%s INTEGER PRIMARY KEY, %s TEXT, %s TEXT, %s TEXT, %s INTEGER, %s INTEGER);",
-//        TABLE_COURSE, COURSE_ID, COURSE_NAME, COURSE_START, COURSE_END, COURSE_TERM_ID, COURSE_STATUS
-//    );
     private static void createDatabase(SQLiteDatabase db) {
         Log.i(StorageHelper.class.getSimpleName(), "Creating database!");
         for (String sql : CREATE_DATABASE) {
@@ -167,9 +155,7 @@ public class StorageHelper extends SQLiteOpenHelper {
     public void onDowngrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         createDatabase(db);
     }
-    /*public void erase(SQLiteDatabase db) {
-        createDatabase(db);
-    }*/
+
     @NonNull
     public static Type classify(long id) {
         if (id >= ASSESSMENT_ID_OFFSET) {

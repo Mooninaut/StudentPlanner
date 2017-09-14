@@ -9,7 +9,6 @@ import android.widget.TextView;
 
 import com.example.clement.studentplanner.ItemListener;
 import com.example.clement.studentplanner.R;
-import com.example.clement.studentplanner.RecyclerViewHolderBase;
 import com.example.clement.studentplanner.data.Event;
 
 import java.text.DateFormat;

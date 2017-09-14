@@ -1,4 +1,4 @@
-package com.example.clement.studentplanner;
+package com.example.clement.studentplanner.database;
 
 import android.support.annotation.CallSuper;
 import android.support.annotation.Nullable;
@@ -6,6 +6,7 @@ import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 
+import com.example.clement.studentplanner.ItemListener;
 import com.example.clement.studentplanner.data.HasId;
 
 /**
@@ -14,7 +15,8 @@ import com.example.clement.studentplanner.data.HasId;
 
 public abstract class RecyclerViewHolderBase<T extends HasId> extends RecyclerView.ViewHolder
     implements View.OnClickListener, View.OnLongClickListener{
-    private final @Nullable ItemListener.OnClickListener clickListener;
+    private final @Nullable
+    ItemListener.OnClickListener clickListener;
     private final @Nullable ItemListener.OnLongClickListener longClickListener;
     @Nullable
     private T item;

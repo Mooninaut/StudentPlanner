@@ -19,7 +19,7 @@ import static com.example.clement.studentplanner.database.StorageHelper.COLUMN_I
  * However, this app will never have enough data in it for the performance to matter.
  */
 
-public abstract class RecyclerCursorAdapter<H extends RecyclerView.ViewHolder, A extends CursorAdapter> extends RecyclerView.Adapter<H> {
+public abstract class RecyclerCursorAdapterBase<H extends RecyclerView.ViewHolder, A extends CursorAdapter> extends RecyclerView.Adapter<H> {
     public abstract A getCursorAdapter();
 
     public void swapCursor(Cursor data) {

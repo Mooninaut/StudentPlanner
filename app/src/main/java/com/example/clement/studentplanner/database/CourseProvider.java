@@ -63,8 +63,8 @@ public class CourseProvider extends ContentProviderBase {
                 .authority(authority)
                 .path(basePath);
             contentUri = builder.build();
-            eventUri = builder.path(EventProvider.CONTRACT.basePath).build();
-            termUri = builder.path(TermProvider.CONTRACT.basePath).build();
+            eventUri = contentUri.buildUpon().appendPath(EventProvider.CONTRACT.basePath).build();
+            termUri = contentUri.buildUpon().appendPath(TermProvider.CONTRACT.basePath).build();
         }
     }
     private static final int COURSE_ALL = 1;
@@ -75,8 +75,10 @@ public class CourseProvider extends ContentProviderBase {
     public static final CourseContract CONTRACT = CourseContract.INSTANCE;
     static {
         uriMatcher.addURI(CONTRACT.authority, CONTRACT.basePath + "/#", COURSE_ID);
-        uriMatcher.addURI(CONTRACT.authority, EventProvider.CONTRACT.basePath, COURSE_EVENT);
-        uriMatcher.addURI(CONTRACT.authority, TermProvider.CONTRACT.basePath + "/#", COURSE_TERM);
+        uriMatcher.addURI(CONTRACT.authority,
+            CONTRACT.basePath+"/"+EventProvider.CONTRACT.basePath, COURSE_EVENT);
+        uriMatcher.addURI(CONTRACT.authority,
+            CONTRACT.basePath+"/"+TermProvider.CONTRACT.basePath + "/#", COURSE_TERM);
         uriMatcher.addURI(CONTRACT.authority, CONTRACT.basePath, COURSE_ALL);
     }
 
@@ -125,26 +127,6 @@ public class CourseProvider extends ContentProviderBase {
         return null;
     }
 
-/*    @Nullable
-    @Override
-    public Uri insert(@NonNull Uri uri, @Nullable ContentValues values) {
-        long id = getWritableDatabase().insert(
-            TABLE_COURSE,
-            null,
-            values
-        );
-        getContext().getContentResolver().notifyChange(contentUri, null);
-        return ContentUris.withAppendedId(contentUri, id);
-    }*/
-/*    @Override
-    public int delete(@NonNull Uri uri, @Nullable String selection, @Nullable String[] selectionArgs) {
-        int rowsDeleted = getWritableDatabase().delete(TABLE_COURSE, selection, selectionArgs);
-        if (rowsDeleted > 0) {
-            getContext().getContentResolver().notifyChange(contentUri, null);
-        }
-        return rowsDeleted;
-    }*/
-
     @NonNull
     @Override
     protected String getTableName() {
@@ -167,14 +149,6 @@ public class CourseProvider extends ContentProviderBase {
     protected int getSingleRowMatchConstant() {
         return COURSE_ID;
     }
-    /*    @Override
-    public int update(@NonNull Uri uri, @Nullable ContentValues values, @Nullable String selection, @Nullable String[] selectionArgs) {
-        int rowsUpdated = getWritableDatabase().update(TABLE_COURSE, values, selection, selectionArgs);
-        if (rowsUpdated > 0) {
-            getContext().getContentResolver().notifyChange(contentUri, null);
-        }
-        return rowsUpdated;
-    }*/
 
     @Nullable
     @Override

@@ -40,7 +40,7 @@ public class PhotoCursorAdapter extends CursorAdapter{
     @Override
     public View newView(Context context, Cursor cursor, ViewGroup parent) {
         return LayoutInflater.from(context).inflate(
-            R.layout.note_list_item, parent, false
+            R.layout.photo_list_item, parent, false
         );
     }
 

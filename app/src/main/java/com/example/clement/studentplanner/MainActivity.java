@@ -42,7 +42,6 @@ public class MainActivity extends AppCompatActivity
     implements EventListingFragment.HostActivity,
     TermListingFragment.HostActivity,
     CourseListingFragment.HostActivity,
-    /*AssessmentListingFragment.HostActivity */
     FragmentItemListener.OnClick, FragmentItemListener.OnLongClick {
 
     private EventListingFragment eventListingFragment;

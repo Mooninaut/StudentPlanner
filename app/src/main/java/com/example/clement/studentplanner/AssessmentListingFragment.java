@@ -14,15 +14,7 @@ import com.example.clement.studentplanner.database.AssessmentRecyclerAdapter;
 public class AssessmentListingFragment
     extends RecyclerListingFragmentBase<AssessmentRecyclerAdapter> {
 
-    //    private Cursor assessmentCursor;
-//    private AssessmentLoaderListener assessmentLoaderListener;
-//    private HostActivity hostActivity;
-
-    public static final int ASSESSMENT_LOADER_ID = 400;
-//    @Override
-//    public int getLoaderId() { return ASSESSMENT_LOADER_ID; }
-
-//    private AssessmentCursorAdapter assessmentCursorAdapter;
+    public static final int ASSESSMENT_LOADER_ID = 0xA; // A for Assessment
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -45,17 +37,4 @@ public class AssessmentListingFragment
     protected AssessmentRecyclerAdapter createAdapter(Context context, Cursor cursor) {
         return new AssessmentRecyclerAdapter(context, cursor, this, this);
     }
-/*    @Override
-    protected AssessmentCursorAdapter createAdapter(Context context, Cursor cursor) {
-        return new AssessmentCursorAdapter(context, cursor, 0);
-    }
-
-    @Override
-    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        getHostContext().onAssessmentListFragmentInteraction(id);
-    }
-
-    public interface HostActivity {
-        void onAssessmentListFragmentInteraction(long assessmentId);
-    }*/
 }

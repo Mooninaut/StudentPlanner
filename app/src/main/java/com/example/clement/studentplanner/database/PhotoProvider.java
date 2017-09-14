@@ -39,6 +39,9 @@ public class PhotoProvider extends ContentProviderBase {
         public String getContentItemType() {
             return contentItemType;
         }
+
+        public Uri getAssessmentContentUri(long id) { return ContentUris.withAppendedId(assessmentContentUri, id); }
+        public Uri getAssessmentContentUri() { return assessmentContentUri; }
         @Override
         public String getAuthority() {
             return authority;
@@ -49,6 +52,10 @@ public class PhotoProvider extends ContentProviderBase {
         }
         public final String authority = "com.example.clement.studentplanner.photoprovider";
         public final String basePath = "photo";
+        public final String assessmentPath = "assessment";
+        public final String coursePath = "course";
+        public final Uri assessmentContentUri;
+        public final Uri courseContentUri;
         public final String contentItemType = "Photo";
         public final Uri contentUri;
         PhotoContract() {
@@ -57,13 +64,21 @@ public class PhotoProvider extends ContentProviderBase {
                 .authority(authority)
                 .path(basePath);
             contentUri = builder.build();
+            assessmentContentUri = contentUri.buildUpon().appendPath(assessmentPath).build();
+            courseContentUri = contentUri.buildUpon().appendPath(coursePath).build();
         }
     }
     private static final int PHOTO_ALL = 1;
     private static final int PHOTO_ID = 2;
+    private static final int PHOTO_ASSESSMENT_ID = 3;
+    private static final int PHOTO_COURSE_ID = 4;
     private static final UriMatcher uriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
     public static final PhotoContract CONTRACT = PhotoContract.INSTANCE;
     static {
+        uriMatcher.addURI(CONTRACT.authority,
+            CONTRACT.basePath+"/"+CONTRACT.assessmentPath+"/#", PHOTO_ASSESSMENT_ID);
+        uriMatcher.addURI(CONTRACT.authority,
+            CONTRACT.basePath+"/"+CONTRACT.coursePath+"/#", PHOTO_COURSE_ID);
         uriMatcher.addURI(CONTRACT.authority, CONTRACT.basePath + "/#", PHOTO_ID);
         uriMatcher.addURI(CONTRACT.authority, CONTRACT.basePath, PHOTO_ALL);
     }

@@ -2,25 +2,26 @@ package com.example.clement.studentplanner.input;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
-import android.widget.ImageButton;
 import android.widget.Toast;
 
+import com.example.clement.studentplanner.PhotoListingFragment;
 import com.example.clement.studentplanner.R;
 import com.example.clement.studentplanner.Util;
 import com.example.clement.studentplanner.data.Photo;
-import com.example.clement.studentplanner.database.PhotoCursorAdapter;
 import com.example.clement.studentplanner.database.PhotoProvider;
 
 public class PhotoCaptureActivity extends AppCompatActivity {
 
+    private PhotoListingFragment photoFragment;
+    private Uri photoContentUri;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -37,7 +38,12 @@ public class PhotoCaptureActivity extends AppCompatActivity {
         });
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-
+        photoContentUri = PhotoProvider.CONTRACT.contentUri;
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        photoFragment = PhotoListingFragment.newInstance(photoContentUri);
+        fragmentManager.beginTransaction()
+            .replace(R.id.photo_list_fragment, photoFragment, Util.Tag.PHOTO)
+            .commit();
     }
     public void imageButtonClick(View view) {
         Util.Photo.capture(PhotoCaptureActivity.this);
@@ -55,7 +61,7 @@ public class PhotoCaptureActivity extends AppCompatActivity {
                     Log.d("PhotoCaptureActivity", fileUri.toString());
                     Uri contentUri = getContentResolver().insert(PhotoProvider.CONTRACT.contentUri, PhotoProvider.photoToValues(photo));
                     Log.d("PhotoCaptureActivity", contentUri.toString());
-                    Cursor cursor = null;
+/*                    Cursor cursor = null;
                     PhotoCursorAdapter pca = null;
                     try {
                         cursor = getContentResolver().query(contentUri, null, null, null, null);
@@ -68,9 +74,9 @@ public class PhotoCaptureActivity extends AppCompatActivity {
                         if (cursor != null) {
                             cursor.close();
                         }
-                    }
-                    getContentResolver().delete(contentUri, null, null);
-                    getContentResolver().delete(fileUri, null, null);
+                    }*/
+//                    getContentResolver().delete(contentUri, null, null);
+//                    getContentResolver().delete(fileUri, null, null);
                 }
                 else {
                     Toast.makeText(this, "FAIL", Toast.LENGTH_LONG).show();

@@ -15,7 +15,7 @@ import com.example.clement.studentplanner.database.MentorRecyclerAdapter;
 public class MentorListingFragment
     extends RecyclerListingFragmentBase<MentorRecyclerAdapter> {
 
-    public static final int MENTOR_LOADER_ID = 0x3; // 3 is M for Mentor sideways
+    public static final int MENTOR_LOADER_ID = 3; // 3 is M for Mentor sideways
 
     @Override
     protected MentorRecyclerAdapter createAdapter(Context context, Cursor cursor) {

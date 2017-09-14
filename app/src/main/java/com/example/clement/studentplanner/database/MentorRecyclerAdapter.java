@@ -13,7 +13,7 @@ import com.example.clement.studentplanner.ItemListener;
  * Based loosely on https://stackoverflow.com/a/27732748
  */
 
-public class MentorRecyclerAdapter extends RecyclerCursorAdapter<MentorHolder, MentorCursorAdapter> {
+public class MentorRecyclerAdapter extends RecyclerCursorAdapterBase<MentorHolder, MentorCursorAdapter> {
     private MentorCursorAdapter mentorCursorAdapter;
     private Context context;
     @Nullable

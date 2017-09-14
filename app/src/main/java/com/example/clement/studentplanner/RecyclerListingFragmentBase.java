@@ -17,14 +17,14 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.clement.studentplanner.database.ProviderContract;
-import com.example.clement.studentplanner.database.RecyclerCursorAdapter;
+import com.example.clement.studentplanner.database.RecyclerCursorAdapterBase;
 
 /**
  * Child classes MUST implement a public no-argument constructor that calls
  * super(ProviderContract contract, Class<H> hostInterface, int recyclerViewId, int loaderId)
  */
 
-public abstract class RecyclerListingFragmentBase<A extends RecyclerCursorAdapter> extends Fragment
+public abstract class RecyclerListingFragmentBase<A extends RecyclerCursorAdapterBase> extends Fragment
     implements ItemListener.OnClickListener, ItemListener.OnLongClickListener {
     private Cursor cursor;
     private A adapter;

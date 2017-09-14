@@ -64,8 +64,8 @@ public class TermProvider extends ContentProviderBase {
                 .scheme(SCHEME_CONTENT)
                 .authority(authority);
             contentUri = builder.path(basePath).build();
-            eventUri = builder.path(pathEvent).build();
-            maxTermUri = builder.path(pathMax).build();
+            eventUri = contentUri.buildUpon().appendPath(pathEvent).build();
+            maxTermUri = contentUri.buildUpon().appendPath(pathMax).build();
 
         }
     }
@@ -79,8 +79,8 @@ public class TermProvider extends ContentProviderBase {
     static {
         Log.i(TermProvider.class.getSimpleName(), CONTRACT.eventUri.getPath());
         uriMatcher.addURI(CONTRACT.authority, CONTRACT.basePath + "/#", TERM_ID);
-        uriMatcher.addURI(CONTRACT.authority, CONTRACT.pathEvent, TERM_EVENT);
-        uriMatcher.addURI(CONTRACT.authority, CONTRACT.pathMax, TERM_MAX);
+        uriMatcher.addURI(CONTRACT.authority, CONTRACT.basePath+"/"+CONTRACT.pathEvent, TERM_EVENT);
+        uriMatcher.addURI(CONTRACT.authority, CONTRACT.basePath+"/"+CONTRACT.pathMax, TERM_MAX);
         uriMatcher.addURI(CONTRACT.authority, CONTRACT.basePath, TERM_ALL);
     }
     @Override

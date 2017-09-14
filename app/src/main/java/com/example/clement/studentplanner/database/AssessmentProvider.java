@@ -68,8 +68,8 @@ public class AssessmentProvider extends ContentProviderBase {
                 .authority(authority)
                 .path(basePath);
             contentUri = builder.build();
-            eventUri = builder.path(EventProvider.CONTRACT.basePath).build();
-            courseUri = builder.path(CourseProvider.CONTRACT.basePath).build();
+            eventUri = contentUri.buildUpon().appendPath(EventProvider.CONTRACT.basePath).build();
+            courseUri = contentUri.buildUpon().appendPath(CourseProvider.CONTRACT.basePath).build();
         }
     }
 
@@ -83,8 +83,8 @@ public class AssessmentProvider extends ContentProviderBase {
 
 //        Log.i(AssessmentProvider.class.getSimpleName(), eventUri.getPath());
         uriMatcher.addURI(CONTRACT.authority, CONTRACT.basePath + "/#", ASSESSMENT_ID);
-        uriMatcher.addURI(CONTRACT.authority, EventProvider.CONTRACT.basePath, ASSESSMENT_EVENT);
-        uriMatcher.addURI(CONTRACT.authority, CourseProvider.CONTRACT.basePath + "/#", ASSESSMENT_COURSE);
+        uriMatcher.addURI(CONTRACT.authority, CONTRACT.eventUri.getPath(), ASSESSMENT_EVENT);
+        uriMatcher.addURI(CONTRACT.authority, CONTRACT.courseUri.getPath() + "/#", ASSESSMENT_COURSE);
         uriMatcher.addURI(CONTRACT.authority, CONTRACT.basePath, ASSESSMENT_ALL);
     }
 
