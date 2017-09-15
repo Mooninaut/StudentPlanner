@@ -28,10 +28,10 @@ public class EventHolder extends RecyclerViewHolderBase<Event> {
     Context context;
 
     public EventHolder(View itemView,
-                       @Nullable ItemListener.OnClickListener onClickListener,
-                       @Nullable ItemListener.OnLongClickListener onLongClickListener) {
+                       @Nullable ItemListener.OnClick onClick,
+                       @Nullable ItemListener.OnLongClick onLongClick) {
 
-        super(itemView, onClickListener, onLongClickListener);
+        super(itemView, onClick, onLongClick);
 
         nameTV = itemView.findViewById(R.id.event_name_text_view);
         eventIdTV = itemView.findViewById(R.id.event_id_text_view);

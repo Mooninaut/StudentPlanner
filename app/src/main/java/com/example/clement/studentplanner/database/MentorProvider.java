@@ -31,35 +31,35 @@ public class MentorProvider extends ContentProviderBase {
     public enum CourseMentorContract implements ProviderContract {
         INSTANCE;
         @Override
-        public Uri getContentUri() {
+        public Uri contentUri() {
             return contentUri;
         }
         @Override
-        public Uri getContentUri(long id) {
+        public Uri contentUri(long id) {
             return ContentUris.withAppendedId(contentUri, id);
         }
         @Override
-        public String getContentItemType() {
+        public String contentItemType() {
             return contentItemType;
         }
-        public Uri getCourseUri() {
+        public Uri courseUri() {
             return courseUri;
         }
-        public Uri getCourseUri(long id) {
+        public Uri courseUri(long id) {
             return ContentUris.withAppendedId(courseUri, id);
         }
-        public Uri getNoCourseUri() {
+        public Uri noCourseUri() {
             return noCourseUri;
         }
-        public Uri getNoCourseUri(long id) {
+        public Uri noCourseUri(long id) {
             return ContentUris.withAppendedId(noCourseUri, id);
         }
         @Override
-        public String getAuthority() {
+        public String authority() {
             return authority;
         }
         @Override
-        public String getBasePath() {
+        public String basePath() {
             return basePath;
         }
 
@@ -151,7 +151,7 @@ public class MentorProvider extends ContentProviderBase {
                 cursor = getReadableDatabase().rawQuery(NO_COURSE_QUERY, new String[] { Long.toString(courseId) });
                 if (cursor != null) {
                     // Same listeners care about notifications to (X) and (not-X), so just listen to (X).
-                    cursor.setNotificationUri(resolver, CONTRACT.getCourseUri(courseId));
+                    cursor.setNotificationUri(resolver, CONTRACT.courseUri(courseId));
                 }
                 break;
             default:

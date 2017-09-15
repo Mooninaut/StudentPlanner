@@ -16,6 +16,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.Toast;
 
 import com.example.clement.studentplanner.data.Assessment;
@@ -25,7 +26,7 @@ import com.example.clement.studentplanner.database.AssessmentProvider;
 import com.example.clement.studentplanner.database.CourseMentorProvider;
 import com.example.clement.studentplanner.database.CourseProvider;
 import com.example.clement.studentplanner.database.MentorProvider;
-import com.example.clement.studentplanner.database.PhotoProvider;
+import com.example.clement.studentplanner.database.NoteProvider;
 import com.example.clement.studentplanner.database.ProviderContract;
 import com.example.clement.studentplanner.database.StorageHelper;
 import com.example.clement.studentplanner.database.TermProvider;
@@ -98,7 +99,7 @@ public class MainActivity extends AppCompatActivity
     }
     private void launchDetailActivity(ProviderContract contract, Class activity, long id) {
         Intent intent = new Intent(this, activity);
-        Uri uri = ContentUris.withAppendedId(contract.getContentUri(), id);
+        Uri uri = ContentUris.withAppendedId(contract.contentUri(), id);
         intent.setAction(Intent.ACTION_VIEW);
         intent.setData(uri);
         startActivity(intent);
@@ -147,7 +148,7 @@ public class MainActivity extends AppCompatActivity
     private void deleteSampleData() {
         getContentResolver().delete(CourseMentorProvider.CONTRACT.contentUri, null, null);
         getContentResolver().delete(MentorProvider.CONTRACT.contentUri, null, null);
-        getContentResolver().delete(PhotoProvider.CONTRACT.contentUri, null, null);
+        getContentResolver().delete(NoteProvider.CONTRACT.contentUri, null, null);
         getContentResolver().delete(AssessmentProvider.CONTRACT.contentUri, null, null);
         getContentResolver().delete(CourseProvider.CONTRACT.contentUri, null, null);
         getContentResolver().delete(TermProvider.CONTRACT.contentUri, null, null);
@@ -181,7 +182,7 @@ public class MainActivity extends AppCompatActivity
                 if (today.compareTo(courseStart) <= 0) {
                     status = Course.Status.PLANNED;
                 }
-                final Course course = new Course(termNumber + "." + courseNumber, courseStart.getTimeInMillis(), courseEnd.getTimeInMillis(), term, status, "Note.");
+                final Course course = new Course(termNumber + "." + courseNumber, courseStart.getTimeInMillis(), courseEnd.getTimeInMillis(), term, status/*, "Note."*/);
                 insertCourse(course);
                 Calendar assessmentStart = (Calendar) courseEnd.clone();
                 Calendar assessmentEnd = (Calendar) courseEnd.clone();
@@ -192,8 +193,8 @@ public class MainActivity extends AppCompatActivity
                 for (Assessment.Type type : assessments) {
                     Assessment assessment = new Assessment(
                         termNumber + "." + courseNumber + " " + type.getString(this),
-                        assessmentStart.getTimeInMillis(), assessmentEnd.getTimeInMillis(), course, type,
-                        "This notes text is long and will hopefully wrap to demonstrate the capacity of the field to display multi-line text.");
+                        assessmentStart.getTimeInMillis(), assessmentEnd.getTimeInMillis(), course, type/*,
+                        "This notes text is long and will hopefully wrap to demonstrate the capacity of the field to display multi-line text."*/);
                     insertAssessment(assessment);
                     assessmentStart.add(Calendar.DATE, 7);
                     assessmentStart.set(Calendar.HOUR_OF_DAY, 16);
@@ -288,7 +289,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
-    public void onFragmentItemClick(long itemId, String tag) {
+    public void onFragmentItemClick(long itemId, View view, String tag) {
         switch (tag) {
             case ASSESSMENT:
                 launchAssessmentDetailActivity(itemId);
@@ -303,7 +304,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
-    public void onFragmentItemLongClick(long itemId, String tag) {
+    public void onFragmentItemLongClick(long itemId, View view, String tag) {
 
     }
 

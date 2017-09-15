@@ -18,7 +18,6 @@ import static com.example.clement.studentplanner.database.StorageHelper.COLUMN_C
 import static com.example.clement.studentplanner.database.StorageHelper.COLUMN_END;
 import static com.example.clement.studentplanner.database.StorageHelper.COLUMN_ID;
 import static com.example.clement.studentplanner.database.StorageHelper.COLUMN_NAME;
-import static com.example.clement.studentplanner.database.StorageHelper.COLUMN_NOTES;
 import static com.example.clement.studentplanner.database.StorageHelper.COLUMN_START;
 import static com.example.clement.studentplanner.database.StorageHelper.COLUMN_TYPE;
 import static com.example.clement.studentplanner.database.StorageHelper.TABLE_ASSESSMENT;
@@ -31,29 +30,29 @@ public class AssessmentProvider extends ContentProviderBase {
     public enum AssessmentContract implements ProviderContract {
         INSTANCE;
         @Override
-        public Uri getContentUri() {
+        public Uri contentUri() {
             return contentUri;
         }
         @Override
-        public Uri getContentUri(long id) {
+        public Uri contentUri(long id) {
             return ContentUris.withAppendedId(contentUri, id);
         }
         @Override
-        public String getContentItemType() {
+        public String contentItemType() {
             return contentItemType;
         }
         @Override
-        public String getAuthority() {
+        public String authority() {
             return authority;
         }
         @Override
-        public String getBasePath() {
+        public String basePath() {
             return basePath;
         }
-        public Uri getCourseUri() {
+        public Uri courseUri() {
             return courseUri;
         }
-        public Uri getCourseUri(long id) {
+        public Uri courseUri(long id) {
             return ContentUris.withAppendedId(courseUri, id);
         }
         public final String authority = "com.example.clement.studentplanner.assessmentprovider";
@@ -138,7 +137,7 @@ public class AssessmentProvider extends ContentProviderBase {
         values.put(COLUMN_END, assessment.endMillis());
         values.put(COLUMN_COURSE_ID, assessment.courseId());
         values.put(COLUMN_TYPE, assessment.type().value());
-        values.put(COLUMN_NOTES, assessment.notes());
+//        values.put(COLUMN_NOTE, assessment.notes());
         return values;
     }
 
@@ -147,7 +146,7 @@ public class AssessmentProvider extends ContentProviderBase {
     public Uri insert(@NonNull Uri uri, @Nullable ContentValues values) {
         Uri newUri = super.insert(uri, values);
         if (newUri != null) {
-            notifyChange(CONTRACT.getCourseUri(values.getAsLong(COLUMN_COURSE_ID)));
+            notifyChange(CONTRACT.courseUri(values.getAsLong(COLUMN_COURSE_ID)));
         }
         return newUri;
     }

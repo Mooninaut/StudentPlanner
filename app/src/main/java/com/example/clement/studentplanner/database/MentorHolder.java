@@ -19,10 +19,10 @@ public class MentorHolder extends RecyclerViewHolderBase<Mentor> {
     private final TextView mentorEmail;
 
     public MentorHolder(View itemView,
-                        @Nullable ItemListener.OnClickListener onClickListener,
-                        @Nullable ItemListener.OnLongClickListener onLongClickListener) {
+                        @Nullable ItemListener.OnClick onClick,
+                        @Nullable ItemListener.OnLongClick onLongClick) {
 
-        super(itemView, onClickListener, onLongClickListener);
+        super(itemView, onClick, onLongClick);
 
         this.mentorName = itemView.findViewById(R.id.mentor_name_text_view);
         this.mentorPhone = itemView.findViewById(R.id.mentor_phone_number_text_view);

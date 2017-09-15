@@ -57,8 +57,8 @@ public class AssessmentDetailActivity extends AppCompatActivity {
                 if (assessment != null) {
                     TextView assessmentTypeTV = (TextView) findViewById(R.id.assessment_type_view);
                     assessmentTypeTV.setText(assessment.type().getString(this));
-                    TextView assessmentNotesTV = (TextView) findViewById(R.id.assessment_notes_view);
-                    assessmentNotesTV.setText(assessment.notes());
+//                    TextView assessmentNotesTV = (TextView) findViewById(R.id.assessment_notes_view);
+//                    assessmentNotesTV.setText(assessment.notes());
                 }
             }
         } finally {
@@ -110,8 +110,8 @@ public class AssessmentDetailActivity extends AppCompatActivity {
                     .setData(CalendarContract.Events.CONTENT_URI)
                     .putExtra(CalendarContract.EXTRA_EVENT_BEGIN_TIME, assessment.startMillis())
                     .putExtra(CalendarContract.EXTRA_EVENT_END_TIME, assessment.endMillis())
-                    .putExtra(CalendarContract.Events.TITLE, assessment.name())
-                    .putExtra(CalendarContract.Events.DESCRIPTION, assessment.notes());
+                    .putExtra(CalendarContract.Events.TITLE, assessment.name());
+//                    .putExtra(CalendarContract.Events.DESCRIPTION, assessment.notes());
                 if (intent.resolveActivity(getPackageManager()) != null) {
                     startActivityForResult(intent, Util.RequestCode.ADD_CALENDAR_EVENT);
                 }

@@ -74,7 +74,7 @@ public class CourseDetailActivity extends AppCompatActivity
         FragmentManager fragmentManager = getSupportFragmentManager();
 
         // Initialize assessment list fragment
-        Uri assessmentContentUri = AssessmentProvider.CONTRACT.getCourseUri(courseId);
+        Uri assessmentContentUri = AssessmentProvider.CONTRACT.courseUri(courseId);
 
         assessmentFragment = AssessmentListingFragment.newInstance(assessmentContentUri);
         fragmentManager.beginTransaction()
@@ -82,7 +82,7 @@ public class CourseDetailActivity extends AppCompatActivity
             .commit();
 
         // Initialize mentor list fragment
-        Uri mentorContentUri = MentorProvider.CONTRACT.getCourseUri(courseId);
+        Uri mentorContentUri = MentorProvider.CONTRACT.courseUri(courseId);
 
         mentorFragment = MentorListingFragment.newInstance(mentorContentUri);
         fragmentManager.beginTransaction()
@@ -146,8 +146,8 @@ public class CourseDetailActivity extends AppCompatActivity
                     .putExtra(CalendarContract.EXTRA_EVENT_BEGIN_TIME, course.startMillis())
                     .putExtra(CalendarContract.EXTRA_EVENT_END_TIME, course.endMillis())
                     .putExtra(CalendarContract.EXTRA_EVENT_ALL_DAY, true)
-                    .putExtra(CalendarContract.Events.TITLE, course.name())
-                    .putExtra(CalendarContract.Events.DESCRIPTION, course.notes());
+                    .putExtra(CalendarContract.Events.TITLE, course.name());
+//                    .putExtra(CalendarContract.Events.DESCRIPTION, course.notes());
                 startActivity(intent);
                 return true;
             default:
@@ -212,7 +212,7 @@ public class CourseDetailActivity extends AppCompatActivity
      */
     public void onMentorToggled(long mentorId) {
         long courseId = ContentUris.parseId(courseContentUri);
-        Uri courseMentorContentUri = CourseMentorProvider.CONTRACT.getCourseMentorContentUri(courseId, mentorId);
+        Uri courseMentorContentUri = CourseMentorProvider.CONTRACT.courseMentorContentUri(courseId, mentorId);
         Cursor cursor = null;
         try {
             cursor = getContentResolver().query(courseMentorContentUri, null, null, null, null);
@@ -235,19 +235,19 @@ public class CourseDetailActivity extends AppCompatActivity
     }
 
     @Override
-    public void onFragmentItemClick(long itemId, String tag) {
+    public void onFragmentItemClick(long itemId, View view, String tag) {
         Intent intent;
         switch (tag) {
             case Util.Tag.MENTOR:
                 intent = new Intent(this, MentorDataEntryActivity.class);
                 intent.setAction(Intent.ACTION_EDIT);
-                intent.setData(MentorProvider.CONTRACT.getContentUri(itemId));
+                intent.setData(MentorProvider.CONTRACT.contentUri(itemId));
                 startActivity(intent);
                 break;
             case Util.Tag.ASSESSMENT:
                 intent = new Intent(this, AssessmentDetailActivity.class);
                 intent.setAction(Intent.ACTION_VIEW);
-                intent.setData(AssessmentProvider.CONTRACT.getContentUri(itemId));
+                intent.setData(AssessmentProvider.CONTRACT.contentUri(itemId));
                 startActivity(intent);
                 break;
             default:
@@ -256,7 +256,7 @@ public class CourseDetailActivity extends AppCompatActivity
     }
 
     @Override
-    public void onFragmentItemLongClick(long itemId, String tag) {
+    public void onFragmentItemLongClick(long itemId, View view, String tag) {
         switch(tag) {
             case Util.Tag.MENTOR:
                 onMentorToggled(itemId);

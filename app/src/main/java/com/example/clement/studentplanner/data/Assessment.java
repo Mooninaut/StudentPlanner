@@ -47,44 +47,44 @@ public class Assessment extends ScheduleItem {
     @NonNull
     private Type type = Type.NONE;
     //private long startMillis;
-    @NonNull
-    private String notes = "";
+/*    @NonNull
+    private String notes = "";*/
 
     public Assessment(long id, @NonNull String name, long startMillis, long endMillis,
-                      long courseId, @NonNull Type type, @NonNull String notes) {
+                      long courseId, @NonNull Type type/*, @NonNull String notes*/) {
         super(id, name, startMillis, endMillis);
         this.type = type;
-        this.notes = notes;
+//        this.notes = notes;
         this.courseId = courseId;
     }
     public Assessment(long id, @NonNull String name, long startMillis, long endMillis,
-                      @NonNull Course course, @NonNull Type type, @NonNull String notes) {
+                      @NonNull Course course, @NonNull Type type/*, @NonNull String notes*/) {
         super(id, name, startMillis, endMillis);
         this.type = type;
-        this.notes = notes;
+//        this.notes = notes;
         this.courseId = course.id();
     }
     public Assessment() {
     }
 
     public Assessment(@NonNull String name, long startMillis, long endMillis,
-                      long courseId, @NonNull Type type, @NonNull String notes) {
+                      long courseId, @NonNull Type type/*, @NonNull String notes*/) {
         super(ScheduleItem.NO_ID, name, startMillis, endMillis);
         this.type = type;
-        this.notes = notes;
+//        this.notes = notes;
         this.courseId = courseId;
     }
     public Assessment(@NonNull String name, long startMillis, long endMillis,
-                      @NonNull Course course, @NonNull Type type, @NonNull String notes) {
+                      @NonNull Course course, @NonNull Type type/*, @NonNull String notes*/) {
         super(ScheduleItem.NO_ID, name, startMillis, endMillis);
         this.type = type;
-        this.notes = notes;
+//        this.notes = notes;
         this.courseId = course.id();
     }
     public Assessment(@NonNull Assessment other) {
         super(other);
         this.type = other.type();
-        this.notes = other.notes();
+//        this.notes = other.notes();
     }
 
     @NonNull
@@ -92,10 +92,10 @@ public class Assessment extends ScheduleItem {
         return type;
     }
 
-    @NonNull
+/*    @NonNull
     public String notes() {
         return notes;
-    }
+    }*/
 
     public long courseId() {
         return courseId;
@@ -103,16 +103,16 @@ public class Assessment extends ScheduleItem {
     public void type(@NonNull Type type) {
         this.type = type;
     }
-    public void notes(@NonNull String notes) {
+/*    public void notes(@NonNull String notes) {
         this.notes = notes;
-    }
+    }*/
     public void courseId(long courseId) {
         this.courseId = courseId;
     }
     @Override
     @NonNull
     public String toString() {
-        return String.format(Locale.US, "Assessment: name '%s', startMillis '%d', endMillis '%d', type '%s', notes '%s'",
-            name(), startMillis(), endMillis(), type().toString(), notes());
+        return String.format(Locale.US, "Assessment: name '%s', startMillis '%d', endMillis '%d', type '%s'", //, notes '%s'
+            name(), startMillis(), endMillis(), type().toString()/*, notes()*/);
     }
 }

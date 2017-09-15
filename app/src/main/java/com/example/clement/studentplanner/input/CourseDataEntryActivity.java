@@ -71,7 +71,7 @@ public class CourseDataEntryActivity extends AppCompatActivity implements DatePi
                 throw new NullPointerException();
             }
             course = editCourse(courseUri);
-            termUri = TermProvider.CONTRACT.getContentUri(course.termId());
+            termUri = TermProvider.CONTRACT.contentUri(course.termId());
         }
         else {
             throw new IllegalStateException();
@@ -181,7 +181,7 @@ public class CourseDataEntryActivity extends AppCompatActivity implements DatePi
                 EditText notesET = (EditText) findViewById(R.id.edit_notes);
                 Spinner statusSpinner = (Spinner) findViewById(R.id.spinner_course_status);
                 nameET.setText(localCourse.name());
-                notesET.setText(localCourse.notes());
+//                notesET.setText(localCourse.notes());
                 setStatusSpinnerFromCourse(statusSpinner, localCourse);
             }
         } finally {
@@ -228,7 +228,7 @@ public class CourseDataEntryActivity extends AppCompatActivity implements DatePi
         EditText notes = (EditText) findViewById(R.id.edit_notes);
         Spinner status = (Spinner) findViewById(R.id.spinner_course_status);
         course.name(name.getText().toString().trim());
-        course.notes(notes.getText().toString().trim());
+//        course.notes(notes.getText().toString().trim());
         course.startEndMillis(start.getTimeInMillis(), end.getTimeInMillis());
         course.termId(term.id());
         int spinnerPosition = status.getSelectedItemPosition();

@@ -17,7 +17,7 @@ import java.util.ArrayList;
 
 public class StorageHelper extends SQLiteOpenHelper {
 
-    public static final int DATABASE_VERSION = 21;
+    public static final int DATABASE_VERSION = 23;
     public static final String TABLE_TERM = "term";
     public static final String COLUMN_ID = BaseColumns._ID;
     public static final String COLUMN_NAME = "name";
@@ -26,9 +26,9 @@ public class StorageHelper extends SQLiteOpenHelper {
     public static final String COLUMN_END = "end";
     public static final String COLUMN_TIME = "time";
     public static final String COLUMN_TYPE = "type";
-    public static final String COLUMN_NOTES = "notes";
+    public static final String COLUMN_NOTE = "note";
     public static final String COLUMN_STATUS = "status";
-    public static final String COLUMN_FILE_URI = "file_uri";
+    public static final String COLUMN_PHOTO_FILE_URI = "file_uri";
     public static final String COLUMN_PHONE_NUMBER = "phone";
     public static final String COLUMN_EMAIL = "email";
     public static final String COLUMN_TERMINUS = "terminus";
@@ -41,17 +41,17 @@ public class StorageHelper extends SQLiteOpenHelper {
 
     public static final String COLUMN_TERM_ID = TABLE_TERM + BaseColumns._ID;
     public static final String[] COLUMNS_COURSE = {
-        COLUMN_ID, COLUMN_NAME, COLUMN_START, COLUMN_END, COLUMN_TERM_ID, COLUMN_STATUS, COLUMN_NOTES
+        COLUMN_ID, COLUMN_NAME, COLUMN_START, COLUMN_END, COLUMN_TERM_ID, COLUMN_STATUS//, COLUMN_NOTE
     };
     public static final String TABLE_ASSESSMENT = "assessment";
     public static final String COLUMN_COURSE_ID = TABLE_COURSE + BaseColumns._ID;
 
     public static final String[] COLUMNS_ASSESSMENT = {
-        COLUMN_ID, COLUMN_NAME, COLUMN_START, COLUMN_END, COLUMN_COURSE_ID, COLUMN_TYPE, COLUMN_NOTES
+        COLUMN_ID, COLUMN_NAME, COLUMN_START, COLUMN_END, COLUMN_COURSE_ID, COLUMN_TYPE//, COLUMN_NOTE
     };
-    public static final String TABLE_PHOTO = "photo";
-    public static final String[] COLUMNS_PHOTO = {
-        COLUMN_ID, COLUMN_PARENT_URI, COLUMN_FILE_URI
+    public static final String TABLE_NOTE = "note";
+    public static final String[] COLUMNS_NOTE = {
+        COLUMN_ID, COLUMN_PARENT_URI, COLUMN_NOTE, COLUMN_PHOTO_FILE_URI
     };
 
     public static final String TABLE_MENTOR = "mentor";
@@ -83,14 +83,15 @@ public class StorageHelper extends SQLiteOpenHelper {
     public static final String DATABASE_FILE_NAME = "studentplanner.sqlite3";
 
     static {
-        ArrayList<String> schema = new ArrayList<String>(20);
+        ArrayList<String> schema = new ArrayList<String>(30);
         schema.add("DROP VIEW IF EXISTS "+VIEW_EVENT);
-        schema.add("DROP TABLE IF EXISTS "+TABLE_PHOTO);
+        schema.add("DROP TABLE IF EXISTS "+TABLE_NOTE);
         schema.add("DROP TABLE IF EXISTS "+TABLE_ASSESSMENT);
         schema.add("DROP TABLE IF EXISTS "+TABLE_COURSE);
         schema.add("DROP TABLE IF EXISTS "+TABLE_TERM);
         schema.add("DROP TABLE IF EXISTS "+TABLE_MENTOR);
         schema.add("DROP TABLE IF EXISTS "+TABLE_COURSE_MENTOR);
+        schema.add("DROP TABLE IF EXISTS photo"); // FIXME TODO REMOVE
 
         schema.add("CREATE TABLE "+TABLE_TERM+" ("+COLUMN_ID+" INTEGER PRIMARY KEY AUTOINCREMENT, "+
             COLUMN_NAME+" TEXT, "+COLUMN_START+" INTEGER, "+COLUMN_END+" INTEGER, "+COLUMN_NUMBER+" INTEGER)");
@@ -100,18 +101,20 @@ public class StorageHelper extends SQLiteOpenHelper {
         schema.add("CREATE TABLE "+TABLE_COURSE+ "("+COLUMN_ID+" INTEGER PRIMARY KEY AUTOINCREMENT, "+
             COLUMN_NAME+" TEXT, "+COLUMN_START+" INTEGER, "+COLUMN_END+" INTEGER, " +
             COLUMN_TERM_ID+" INTEGER REFERENCES "+TABLE_TERM+"("+COLUMN_ID+"), "+
-            COLUMN_STATUS+" INTEGER, "+COLUMN_NOTES+" TEXT)");
+            COLUMN_STATUS+" INTEGER)"); // , "+COLUMN_NOTE+" TEXT
         schema.add("INSERT INTO "+TABLE_COURSE+" ("+COLUMN_ID+", "+COLUMN_NAME+", "+COLUMN_START+", "+
             COLUMN_END+", "+COLUMN_TERM_ID+", "+COLUMN_STATUS+") VALUES ("+ COURSE_ID_OFFSET +", 'B', 2, 2, "+TERM_ID_OFFSET+", 2);");
 
         schema.add("CREATE TABLE "+TABLE_ASSESSMENT+"("+COLUMN_ID+" INTEGER PRIMARY KEY AUTOINCREMENT, "+
             COLUMN_NAME+" TEXT, "+COLUMN_START+" INTEGER, "+COLUMN_END+" INTEGER, "+
             COLUMN_COURSE_ID+" INTEGER REFERENCES "+TABLE_COURSE+"("+COLUMN_ID+"), "+
-            COLUMN_TYPE+" INTEGER, "+COLUMN_NOTES+" TEXT)");
+            COLUMN_TYPE+" INTEGER)"); // , "+COLUMN_NOTE+" TEXT
         schema.add("INSERT INTO "+TABLE_ASSESSMENT+" ("+COLUMN_ID+", "+COLUMN_NAME+", "+COLUMN_START+", "+
-            COLUMN_END+", "+COLUMN_COURSE_ID+", "+COLUMN_TYPE+", "+COLUMN_NOTES+") VALUES ("+ ASSESSMENT_ID_OFFSET +", 'C', 3, 3, "+COURSE_ID_OFFSET+", 3, 'C');");
-        schema.add("CREATE TABLE "+TABLE_PHOTO+"("+COLUMN_ID+" INTEGER PRIMARY KEY AUTOINCREMENT, "+
-            COLUMN_PARENT_URI+" TEXT, "+COLUMN_FILE_URI +" TEXT)");
+            COLUMN_END+", "+COLUMN_COURSE_ID+", "+COLUMN_TYPE+") VALUES ("+ ASSESSMENT_ID_OFFSET +", 'C', 3, 3, "+COURSE_ID_OFFSET+", 3);");
+        // ", "+COLUMN_NOTE+
+        // , 'C'
+        schema.add("CREATE TABLE "+ TABLE_NOTE +"("+COLUMN_ID+" INTEGER PRIMARY KEY AUTOINCREMENT, "+
+            COLUMN_NOTE+" TEXT, "+COLUMN_PARENT_URI+" TEXT, "+ COLUMN_PHOTO_FILE_URI +" TEXT)");
 
         schema.add("CREATE TABLE "+TABLE_MENTOR+"("+COLUMN_ID+" INTEGER PRIMARY KEY AUTOINCREMENT, "+
             COLUMN_NAME+" TEXT, "+COLUMN_PHONE_NUMBER+" TEXT, "+COLUMN_EMAIL+" TEXT)");

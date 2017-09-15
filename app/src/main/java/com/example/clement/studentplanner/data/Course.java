@@ -42,31 +42,31 @@ public class Course extends ScheduleItem {
     private long termId = NO_ID;
     @NonNull
     private Status status = Status.NONE;
-    @NonNull
-    private String notes = "";
+//    @NonNull
+//    private String notes = "";
     public Course() { super(); }
-    public Course(long id, @NonNull String name, long startMillis, long endMillis, long termId, @NonNull Status status, @NonNull String notes) {
+    public Course(long id, @NonNull String name, long startMillis, long endMillis, long termId, @NonNull Status status/*, @NonNull String notes*/) {
         super(id, name, startMillis, endMillis);
 //        this.id = id;
 //        this.assessmentList = new ArrayList<>();
         this.termId = termId;
         this.status = status;
-        this.notes = notes;
+//        this.notes = notes;
     }
-    public Course (@NonNull String name, long startMillis, long endMillis, long termId, @NonNull Status status, @NonNull String notes) {
-        this(NO_ID, name, startMillis, endMillis, termId, status, notes);
+    public Course (@NonNull String name, long startMillis, long endMillis, long termId, @NonNull Status status/*, @NonNull String notes*/) {
+        this(NO_ID, name, startMillis, endMillis, termId, status/*, notes*/);
     }
-    public Course(long id, @NonNull String name, long startMillis, long endMillis, Term term, @NonNull Status status, @NonNull String notes) {
-        this(id, name, startMillis, endMillis, term.id(), status, notes);
+    public Course(long id, @NonNull String name, long startMillis, long endMillis, Term term, @NonNull Status status/*, @NonNull String notes*/) {
+        this(id, name, startMillis, endMillis, term.id(), status/*, notes*/);
     }
-    public Course(@NonNull String name, long startMillis, long endMillis, Term term, @NonNull Status status, @NonNull String notes) {
-        this(NO_ID, name, startMillis, endMillis, term.id(), status, notes);
+    public Course(@NonNull String name, long startMillis, long endMillis, Term term, @NonNull Status status/*, @NonNull String notes*/) {
+        this(NO_ID, name, startMillis, endMillis, term.id(), status/*, notes*/);
     }
     public Course(@NonNull Course other) {
         super(other);
         this.termId = other.termId();
         this.status = other.status();
-        this.notes = other.notes();
+//        this.notes = other.notes();
     }
 
     public long termId() {
@@ -78,10 +78,10 @@ public class Course extends ScheduleItem {
         return status;
     }
 
-    @NonNull
+/*    @NonNull
     public String notes() {
         return notes;
-    }
+    }*/
 //    public void setName(String name) {
 //        this.name = name;
 //    }
@@ -106,14 +106,14 @@ public class Course extends ScheduleItem {
         this.status = status;
     }
 
-    public void notes(@NonNull String notes) {
+/*    public void notes(@NonNull String notes) {
         this.notes = notes;
-    }
+    }*/
 
     @Override
     public String toString() {
-        return String.format(Locale.US, "Course: name '%s', startMillis '%d', endMillis '%d', term '%d', status '%s', notes '%s'",
-            name(), startMillis(), endMillis(), termId(), status().toString(), notes);
+        return String.format(Locale.US, "Course: name '%s', startMillis '%d', endMillis '%d', term '%d', status '%s'", // , notes '%s'
+            name(), startMillis(), endMillis(), termId(), status().toString()/*, notes*/);
     }
 
 }

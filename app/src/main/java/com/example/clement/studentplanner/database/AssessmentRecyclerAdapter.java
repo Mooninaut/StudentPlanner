@@ -17,25 +17,25 @@ public class AssessmentRecyclerAdapter extends RecyclerCursorAdapterBase<Assessm
     private AssessmentCursorAdapter assessmentCursorAdapter;
     private Context context;
     @Nullable
-    private ItemListener.OnClickListener onClickListener;
+    private ItemListener.OnClick onClick;
     @Nullable
-    private ItemListener.OnLongClickListener onLongClickListener;
+    private ItemListener.OnLongClick onLongClick;
 
     public AssessmentRecyclerAdapter(Context context,
                                      Cursor cursor,
-                                     @Nullable ItemListener.OnClickListener onClickListener,
-                                     @Nullable ItemListener.OnLongClickListener onLongClickListener) {
+                                     @Nullable ItemListener.OnClick onClick,
+                                     @Nullable ItemListener.OnLongClick onLongClick) {
         assessmentCursorAdapter = new AssessmentCursorAdapter(context, cursor, 0);
         this.context = context;
-        this.onClickListener = onClickListener;
-        this.onLongClickListener = onLongClickListener;
+        this.onClick = onClick;
+        this.onLongClick = onLongClick;
         setHasStableIds(true);
     }
 
     @Override
     public AssessmentHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View v = assessmentCursorAdapter.newView(context, assessmentCursorAdapter.getCursor(), parent);
-        return new AssessmentHolder(v, onClickListener, onLongClickListener);
+        return new AssessmentHolder(v, onClick, onLongClick);
     }
 
     @Override

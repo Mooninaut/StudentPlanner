@@ -18,7 +18,6 @@ import java.util.Locale;
 import static com.example.clement.studentplanner.database.StorageHelper.COLUMN_END;
 import static com.example.clement.studentplanner.database.StorageHelper.COLUMN_ID;
 import static com.example.clement.studentplanner.database.StorageHelper.COLUMN_NAME;
-import static com.example.clement.studentplanner.database.StorageHelper.COLUMN_NOTES;
 import static com.example.clement.studentplanner.database.StorageHelper.COLUMN_START;
 import static com.example.clement.studentplanner.database.StorageHelper.COLUMN_STATUS;
 import static com.example.clement.studentplanner.database.StorageHelper.COLUMN_TERM_ID;
@@ -66,8 +65,8 @@ public class CourseCursorAdapter extends CursorAdapter {
             cursor.getLong(cursor.getColumnIndex(COLUMN_START)),
             cursor.getLong(cursor.getColumnIndex(COLUMN_END)),
             cursor.getInt(cursor.getColumnIndex(COLUMN_TERM_ID)),
-            Course.Status.of(cursor.getInt(cursor.getColumnIndex(COLUMN_STATUS))),
-            cursor.getString(cursor.getColumnIndex(COLUMN_NOTES))
+            Course.Status.of(cursor.getInt(cursor.getColumnIndex(COLUMN_STATUS)))/*,
+            cursor.getString(cursor.getColumnIndex(COLUMN_NOTE))*/
         );
     }
     @Override

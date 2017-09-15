@@ -49,7 +49,7 @@
             android:enabled="true"
             android:exported="false"/>
         <provider
-            android:name=".database.PhotoProvider"
+            android:name=".database.NoteProvider"
             android:authorities="com.example.clement.studentplanner.photoprovider"
             android:enabled="true"
             android:exported="false"/>

@@ -196,19 +196,24 @@ public class TermDataEntryActivity extends AppCompatActivity implements DatePick
         try {
             termNumber = Integer.parseInt(number.getText().toString());
             if (termNumber < 0) {
-                Toast.makeText(this, "Term number cannot be negative", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, R.string.negative_term_error, Toast.LENGTH_SHORT).show();
                 number.setText(Integer.toString(Math.abs(termNumber)));
                 return;
             }
         }
         catch (NumberFormatException e) {
             number.setText("");
-            Toast.makeText(this, "Invalid term number", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, R.string.invalid_term_error, Toast.LENGTH_SHORT).show();
             return;
         }
 
         term.name(name.getText().toString().trim());
-        term.startEndMillis(start.getTimeInMillis(), end.getTimeInMillis());
+        try {
+            term.startEndMillis(start.getTimeInMillis(), end.getTimeInMillis());
+        } catch (IllegalArgumentException e) {
+            Toast.makeText(this, R.string.time_paradox, Toast.LENGTH_SHORT).show();
+            return;
+        }
         term.number(termNumber);
 
         Intent intent = getIntent();

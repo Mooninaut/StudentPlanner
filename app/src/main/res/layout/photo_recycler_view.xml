@@ -9,5 +9,5 @@
     android:layout_height="match_parent"
     android:background="#FFFF"
     app:layoutManager="LinearLayoutManager"
-    tools:context="com.example.clement.studentplanner.PhotoListingFragment"
+    tools:context="com.example.clement.studentplanner.NoteListingFragment"
     tools:listitem="@layout/photo_list_item"/>

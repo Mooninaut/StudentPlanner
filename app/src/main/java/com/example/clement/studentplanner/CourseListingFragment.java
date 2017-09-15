@@ -70,10 +70,10 @@ public class CourseListingFragment extends ListingFragmentBase<CourseCursorAdapt
             throw new IllegalStateException("Activity must implement HostActivity interface");
         }
         Cursor courseCursor = context.getContentResolver().query(
-            getContentUri(), null, null, null, null
+            contentUri(), null, null, null, null
         );
         courseCursorAdapter = new CourseCursorAdapter(context, courseCursor, 0);
-        getLoaderManager().initLoader(COURSE_LOADER_ID, null, new CourseLoaderListener(getActivity(), getContentUri(), courseCursorAdapter));
+        getLoaderManager().initLoader(COURSE_LOADER_ID, null, new CourseLoaderListener(getActivity(), contentUri(), courseCursorAdapter));
     }
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -101,7 +101,7 @@ public class CourseListingFragment extends ListingFragmentBase<CourseCursorAdapt
         }
         return courseLoaderListener;
     }*//*
-    private synchronized Uri getContentUri() {
+    private synchronized Uri contentUri() {
         Bundle arguments = getArguments();
         if (arguments == null) {
             return CourseProvider.CONTRACT.contentUri;

@@ -26,29 +26,29 @@ public class CourseProvider extends ContentProviderBase {
     public enum CourseContract implements ProviderContract {
         INSTANCE;
         @Override
-        public Uri getContentUri() {
+        public Uri contentUri() {
             return contentUri;
         }
         @Override
-        public Uri getContentUri(long id) {
+        public Uri contentUri(long id) {
             return ContentUris.withAppendedId(contentUri, id);
         }
         @Override
-        public String getContentItemType() {
+        public String contentItemType() {
             return contentItemType;
         }
         @Override
-        public String getAuthority() {
+        public String authority() {
             return authority;
         }
         @Override
-        public String getBasePath() {
+        public String basePath() {
             return basePath;
         }
-        public Uri getTermUri() {
+        public Uri termUri() {
             return termUri;
         }
-        public Uri getTermUri(long id) {
+        public Uri termUri(long id) {
             return ContentUris.withAppendedId(termUri, id);
         }
         public final String authority = "com.example.clement.studentplanner.courseprovider";
@@ -155,7 +155,7 @@ public class CourseProvider extends ContentProviderBase {
     public Uri insert(@NonNull Uri uri, @Nullable ContentValues values) {
         Uri newUri = super.insert(uri, values);
         if (newUri != null) {
-            notifyChange(CONTRACT.getTermUri(values.getAsLong(COLUMN_TERM_ID)));
+            notifyChange(CONTRACT.termUri(values.getAsLong(COLUMN_TERM_ID)));
         }
         return newUri;
     }
@@ -170,7 +170,7 @@ public class CourseProvider extends ContentProviderBase {
         values.put(StorageHelper.COLUMN_END, course.endMillis());
         values.put(StorageHelper.COLUMN_STATUS, course.status().value());
         values.put(StorageHelper.COLUMN_TERM_ID, course.termId());
-        values.put(StorageHelper.COLUMN_NOTES, course.notes());
+//        values.put(StorageHelper.COLUMN_NOTE, course.notes());
         return values;
     }
 }

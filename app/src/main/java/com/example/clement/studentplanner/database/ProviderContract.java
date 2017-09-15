@@ -7,9 +7,9 @@ import android.net.Uri;
  */
 
 public interface ProviderContract {
-    Uri getContentUri();
-    Uri getContentUri(long id);
-    String getContentItemType();
-    String getAuthority();
-    String getBasePath();
+    Uri contentUri();
+    Uri contentUri(long id);
+    String contentItemType();
+    String authority();
+    String basePath();
 }

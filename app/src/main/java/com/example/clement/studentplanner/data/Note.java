@@ -9,17 +9,20 @@ import java.util.Locale;
  * Created by Clement on 9/12/2017.
  */
 
-public class Photo implements HasId{
+public class Note implements HasId{
     private @NonNull Uri fileUri = Uri.EMPTY;
-    private @NonNull Uri parentUri;
+    private @NonNull Uri parentUri = Uri.EMPTY;
     private long id = NO_ID;
-    public Photo() { }
-    public Photo(long id, @NonNull Uri parentUri, @NonNull Uri fileUri) {
+    private String note = "";
+    public Note() { }
+    public Note(long id, @NonNull String note, @NonNull Uri parentUri, @NonNull Uri fileUri) {
         this.id = id;
+        this.note = note;
         this.parentUri = parentUri;
         this.fileUri = fileUri;
     }
-    public Photo(@NonNull Uri parentUri, @NonNull Uri fileUri) {
+    public Note(@NonNull String note, @NonNull Uri parentUri, @NonNull Uri fileUri) {
+        this.note = note;
         this.parentUri = parentUri;
         this.fileUri = fileUri;
     }
@@ -29,6 +32,12 @@ public class Photo implements HasId{
     }
     public void id(long id) {
         this.id = id;
+    }
+    public @NonNull String note() {
+        return note;
+    }
+    public void note(@NonNull String note) {
+        this.note = note;
     }
     @Override
     public boolean hasId() {
@@ -52,8 +61,8 @@ public class Photo implements HasId{
     public String toString() {
         return String.format(
             Locale.getDefault(),
-            "Photo: {id: \"%d\", parentUri: \"%s\", fileUri: \"%s\"}",
-            id, parentUri.toString(), fileUri.toString()
+            "Note: {id: \"%d\", note: \"%s\", parentUri: \"%s\", fileUri: \"%s\"}",
+            id, note, parentUri.toString(), fileUri.toString()
         );
     }
 }

@@ -78,7 +78,7 @@ public class AssessmentDataEntryActivity extends AppCompatActivity implements
                 throw new NullPointerException();
             }
             assessment = editAssessment(assessmentUri);
-            courseUri = CourseProvider.CONTRACT.getContentUri(assessment.courseId());
+            courseUri = CourseProvider.CONTRACT.contentUri(assessment.courseId());
         }
         else {
             throw new IllegalStateException();
@@ -149,7 +149,7 @@ public class AssessmentDataEntryActivity extends AppCompatActivity implements
                 EditText notesET = (EditText) findViewById(R.id.edit_notes);
                 Spinner typeSpinner = (Spinner) findViewById(R.id.spinner_assessment_type);
                 nameET.setText(localAssessment.name());
-                notesET.setText(localAssessment.notes());
+//                notesET.setText(localAssessment.notes());
                 setTypeSpinnerFromAssessment(typeSpinner, localAssessment);
             }
         }
@@ -290,7 +290,7 @@ public class AssessmentDataEntryActivity extends AppCompatActivity implements
         int assessmentType = getResources().getIntArray(R.array.assessment_type_id)[spinnerPosition];
         assessment.type(Assessment.Type.of(assessmentType));
 
-        assessment.notes(notes.getText().toString().trim());
+//        assessment.notes(notes.getText().toString().trim());
 
         Intent intent = getIntent();
         Uri resultUri = null;

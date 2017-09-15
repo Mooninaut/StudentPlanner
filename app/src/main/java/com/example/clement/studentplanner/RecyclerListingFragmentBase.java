@@ -25,20 +25,21 @@ import com.example.clement.studentplanner.database.RecyclerCursorAdapterBase;
  */
 
 public abstract class RecyclerListingFragmentBase<A extends RecyclerCursorAdapterBase> extends Fragment
-    implements ItemListener.OnClickListener, ItemListener.OnLongClickListener {
+    implements ItemListener.OnClick, ItemListener.OnLongClick {
     private Cursor cursor;
     private A adapter;
     private Context context;
     private Uri defaultContentUri;
     private String contentItemType;
+    private RecyclerView recyclerView;
     private int recyclerViewId = Integer.MIN_VALUE;
     private int loaderId = Integer.MIN_VALUE;
 
     protected abstract A createAdapter(Context context, Cursor cursor);
 
     protected RecyclerListingFragmentBase(ProviderContract contract, int recyclerViewId, int loaderId) {
-        this.defaultContentUri = contract.getContentUri();
-        this.contentItemType = contract.getContentItemType();
+        this.defaultContentUri = contract.contentUri();
+        this.contentItemType = contract.contentItemType();
         this.recyclerViewId = recyclerViewId;
         this.loaderId = loaderId;
     }
@@ -52,7 +53,7 @@ public abstract class RecyclerListingFragmentBase<A extends RecyclerCursorAdapte
     public void onAttach(Context context) {
         super.onAttach(context);
         this.context = context;
-        cursor = context.getContentResolver().query(getContentUri(), null, null, null, null);
+        cursor = context.getContentResolver().query(contentUri(), null, null, null, null);
         adapter = createAdapter(context, cursor);
         getLoaderManager().initLoader(loaderId, null, new LoaderListener());
     }
@@ -69,16 +70,16 @@ public abstract class RecyclerListingFragmentBase<A extends RecyclerCursorAdapte
     @Override
     public void onItemClick(View view, long itemId) {
         if (context instanceof FragmentItemListener.OnClick) {
-            ((FragmentItemListener.OnClick) context).onFragmentItemClick(itemId, getTag());
+            ((FragmentItemListener.OnClick) context).onFragmentItemClick(itemId, view, getTag());
         }
     }
     @Override
     public void onItemLongClick(View view, long itemId) {
         if (context instanceof FragmentItemListener.OnLongClick) {
-            ((FragmentItemListener.OnLongClick) context).onFragmentItemLongClick(itemId, getTag());
+            ((FragmentItemListener.OnLongClick) context).onFragmentItemLongClick(itemId, view, getTag());
         }
     }
-    protected synchronized final Uri getContentUri() {
+    protected synchronized final Uri contentUri() {
         Bundle arguments = getArguments();
         if (arguments == null) {
             return defaultContentUri;
@@ -98,7 +99,7 @@ public abstract class RecyclerListingFragmentBase<A extends RecyclerCursorAdapte
     @Override
     @CallSuper
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        RecyclerView recyclerView = (RecyclerView) inflater.inflate(recyclerViewId, container, false);
+        recyclerView = (RecyclerView) inflater.inflate(recyclerViewId, container, false);
         DividerItemDecoration div = new DividerItemDecoration(
             recyclerView.getContext(),
             DividerItemDecoration.VERTICAL
@@ -109,10 +110,14 @@ public abstract class RecyclerListingFragmentBase<A extends RecyclerCursorAdapte
         return recyclerView;
     }
 
+    public int getCount() {
+        return recyclerView.getChildCount();
+    }
+
     private class LoaderListener implements LoaderManager.LoaderCallbacks<Cursor> {
         @Override
         public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-            return new CursorLoader(getActivity(), getContentUri(),
+            return new CursorLoader(getActivity(), contentUri(),
                 null, null, null, null);
         }
         @Override

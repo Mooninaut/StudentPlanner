@@ -16,15 +16,16 @@ import com.example.clement.studentplanner.data.HasId;
 public abstract class RecyclerViewHolderBase<T extends HasId> extends RecyclerView.ViewHolder
     implements View.OnClickListener, View.OnLongClickListener{
     private final @Nullable
-    ItemListener.OnClickListener clickListener;
-    private final @Nullable ItemListener.OnLongClickListener longClickListener;
+    ItemListener.OnClick clickListener;
+    private final @Nullable
+    ItemListener.OnLongClick longClickListener;
     @Nullable
     private T item;
 
 
     public RecyclerViewHolderBase(View itemView,
-                                  @Nullable ItemListener.OnClickListener clickListener,
-                                  @Nullable ItemListener.OnLongClickListener longClickListener) {
+                                  @Nullable ItemListener.OnClick clickListener,
+                                  @Nullable ItemListener.OnLongClick longClickListener) {
         super(itemView);
         itemView.setOnClickListener(this);
         itemView.setOnLongClickListener(this);

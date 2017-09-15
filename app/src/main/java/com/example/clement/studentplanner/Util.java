@@ -71,7 +71,7 @@ public final class Util {
         public static final String ASSESSMENT = StorageHelper.TABLE_ASSESSMENT;
         public static final String EVENT = StorageHelper.VIEW_EVENT;
         public static final String MENTOR = StorageHelper.TABLE_MENTOR;
-        public static final String PHOTO = StorageHelper.TABLE_PHOTO;
+        public static final String PHOTO = StorageHelper.TABLE_NOTE;
     }
 
     private Util() {
@@ -81,7 +81,7 @@ public final class Util {
         Cursor cursor = null;
         Mentor mentor = null;
         try {
-            cursor = context.getContentResolver().query(MentorProvider.CONTRACT.getContentUri(mentorId), null, null, null, null);
+            cursor = context.getContentResolver().query(MentorProvider.CONTRACT.contentUri(mentorId), null, null, null, null);
             if (cursor != null && cursor.moveToFirst()) {
                 mentor = MentorCursorAdapter.cursorToCourseMentor(cursor);
             }
@@ -97,7 +97,7 @@ public final class Util {
         Cursor cursor = null;
         Term term = null;
         try {
-            cursor = context.getContentResolver().query(TermProvider.CONTRACT.getContentUri(termId), null, null, null, null);
+            cursor = context.getContentResolver().query(TermProvider.CONTRACT.contentUri(termId), null, null, null, null);
             if (cursor != null && cursor.moveToFirst()) {
                 term = TermCursorAdapter.cursorToTerm(cursor);
             }
@@ -113,7 +113,7 @@ public final class Util {
         Cursor cursor = null;
         Course course = null;
         try {
-            cursor = context.getContentResolver().query(CourseProvider.CONTRACT.getContentUri(courseId), null, null, null, null);
+            cursor = context.getContentResolver().query(CourseProvider.CONTRACT.contentUri(courseId), null, null, null, null);
             if (cursor != null && cursor.moveToFirst()) {
                 course = CourseCursorAdapter.cursorToCourse(cursor);
             }
@@ -129,7 +129,7 @@ public final class Util {
         Cursor cursor = null;
         Assessment assessment = null;
         try {
-            cursor = context.getContentResolver().query(AssessmentProvider.CONTRACT.getContentUri(assessmentId), null, null, null, null);
+            cursor = context.getContentResolver().query(AssessmentProvider.CONTRACT.contentUri(assessmentId), null, null, null, null);
             if (cursor != null && cursor.moveToFirst()) {
                 assessment = AssessmentCursorAdapter.cursorToAssessment(cursor);
             }
@@ -145,7 +145,7 @@ public final class Util {
         Cursor cursor = null;
         Event event = null;
         try {
-            cursor = context.getContentResolver().query(EventProvider.CONTRACT.getContentUri(eventId), null, null, null, null);
+            cursor = context.getContentResolver().query(EventProvider.CONTRACT.contentUri(eventId), null, null, null, null);
             if (cursor != null && cursor.moveToFirst()) {
                 event = EventCursorAdapter.cursorToEvent(cursor, context);
             }

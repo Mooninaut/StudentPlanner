@@ -17,24 +17,24 @@ public class MentorRecyclerAdapter extends RecyclerCursorAdapterBase<MentorHolde
     private MentorCursorAdapter mentorCursorAdapter;
     private Context context;
     @Nullable
-    private ItemListener.OnClickListener onClickListener;
+    private ItemListener.OnClick onClick;
     @Nullable
-    private ItemListener.OnLongClickListener onLongClickListener;
+    private ItemListener.OnLongClick onLongClick;
 
     public MentorRecyclerAdapter(Context context,
                                  Cursor cursor,
-                                 @Nullable ItemListener.OnClickListener onClickListener,
-                                 @Nullable ItemListener.OnLongClickListener onLongClickListener) {
+                                 @Nullable ItemListener.OnClick onClick,
+                                 @Nullable ItemListener.OnLongClick onLongClick) {
         mentorCursorAdapter = new MentorCursorAdapter(context, cursor, 0);
         this.context = context;
-        this.onClickListener = onClickListener;
-        this.onLongClickListener = onLongClickListener;
+        this.onClick = onClick;
+        this.onLongClick = onLongClick;
     }
 
     @Override
     public MentorHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View v = mentorCursorAdapter.newView(context, mentorCursorAdapter.getCursor(), parent);
-        return new MentorHolder(v, onClickListener, onLongClickListener);
+        return new MentorHolder(v, onClick, onLongClick);
     }
 
     @Override

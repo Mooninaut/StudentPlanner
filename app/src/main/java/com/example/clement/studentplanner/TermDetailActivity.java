@@ -149,7 +149,7 @@ public class TermDetailActivity extends AppCompatActivity
     public void onCourseSelected(long courseId) {
         Intent intent = new Intent(this, CourseDetailActivity.class);
         intent.setAction(Intent.ACTION_VIEW);
-        intent.setData(CourseProvider.CONTRACT.getContentUri(courseId));
+        intent.setData(CourseProvider.CONTRACT.contentUri(courseId));
         startActivity(intent);
     }
 

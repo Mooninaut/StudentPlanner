@@ -11,57 +11,58 @@ import android.view.ViewGroup;
 
 import com.example.clement.studentplanner.ItemListener;
 import com.example.clement.studentplanner.R;
-import com.example.clement.studentplanner.data.Photo;
+import com.example.clement.studentplanner.data.Note;
 
 import java.text.DateFormat;
 
-import static com.example.clement.studentplanner.database.StorageHelper.COLUMN_FILE_URI;
 import static com.example.clement.studentplanner.database.StorageHelper.COLUMN_ID;
+import static com.example.clement.studentplanner.database.StorageHelper.COLUMN_NOTE;
 import static com.example.clement.studentplanner.database.StorageHelper.COLUMN_PARENT_URI;
+import static com.example.clement.studentplanner.database.StorageHelper.COLUMN_PHOTO_FILE_URI;
 
 /**
  * Created by Clement on 9/10/2017.
  * Based loosely on https://stackoverflow.com/a/27732748
  */
 
-public class PhotoRecyclerAdapter extends RecyclerCursorAdapterBase<PhotoHolder, PhotoRecyclerAdapter.PhotoCursorAdapter> {
+public class NoteRecyclerAdapter extends RecyclerCursorAdapterBase<NoteHolder, NoteRecyclerAdapter.PhotoCursorAdapter> {
     private static DateFormat dateFormat = DateFormat.getDateInstance();
 
-    public static Photo cursorToPhoto(Cursor cursor) {
-        return new Photo(
+    public static Note cursorToPhoto(Cursor cursor) {
+        return new Note(
             cursor.getLong(cursor.getColumnIndex(COLUMN_ID)),
+            cursor.getString(cursor.getColumnIndex(COLUMN_NOTE)),
             Uri.parse(cursor.getString(cursor.getColumnIndex(COLUMN_PARENT_URI))),
-            Uri.parse(cursor.getString(cursor.getColumnIndex(COLUMN_FILE_URI)))
+            Uri.parse(cursor.getString(cursor.getColumnIndex(COLUMN_PHOTO_FILE_URI)))
         );
     }
 
-
+    @Nullable
+    private ItemListener.OnClick clickListener;
+    @Nullable
+    private ItemListener.OnLongClick longClickListener;
     private final PhotoCursorAdapter photoCursorAdapter;
     private final Context context;
-    @Nullable
-    private ItemListener.OnClickListener onClickListener;
-    @Nullable
-    private ItemListener.OnLongClickListener onLongClickListener;
 
-    public PhotoRecyclerAdapter(Context context,
-                                Cursor cursor,
-                                @Nullable ItemListener.OnClickListener onClickListener,
-                                @Nullable ItemListener.OnLongClickListener onLongClickListener) {
+    public NoteRecyclerAdapter(Context context,
+                               Cursor cursor,
+                               @Nullable ItemListener.OnClick clickListener,
+                               @Nullable ItemListener.OnLongClick longClickListener) {
         photoCursorAdapter = new PhotoCursorAdapter(context, cursor, 0);
         this.context = context;
-        this.onClickListener = onClickListener;
-        this.onLongClickListener = onLongClickListener;
+        this.clickListener = clickListener;
+        this.longClickListener = longClickListener;
         setHasStableIds(true);
     }
 
     @Override
-    public PhotoHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public NoteHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View v = photoCursorAdapter.newView(context, photoCursorAdapter.getCursor(), parent);
-        return new PhotoHolder(v, context);
+        return new NoteHolder(v, context, clickListener, longClickListener);
     }
 
     @Override
-    public void onBindViewHolder(PhotoHolder holder, int position) {
+    public void onBindViewHolder(NoteHolder holder, int position) {
         photoCursorAdapter.getCursor().moveToPosition(position);
         holder.bindItem(photoCursorAdapter.getItem(position));
     }
@@ -75,7 +76,6 @@ public class PhotoRecyclerAdapter extends RecyclerCursorAdapterBase<PhotoHolder,
     public PhotoCursorAdapter getCursorAdapter() {
         return photoCursorAdapter;
     }
-
 
     /**
      * This allows the adapter to re-use the existing LoaderManager/CursorLoader
@@ -99,7 +99,7 @@ public class PhotoRecyclerAdapter extends RecyclerCursorAdapterBase<PhotoHolder,
         @Override
         public void bindView(View view, Context context, Cursor cursor) {
             throw new UnsupportedOperationException();
-//            Photo photo = cursorToPhoto(cursor);
+//            Note photo = cursorToPhoto(cursor);
 //            Uri photoUri = photo.fileUri();
 //            Log.d("PhotoCursorAdapter", "Id: "+photo.id());
 //    //        ImageView photoIV = (ImageView) view.findViewById(R.id.note_image_button);
@@ -118,13 +118,13 @@ public class PhotoRecyclerAdapter extends RecyclerCursorAdapterBase<PhotoHolder,
 
         @Override
         @Nullable
-        public Photo getItem(int position) {
+        public Note getItem(int position) {
             Cursor cursor = getCursor();
-            Photo photo = null;
+            Note note = null;
             if (cursor.moveToPosition(position)) {
-                photo = cursorToPhoto(cursor);
+                note = cursorToPhoto(cursor);
             }
-            return photo;
+            return note;
         }
     }
 }

@@ -27,23 +27,23 @@ public class CourseMentorProvider extends ContentProviderBase {
     public enum CourseMentorContract implements ProviderContract {
         INSTANCE;
         @Override
-        public Uri getContentUri() {
+        public Uri contentUri() {
             return contentUri;
         }
         @Override
-        public Uri getContentUri(long id) {
+        public Uri contentUri(long id) {
             return ContentUris.withAppendedId(contentUri, id);
         }
         @Override
-        public String getContentItemType() {
+        public String contentItemType() {
             return contentItemType;
         }
         @Override
-        public String getAuthority() {
+        public String authority() {
             return authority;
         }
         @Override
-        public String getBasePath() {
+        public String basePath() {
             return basePath;
         }
 
@@ -55,16 +55,16 @@ public class CourseMentorProvider extends ContentProviderBase {
         public final Uri mentorContentUri;
         public final Uri courseMentorContentUri;
         public final String contentItemType = "Mentor";
-        public Uri getMentorContentUri() {
+        public Uri mentorContentUri() {
             return mentorContentUri;
         }
-        public Uri getMentorContentUri(long id) {
+        public Uri mentorContentUri(long id) {
             return ContentUris.withAppendedId(mentorContentUri, id);
         }
-        public Uri getCourseMentorContentUri() {
+        public Uri courseMentorContentUri() {
             return courseMentorContentUri;
         }
-        public Uri getCourseMentorContentUri(long courseId, long mentorId) {
+        public Uri courseMentorContentUri(long courseId, long mentorId) {
             return ContentUris.withAppendedId(
                 ContentUris.withAppendedId(courseMentorContentUri, courseId),
                 mentorId
@@ -181,7 +181,7 @@ public class CourseMentorProvider extends ContentProviderBase {
                 result = db.delete(TABLE_COURSE_MENTOR, COLUMN_COURSE_ID+"="+courseId, null);
                 if (result > 0) {
                     notifyChange(uri);
-                    notifyChange(MentorProvider.CONTRACT.getCourseUri(courseId));
+                    notifyChange(MentorProvider.CONTRACT.courseUri(courseId));
                 }
                 break;
             case COURSE_MENTOR_COURSE_ID_MENTOR_ID:
@@ -195,7 +195,7 @@ public class CourseMentorProvider extends ContentProviderBase {
                     result = db.delete(TABLE_COURSE_MENTOR, COLUMN_COURSE_ID+"= ? AND "+COLUMN_MENTOR_ID+"= ?", mentorCursorIds);
                     if (result > 0) {
                         notifyChange(uri);
-                        notifyChange(MentorProvider.CONTRACT.getCourseUri(courseId));
+                        notifyChange(MentorProvider.CONTRACT.courseUri(courseId));
                     }
                 }
                 else {
@@ -213,7 +213,7 @@ public class CourseMentorProvider extends ContentProviderBase {
     public Uri insert(@NonNull Uri uri, @Nullable ContentValues values) {
         Uri result = super.insert(uri, values);
         if (result != null && values != null) {
-            notifyChange(MentorProvider.CONTRACT.getCourseUri(values.getAsLong(COLUMN_COURSE_ID)));
+            notifyChange(MentorProvider.CONTRACT.courseUri(values.getAsLong(COLUMN_COURSE_ID)));
         }
         return result;
     }

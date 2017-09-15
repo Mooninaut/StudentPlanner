@@ -30,10 +30,10 @@ public class AssessmentHolder extends RecyclerViewHolderBase<Assessment> {
     private final TextView end;
 
     public AssessmentHolder(View itemView,
-                            @Nullable ItemListener.OnClickListener onClickListener,
-                            @Nullable ItemListener.OnLongClickListener onLongClickListener) {
+                            @Nullable ItemListener.OnClick onClick,
+                            @Nullable ItemListener.OnLongClick onLongClick) {
 
-        super(itemView, onClickListener, onLongClickListener);
+        super(itemView, onClick, onLongClick);
         name = itemView.findViewById(R.id.assessment_name_text_view);
 //        notes = itemView.findViewById(R.id.assessment_notes_view);
         type = itemView.findViewById(R.id.assessment_type_text_view);

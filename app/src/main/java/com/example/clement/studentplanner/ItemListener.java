@@ -8,10 +8,10 @@ import android.view.View;
 
 public class ItemListener {
 
-    public interface OnClickListener {
+    public interface OnClick {
         void onItemClick(View view, long itemId);
     }
-    public interface OnLongClickListener {
+    public interface OnLongClick {
         void onItemLongClick(View view, long itemId);
     }
 }

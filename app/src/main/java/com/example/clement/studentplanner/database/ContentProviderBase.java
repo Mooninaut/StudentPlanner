@@ -26,7 +26,16 @@ abstract class ContentProviderBase extends ContentProvider {
     protected abstract @NonNull UriMatcher getUriMatcher();
     protected abstract int getSingleRowMatchConstant();
 
-    private static final String SELECTION = COLUMN_ID + " = ?";
+    public static final String SELECTION_ID = COLUMN_ID + " = ?";
+    public static String[] toStringArray(String s) {
+        return new String[] { s };
+    }
+    public static String[] toStringArray(long l) {
+        return new String[] { Long.toString(l) };
+    }
+    public static String[] toStringArray(Uri uri) {
+        return new String[] { uri.toString() };
+    }
     /**
      * Lazily initialize the writableDatabase object
      */
@@ -71,7 +80,7 @@ abstract class ContentProviderBase extends ContentProvider {
     @Override
     public int update(@NonNull Uri uri, @Nullable ContentValues values, @Nullable String selection, @Nullable String[] selectionArgs) {
         long id = ContentUris.parseId(uri);
-        selection = SELECTION;
+        selection = SELECTION_ID;
         selectionArgs = new String[] { Long.toString(id) };
         int rowsUpdated = getWritableDatabase().update(getTableName(), values, selection, selectionArgs);
         if (rowsUpdated > 0) {
@@ -84,7 +93,7 @@ abstract class ContentProviderBase extends ContentProvider {
     public int delete(@NonNull Uri uri, @Nullable String selection, @Nullable String[] selectionArgs) {
         if (getUriMatcher().match(uri) == getSingleRowMatchConstant()) {
             long id = ContentUris.parseId(uri);
-            selection = SELECTION;
+            selection = SELECTION_ID;
             selectionArgs = new String[] { Long.toString(id) };
         }
         int rowsAffected = getWritableDatabase().delete(
@@ -106,7 +115,7 @@ abstract class ContentProviderBase extends ContentProvider {
             null,
             values
         );
-        Uri newUri = getContract().getContentUri(id);
+        Uri newUri = getContract().contentUri(id);
         notifyChange(newUri);
         return newUri;
     }

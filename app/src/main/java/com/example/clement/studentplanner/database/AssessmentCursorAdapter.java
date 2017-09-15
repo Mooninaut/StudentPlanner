@@ -20,7 +20,6 @@ import static com.example.clement.studentplanner.database.StorageHelper.COLUMN_C
 import static com.example.clement.studentplanner.database.StorageHelper.COLUMN_END;
 import static com.example.clement.studentplanner.database.StorageHelper.COLUMN_ID;
 import static com.example.clement.studentplanner.database.StorageHelper.COLUMN_NAME;
-import static com.example.clement.studentplanner.database.StorageHelper.COLUMN_NOTES;
 import static com.example.clement.studentplanner.database.StorageHelper.COLUMN_START;
 import static com.example.clement.studentplanner.database.StorageHelper.COLUMN_TYPE;
 
@@ -66,8 +65,8 @@ public class AssessmentCursorAdapter extends CursorAdapter {
             cursor.getLong(cursor.getColumnIndex(COLUMN_START)),
             cursor.getLong(cursor.getColumnIndex(COLUMN_END)),
             cursor.getLong(cursor.getColumnIndex(COLUMN_COURSE_ID)),
-            Assessment.Type.of(cursor.getInt(cursor.getColumnIndex(COLUMN_TYPE))),
-            cursor.getString(cursor.getColumnIndex(COLUMN_NOTES))
+            Assessment.Type.of(cursor.getInt(cursor.getColumnIndex(COLUMN_TYPE)))//,
+//            cursor.getString(cursor.getColumnIndex(COLUMN_NOTE))
         );
     }
     @Override

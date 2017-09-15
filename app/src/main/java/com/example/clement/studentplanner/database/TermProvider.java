@@ -31,23 +31,23 @@ public class TermProvider extends ContentProviderBase {
     public enum TermContract implements ProviderContract {
         INSTANCE;
         @Override
-        public Uri getContentUri() {
+        public Uri contentUri() {
             return contentUri;
         }
         @Override
-        public Uri getContentUri(long id) {
+        public Uri contentUri(long id) {
             return ContentUris.withAppendedId(contentUri, id);
         }
         @Override
-        public String getContentItemType() {
+        public String contentItemType() {
             return contentItemType;
         }
         @Override
-        public String getAuthority() {
+        public String authority() {
             return authority;
         }
         @Override
-        public String getBasePath() {
+        public String basePath() {
             return basePath;
         }
 

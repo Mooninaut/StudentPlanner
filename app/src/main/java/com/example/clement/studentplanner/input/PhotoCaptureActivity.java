@@ -12,15 +12,16 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
-import com.example.clement.studentplanner.PhotoListingFragment;
+import com.example.clement.studentplanner.NoteListingFragment;
 import com.example.clement.studentplanner.R;
 import com.example.clement.studentplanner.Util;
-import com.example.clement.studentplanner.data.Photo;
-import com.example.clement.studentplanner.database.PhotoProvider;
+import com.example.clement.studentplanner.data.Note;
+import com.example.clement.studentplanner.database.NoteProvider;
 
 public class PhotoCaptureActivity extends AppCompatActivity {
 
-    private PhotoListingFragment photoFragment;
+    private NoteListingFragment photoFragment;
+    private FloatingActionButton fab;
     private Uri photoContentUri;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,23 +29,39 @@ public class PhotoCaptureActivity extends AppCompatActivity {
         setContentView(R.layout.photo_capture_activity);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-                Util.Photo.capture(PhotoCaptureActivity.this);
-            }
-        });
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        photoContentUri = PhotoProvider.CONTRACT.contentUri;
+        fab = (FloatingActionButton) findViewById(R.id.fab);
+
+        photoContentUri = NoteProvider.CONTRACT.contentUri;
         FragmentManager fragmentManager = getSupportFragmentManager();
-        photoFragment = PhotoListingFragment.newInstance(photoContentUri);
+        photoFragment = NoteListingFragment.newInstance(photoContentUri);
         fragmentManager.beginTransaction()
             .replace(R.id.photo_list_fragment, photoFragment, Util.Tag.PHOTO)
             .commit();
+
     }
+    private void hideOrShowFAB() {
+        if (photoFragment.getCount() == 0) {
+            fab.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Util.Photo.capture(PhotoCaptureActivity.this);
+                }
+            });
+        }
+        else {
+            fab.hide();
+        }
+
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        hideOrShowFAB();
+    }
+
     public void imageButtonClick(View view) {
         Util.Photo.capture(PhotoCaptureActivity.this);
     }
@@ -57,9 +74,9 @@ public class PhotoCaptureActivity extends AppCompatActivity {
                     Uri courseOrAssessmentUri = intent.getData();
                     Uri fileUri = Util.Photo.storeThumbnail(this, resultCode, data, "Test");
                     Uri parentUri = Uri.EMPTY;
-                    Photo photo = new Photo(parentUri, fileUri);
+                    Note note = new Note("", parentUri, fileUri);
                     Log.d("PhotoCaptureActivity", fileUri.toString());
-                    Uri contentUri = getContentResolver().insert(PhotoProvider.CONTRACT.contentUri, PhotoProvider.photoToValues(photo));
+                    Uri contentUri = getContentResolver().insert(NoteProvider.CONTRACT.contentUri, NoteProvider.photoToValues(note));
                     Log.d("PhotoCaptureActivity", contentUri.toString());
 /*                    Cursor cursor = null;
                     PhotoCursorAdapter pca = null;

@@ -39,8 +39,8 @@ public abstract class ListingFragmentBase<A extends CursorAdapter, H> extends Fr
     protected abstract A createAdapter(Context context, Cursor cursor);
 
     protected ListingFragmentBase(ProviderContract contract, Class<H> hostInterface, int listViewId, int loaderId) {
-        this.defaultContentUri = contract.getContentUri();
-        this.contentItemType = contract.getContentItemType();
+        this.defaultContentUri = contract.contentUri();
+        this.contentItemType = contract.contentItemType();
         this.hostInterface = hostInterface;
         this.listViewId = listViewId;
         this.loaderId = loaderId;
@@ -59,7 +59,7 @@ public abstract class ListingFragmentBase<A extends CursorAdapter, H> extends Fr
         else {
             throw new IllegalStateException("Activity must implement "+hostInterface.getCanonicalName()+" interface");
         }
-        cursor = context.getContentResolver().query(getContentUri(), null, null, null, null);
+        cursor = context.getContentResolver().query(contentUri(), null, null, null, null);
         adapter = createAdapter(context, cursor);
         getLoaderManager().initLoader(loaderId, null, new LoaderListener());
     }
@@ -77,7 +77,7 @@ public abstract class ListingFragmentBase<A extends CursorAdapter, H> extends Fr
     public ListingFragmentBase() {
     }
 
-    protected synchronized final Uri getContentUri() {
+    protected synchronized final Uri contentUri() {
         Bundle arguments = getArguments();
         if (arguments == null) {
             return defaultContentUri;
@@ -106,7 +106,7 @@ public abstract class ListingFragmentBase<A extends CursorAdapter, H> extends Fr
     private class LoaderListener implements LoaderManager.LoaderCallbacks<Cursor> {
         @Override
         public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-            return new CursorLoader(getActivity(), getContentUri(),
+            return new CursorLoader(getActivity(), contentUri(),
                 null, null, null, null);
         }
         @Override

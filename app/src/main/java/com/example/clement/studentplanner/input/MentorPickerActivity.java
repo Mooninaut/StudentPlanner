@@ -58,7 +58,7 @@ public class MentorPickerActivity extends AppCompatActivity
         });
 
         /*Long courseId = ContentUris.parseId(getIntent().getData());
-        Uri mentorWithoutCourseUri = MentorProvider.CONTRACT.getNoCourseUri(courseId);
+        Uri mentorWithoutCourseUri = MentorProvider.CONTRACT.noCourseUri(courseId);
         MentorListingFragment fragment = MentorListingFragment.newInstance(mentorWithoutCourseUri);
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         transaction.replace(R.id.mentor_picker_frame, fragment, "mentor");
@@ -69,7 +69,7 @@ public class MentorPickerActivity extends AppCompatActivity
     protected void onStart() {
         super.onStart();
         Long courseId = ContentUris.parseId(getIntent().getData());
-        Uri mentorWithoutCourseUri = MentorProvider.CONTRACT.getNoCourseUri(courseId);
+        Uri mentorWithoutCourseUri = MentorProvider.CONTRACT.noCourseUri(courseId);
         MentorListingFragment fragment = MentorListingFragment.newInstance(mentorWithoutCourseUri);
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         transaction.replace(R.id.mentor_picker_frame, fragment, TAG);
@@ -84,10 +84,10 @@ public class MentorPickerActivity extends AppCompatActivity
     }
 
     @Override
-    public void onFragmentItemClick(long mentorId, String tag) {
+    public void onFragmentItemClick(long mentorId, View view, String tag) {
         if (tag.equals(TAG)) {
             Intent result = new Intent("com.example.clement.studentplanner.RESULT_MENTOR",
-                MentorProvider.CONTRACT.getContentUri(mentorId)
+                MentorProvider.CONTRACT.contentUri(mentorId)
             );
             setResult(Activity.RESULT_OK, result);
             finish();
