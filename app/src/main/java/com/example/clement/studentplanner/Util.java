@@ -69,7 +69,7 @@ public final class Util {
         public static final String TERM = StorageHelper.TABLE_TERM;
         public static final String COURSE = StorageHelper.TABLE_COURSE;
         public static final String ASSESSMENT = StorageHelper.TABLE_ASSESSMENT;
-        public static final String EVENT = StorageHelper.VIEW_EVENT;
+        public static final String EVENT = StorageHelper.TABLE_EVENT;
         public static final String MENTOR = StorageHelper.TABLE_MENTOR;
         public static final String PHOTO = StorageHelper.TABLE_NOTE;
     }

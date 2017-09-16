@@ -24,12 +24,16 @@ import com.example.clement.studentplanner.database.AssessmentProvider;
 import com.example.clement.studentplanner.database.CourseCursorAdapter;
 import com.example.clement.studentplanner.database.CourseMentorProvider;
 import com.example.clement.studentplanner.database.CourseProvider;
-import com.example.clement.studentplanner.database.MentorProvider;
+import com.example.clement.studentplanner.database.OmniProvider;
 import com.example.clement.studentplanner.input.AssessmentDataEntryActivity;
 import com.example.clement.studentplanner.input.CourseDataEntryActivity;
 import com.example.clement.studentplanner.input.MentorDataEntryActivity;
 import com.example.clement.studentplanner.input.MentorPickerActivity;
 import com.example.clement.studentplanner.input.PhotoCaptureActivity;
+
+import static android.content.ContentUris.withAppendedId;
+import static com.example.clement.studentplanner.database.OmniProvider.CONTENT_ASSESSMENT;
+import static com.example.clement.studentplanner.database.OmniProvider.CONTENT_MENTOR;
 
 /**
  * An activity representing a single Course detail screen.
@@ -82,7 +86,7 @@ public class CourseDetailActivity extends AppCompatActivity
             .commit();
 
         // Initialize mentor list fragment
-        Uri mentorContentUri = MentorProvider.CONTRACT.courseUri(courseId);
+        Uri mentorContentUri = withAppendedId(OmniProvider.CONTENT_MENTOR_COURSE_ID, courseId);
 
         mentorFragment = MentorListingFragment.newInstance(mentorContentUri);
         fragmentManager.beginTransaction()
@@ -241,13 +245,13 @@ public class CourseDetailActivity extends AppCompatActivity
             case Util.Tag.MENTOR:
                 intent = new Intent(this, MentorDataEntryActivity.class);
                 intent.setAction(Intent.ACTION_EDIT);
-                intent.setData(MentorProvider.CONTRACT.contentUri(itemId));
+                intent.setData(withAppendedId(CONTENT_MENTOR, itemId));
                 startActivity(intent);
                 break;
             case Util.Tag.ASSESSMENT:
                 intent = new Intent(this, AssessmentDetailActivity.class);
                 intent.setAction(Intent.ACTION_VIEW);
-                intent.setData(AssessmentProvider.CONTRACT.contentUri(itemId));
+                intent.setData(withAppendedId(CONTENT_ASSESSMENT, itemId));
                 startActivity(intent);
                 break;
             default:

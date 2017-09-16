@@ -70,7 +70,7 @@ public class StorageHelper extends SQLiteOpenHelper {
     public static final String[] COLUMNS_EVENT = {
         COLUMN_ID, COLUMN_NAME, COLUMN_TIME, COLUMN_TERMINUS
     };
-    public static final String VIEW_EVENT = "eventView";
+    public static final String TABLE_EVENT = "eventView";
     private static final String SELECT_EVENT_START = "SELECT "+COLUMN_ID+"*2 AS "+COLUMN_ID+", "
         +COLUMN_NAME+", "+COLUMN_START+" AS "+COLUMN_TIME+", '"+COLUMN_START+"' AS "+COLUMN_TERMINUS+" FROM ";
     private static final String SELECT_EVENT_END = "SELECT "+COLUMN_ID+"*2+1 AS "+COLUMN_ID+", "
@@ -84,7 +84,7 @@ public class StorageHelper extends SQLiteOpenHelper {
 
     static {
         ArrayList<String> schema = new ArrayList<String>(30);
-        schema.add("DROP VIEW IF EXISTS "+VIEW_EVENT);
+        schema.add("DROP VIEW IF EXISTS "+ TABLE_EVENT);
         schema.add("DROP TABLE IF EXISTS "+TABLE_NOTE);
         schema.add("DROP TABLE IF EXISTS "+TABLE_ASSESSMENT);
         schema.add("DROP TABLE IF EXISTS "+TABLE_COURSE);
@@ -126,7 +126,7 @@ public class StorageHelper extends SQLiteOpenHelper {
         schema.add("DELETE FROM "+TABLE_COURSE+" WHERE "+COLUMN_ID+" = "+COURSE_ID_OFFSET+";");
         schema.add("DELETE FROM "+TABLE_TERM+" WHERE "+COLUMN_ID+" = "+TERM_ID_OFFSET+";");
 
-        schema.add("CREATE VIEW "+VIEW_EVENT+" AS "+
+        schema.add("CREATE VIEW "+ TABLE_EVENT +" AS "+
             SELECT_EVENT_START + TABLE_TERM+" UNION "+SELECT_EVENT_END + TABLE_TERM+" UNION "+
             SELECT_EVENT_START + TABLE_COURSE+" UNION "+SELECT_EVENT_END + TABLE_COURSE + " UNION "+
             SELECT_EVENT_START + TABLE_ASSESSMENT+" UNION "+SELECT_EVENT_END + TABLE_ASSESSMENT+" ORDER BY "+COLUMN_TIME+" ASC;"

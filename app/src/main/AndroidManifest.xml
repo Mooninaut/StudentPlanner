@@ -73,7 +73,11 @@
             android:authorities="com.example.clement.studentplanner.coursementorprovider"
             android:enabled="true"
             android:exported="false"/>
-
+        <provider
+            android:name=".database.OmniProvider"
+            android:authorities="com.example.clement.studentplanner.provider"
+            android:enabled="true"
+            android:exported="false"/>
         <activity
             android:name=".CourseDetailActivity"
             android:label="@string/title_course_detail"

@@ -6,8 +6,9 @@ import android.database.Cursor;
 import android.net.Uri;
 
 import com.example.clement.studentplanner.data.Mentor;
-import com.example.clement.studentplanner.database.MentorProvider;
 import com.example.clement.studentplanner.database.MentorRecyclerAdapter;
+
+import static com.example.clement.studentplanner.database.OmniProvider.CONTENT_MENTOR;
 
 /**
  * A fragment containing a list of {@link Mentor}s.
@@ -27,7 +28,7 @@ public class MentorListingFragment
      * fragment (e.g. upon screen orientation changes).
      */
     public MentorListingFragment() {
-        super(MentorProvider.CONTRACT,
+        super(CONTENT_MENTOR,
             R.layout.mentor_recycler_view,
             MENTOR_LOADER_ID
         );

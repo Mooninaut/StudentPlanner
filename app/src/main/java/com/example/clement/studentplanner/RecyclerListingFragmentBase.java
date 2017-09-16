@@ -26,20 +26,37 @@ import com.example.clement.studentplanner.database.RecyclerCursorAdapterBase;
 
 public abstract class RecyclerListingFragmentBase<A extends RecyclerCursorAdapterBase> extends Fragment
     implements ItemListener.OnClick, ItemListener.OnLongClick {
+    private static final String CONTENT_URI_KEY = "content-uri";
     private Cursor cursor;
     private A adapter;
     private Context context;
     private Uri defaultContentUri;
-    private String contentItemType;
     private RecyclerView recyclerView;
     private int recyclerViewId = Integer.MIN_VALUE;
     private int loaderId = Integer.MIN_VALUE;
 
     protected abstract A createAdapter(Context context, Cursor cursor);
 
+    /**
+     * For use with multi-providers
+     * @param contract
+     * @param recyclerViewId
+     * @param loaderId
+     */
     protected RecyclerListingFragmentBase(ProviderContract contract, int recyclerViewId, int loaderId) {
         this.defaultContentUri = contract.contentUri();
-        this.contentItemType = contract.contentItemType();
+        this.recyclerViewId = recyclerViewId;
+        this.loaderId = loaderId;
+    }
+
+    /**
+     * For use with OmniProvider
+     * @param contentUri
+     * @param recyclerViewId
+     * @param loaderId
+     */
+    protected RecyclerListingFragmentBase(Uri contentUri, int recyclerViewId, int loaderId) {
+        this.defaultContentUri = contentUri;
         this.recyclerViewId = recyclerViewId;
         this.loaderId = loaderId;
     }
@@ -85,13 +102,13 @@ public abstract class RecyclerListingFragmentBase<A extends RecyclerCursorAdapte
             return defaultContentUri;
         }
         else {
-            return arguments.getParcelable(contentItemType);
+            return arguments.getParcelable(CONTENT_URI_KEY);
         }
     }
 
     protected final void initialize(Uri contentUri) {
         Bundle args = new Bundle();
-        args.putParcelable(contentItemType, contentUri);
+        args.putParcelable(CONTENT_URI_KEY, contentUri);
         setArguments(args);
     }
 

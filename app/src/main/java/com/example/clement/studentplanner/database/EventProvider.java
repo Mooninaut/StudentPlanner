@@ -14,7 +14,7 @@ import android.support.annotation.Nullable;
 import static android.content.ContentResolver.SCHEME_CONTENT;
 import static com.example.clement.studentplanner.database.StorageHelper.COLUMNS_EVENT;
 import static com.example.clement.studentplanner.database.StorageHelper.COLUMN_TIME;
-import static com.example.clement.studentplanner.database.StorageHelper.VIEW_EVENT;
+import static com.example.clement.studentplanner.database.StorageHelper.TABLE_EVENT;
 
 /**
  * Created by Clement on 8/13/2017.
@@ -115,8 +115,9 @@ public class EventProvider extends ContentProviderBase {
         switch(match) {
             case EVENT_ID:
                 long id = ContentUris.parseId(uri);
+                long sourceId = eventToSource(id);
                 Uri contentUri;
-                switch(StorageHelper.classify(eventToSource(id))) {
+                switch(StorageHelper.classify(sourceId)) {
                     case TERM:
                         contentUri = TermProvider.CONTRACT.contentUri;
                         break;
@@ -130,7 +131,7 @@ public class EventProvider extends ContentProviderBase {
                     default:
                         return null;
                 }
-                uri = ContentUris.withAppendedId(contentUri, ContentUris.parseId(uri));
+                uri = ContentUris.withAppendedId(contentUri, sourceId);
                 cursor = resolver.query(uri, COLUMNS_EVENT, selection, selectionArgs, sortOrder);
                 if (cursor != null) {
                     cursor.setNotificationUri(resolver, contentUri);
@@ -138,7 +139,7 @@ public class EventProvider extends ContentProviderBase {
                 break;
             case EVENT_ALL:
                 cursor = getReadableDatabase().query(
-                    VIEW_EVENT,
+                    TABLE_EVENT,
                     COLUMNS_EVENT,
                     selection,
                     selectionArgs,
@@ -176,7 +177,7 @@ public class EventProvider extends ContentProviderBase {
     @NonNull
     @Override
     protected String getTableName() {
-        return VIEW_EVENT;
+        return TABLE_EVENT;
     }
 
     @NonNull
