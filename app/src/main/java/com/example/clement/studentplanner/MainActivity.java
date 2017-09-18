@@ -147,7 +147,7 @@ public class MainActivity extends AppCompatActivity
 
     private void deleteSampleData() {
         getContentResolver().delete(CourseMentorProvider.CONTRACT.contentUri, null, null);
-        getContentResolver().delete(OmniProvider.CONTENT_MENTOR, null, null);
+        getContentResolver().delete(OmniProvider.Content.MENTOR, null, null);
         getContentResolver().delete(NoteProvider.CONTRACT.contentUri, null, null);
         getContentResolver().delete(AssessmentProvider.CONTRACT.contentUri, null, null);
         getContentResolver().delete(CourseProvider.CONTRACT.contentUri, null, null);

@@ -1,13 +1,19 @@
 package com.example.clement.studentplanner.data;
 
+import android.content.ContentValues;
 import android.content.res.Resources;
+import android.database.Cursor;
 import android.support.annotation.NonNull;
 
 import com.example.clement.studentplanner.R;
 import com.example.clement.studentplanner.database.StorageHelper;
 
 import static com.example.clement.studentplanner.database.StorageHelper.COLUMN_END;
+import static com.example.clement.studentplanner.database.StorageHelper.COLUMN_ID;
+import static com.example.clement.studentplanner.database.StorageHelper.COLUMN_NAME;
 import static com.example.clement.studentplanner.database.StorageHelper.COLUMN_START;
+import static com.example.clement.studentplanner.database.StorageHelper.COLUMN_TERMINUS;
+import static com.example.clement.studentplanner.database.StorageHelper.COLUMN_TIME;
 import static com.example.clement.studentplanner.database.StorageHelper.TABLE_ASSESSMENT;
 import static com.example.clement.studentplanner.database.StorageHelper.TABLE_COURSE;
 import static com.example.clement.studentplanner.database.StorageHelper.TABLE_TERM;
@@ -20,10 +26,19 @@ public class Event implements HasId {
     public enum Terminus {
         START(COLUMN_START), END(COLUMN_END), NONE("");
         private final String value;
-        Terminus(String value) { this.value = value; }
-        public @NonNull String value() { return value; }
+
+        Terminus(String value) {
+            this.value = value;
+        }
+
+        public
+        @NonNull
+        String value() {
+            return value;
+        }
+
         public static Terminus of(@NonNull String value) {
-            switch(value) {
+            switch (value) {
                 case COLUMN_END:
                     return END;
                 case COLUMN_START:
@@ -35,13 +50,23 @@ public class Event implements HasId {
             }
         }
     }
+
     public enum Type {
         TERM(TABLE_TERM), COURSE(TABLE_COURSE), ASSESSMENT(TABLE_ASSESSMENT), NONE("");
         private final String value;
-        Type(String value) { this.value = value; }
-        public @NonNull String value() { return value; }
+
+        Type(String value) {
+            this.value = value;
+        }
+
+        public
+        @NonNull
+        String value() {
+            return value;
+        }
+
         public static Type of(@NonNull String value) {
-            switch(value) {
+            switch (value) {
                 case TABLE_TERM:
                     return TERM;
                 case TABLE_COURSE:
@@ -55,17 +80,29 @@ public class Event implements HasId {
             }
         }
     }
-    public Event() { }
+
+    public Event() {
+    }
+
     public Event(long id, @NonNull String name, long timeInMillis, @NonNull Terminus terminus) {
         this.id = id;
         this.name = name;
         this.timeInMillis = timeInMillis;
         this.terminus = terminus;
     }
+
     public Event(@NonNull String name, long timeInMillis, @NonNull Terminus terminus) {
         this.name = name;
         this.timeInMillis = timeInMillis;
         this.terminus = terminus;
+    }
+    public Event(@NonNull Cursor cursor) {
+        this(
+            cursor.getLong(cursor.getColumnIndex(COLUMN_ID)),
+            cursor.getString(cursor.getColumnIndex(COLUMN_NAME)),
+            cursor.getLong(cursor.getColumnIndex(COLUMN_TIME)),
+            Event.Terminus.of(cursor.getString(cursor.getColumnIndex(COLUMN_TERMINUS)))
+        );
     }
     private long id = NO_ID;
     private long timeInMillis = Long.MIN_VALUE;
@@ -73,10 +110,12 @@ public class Event implements HasId {
     private Terminus terminus = Terminus.NONE;
     @NonNull
     private String name = "";
+
     @NonNull
     public Type sourceType() {
         return StorageHelper.classify(id);
     }
+
     public String localizedType(Resources resources) {
         int resourceId;
         switch (sourceType()) {
@@ -95,15 +134,29 @@ public class Event implements HasId {
         }
         return resources.getString(resourceId);
     }
+
     @Override
     public long id() {
         return id;
     }
+
+    @Override
     public void id(long id) {
         this.id = id;
     }
+
     @Override
-    public boolean hasId() { return id != NO_ID; }
+    public boolean hasId() {
+        return id != NO_ID;
+    }
+
+    @Override
+    @NonNull
+    public ContentValues toValues() {
+        throw new UnsupportedOperationException();
+    }
+
+
     @NonNull
     public Terminus terminus() {
         return terminus;

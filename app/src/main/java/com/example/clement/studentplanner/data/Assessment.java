@@ -1,11 +1,20 @@
 package com.example.clement.studentplanner.data;
 
+import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
 import android.support.annotation.NonNull;
 
 import com.example.clement.studentplanner.R;
 
 import java.util.Locale;
+
+import static com.example.clement.studentplanner.database.StorageHelper.COLUMN_COURSE_ID;
+import static com.example.clement.studentplanner.database.StorageHelper.COLUMN_END;
+import static com.example.clement.studentplanner.database.StorageHelper.COLUMN_ID;
+import static com.example.clement.studentplanner.database.StorageHelper.COLUMN_NAME;
+import static com.example.clement.studentplanner.database.StorageHelper.COLUMN_START;
+import static com.example.clement.studentplanner.database.StorageHelper.COLUMN_TYPE;
 
 /**
  * Created by Clement on 8/8/2017.
@@ -86,7 +95,16 @@ public class Assessment extends ScheduleItem {
         this.type = other.type();
 //        this.notes = other.notes();
     }
-
+    public Assessment(@NonNull Cursor cursor) {
+        this(
+            cursor.getLong(cursor.getColumnIndex(COLUMN_ID)),
+            cursor.getString(cursor.getColumnIndex(COLUMN_NAME)),
+            cursor.getLong(cursor.getColumnIndex(COLUMN_START)),
+            cursor.getLong(cursor.getColumnIndex(COLUMN_END)),
+            cursor.getLong(cursor.getColumnIndex(COLUMN_COURSE_ID)),
+            Assessment.Type.of(cursor.getInt(cursor.getColumnIndex(COLUMN_TYPE)))
+        );
+    }
     @NonNull
     public Type type() {
         return type;
@@ -114,5 +132,20 @@ public class Assessment extends ScheduleItem {
     public String toString() {
         return String.format(Locale.US, "Assessment: name '%s', startMillis '%d', endMillis '%d', type '%s'", //, notes '%s'
             name(), startMillis(), endMillis(), type().toString()/*, notes()*/);
+    }
+    @Override
+    @NonNull
+    public ContentValues toValues() {
+        ContentValues values = new ContentValues();
+        if (hasId()) {
+            values.put(COLUMN_ID, id());
+        }
+        values.put(COLUMN_NAME, name());
+        values.put(COLUMN_START, startMillis());
+        values.put(COLUMN_END, endMillis());
+        values.put(COLUMN_COURSE_ID, courseId);
+        values.put(COLUMN_TYPE, type.value());
+//        values.put(COLUMN_NOTE, assessment.notes());
+        return values;
     }
 }

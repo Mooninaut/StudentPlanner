@@ -60,11 +60,11 @@ public class CourseCursorAdapter extends CursorAdapter {
 
     public static Course cursorToCourse(Cursor cursor) {
         return new Course(
-            cursor.getInt(cursor.getColumnIndex(COLUMN_ID)),
+            cursor.getLong(cursor.getColumnIndex(COLUMN_ID)),
             cursor.getString(cursor.getColumnIndex(COLUMN_NAME)),
             cursor.getLong(cursor.getColumnIndex(COLUMN_START)),
             cursor.getLong(cursor.getColumnIndex(COLUMN_END)),
-            cursor.getInt(cursor.getColumnIndex(COLUMN_TERM_ID)),
+            cursor.getLong(cursor.getColumnIndex(COLUMN_TERM_ID)),
             Course.Status.of(cursor.getInt(cursor.getColumnIndex(COLUMN_STATUS)))/*,
             cursor.getString(cursor.getColumnIndex(COLUMN_NOTE))*/
         );

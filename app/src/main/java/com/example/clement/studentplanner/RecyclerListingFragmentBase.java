@@ -70,7 +70,8 @@ public abstract class RecyclerListingFragmentBase<A extends RecyclerCursorAdapte
     public void onAttach(Context context) {
         super.onAttach(context);
         this.context = context;
-        cursor = context.getContentResolver().query(contentUri(), null, null, null, null);
+        Uri contentUri = contentUri();
+        cursor = context.getContentResolver().query(contentUri, null, null, null, null);
         adapter = createAdapter(context, cursor);
         getLoaderManager().initLoader(loaderId, null, new LoaderListener());
     }

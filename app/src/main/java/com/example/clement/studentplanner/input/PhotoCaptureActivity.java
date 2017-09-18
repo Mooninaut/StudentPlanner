@@ -79,11 +79,11 @@ public class PhotoCaptureActivity extends AppCompatActivity {
                     Uri contentUri = getContentResolver().insert(NoteProvider.CONTRACT.contentUri, NoteProvider.photoToValues(note));
                     Log.d("PhotoCaptureActivity", contentUri.toString());
 /*                    Cursor cursor = null;
-                    PhotoCursorAdapter pca = null;
+                    NoteCursorAdapter pca = null;
                     try {
                         cursor = getContentResolver().query(contentUri, null, null, null, null);
                         if (cursor != null && cursor.moveToFirst()) {
-                            pca = new PhotoCursorAdapter(this, cursor, 0);
+                            pca = new NoteCursorAdapter(this, cursor, 0);
                             ImageButton button = findViewById(R.id.note_image_button);
                             pca.bindView(button, this, cursor);
                         }

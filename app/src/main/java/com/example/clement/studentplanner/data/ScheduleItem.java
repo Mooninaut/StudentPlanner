@@ -45,6 +45,7 @@ public abstract class ScheduleItem implements HasId {
     public long id() {
         return id;
     }
+    @Override
     public boolean hasId() {
         return id != NO_ID;
     }

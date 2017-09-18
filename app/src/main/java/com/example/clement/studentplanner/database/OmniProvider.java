@@ -12,114 +12,141 @@ import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.util.Log;
+import android.util.SparseArray;
 
-import static android.content.ContentResolver.SCHEME_CONTENT;
-import static com.example.clement.studentplanner.database.StorageHelper.COLUMNS_ASSESSMENT;
-import static com.example.clement.studentplanner.database.StorageHelper.COLUMNS_COURSE;
-import static com.example.clement.studentplanner.database.StorageHelper.COLUMNS_COURSE_MENTOR;
-import static com.example.clement.studentplanner.database.StorageHelper.COLUMNS_EVENT;
+import java.util.HashMap;
+import java.util.List;
+
 import static com.example.clement.studentplanner.database.StorageHelper.COLUMNS_MENTOR;
-import static com.example.clement.studentplanner.database.StorageHelper.COLUMNS_NOTE;
-import static com.example.clement.studentplanner.database.StorageHelper.COLUMNS_TERM;
 import static com.example.clement.studentplanner.database.StorageHelper.COLUMN_COURSE_ID;
 import static com.example.clement.studentplanner.database.StorageHelper.COLUMN_ID;
 import static com.example.clement.studentplanner.database.StorageHelper.COLUMN_MENTOR_ID;
-import static com.example.clement.studentplanner.database.StorageHelper.TABLE_ASSESSMENT;
-import static com.example.clement.studentplanner.database.StorageHelper.TABLE_COURSE;
+import static com.example.clement.studentplanner.database.StorageHelper.COLUMN_START;
+import static com.example.clement.studentplanner.database.StorageHelper.COLUMN_TIME;
 import static com.example.clement.studentplanner.database.StorageHelper.TABLE_COURSE_MENTOR;
-import static com.example.clement.studentplanner.database.StorageHelper.TABLE_EVENT;
 import static com.example.clement.studentplanner.database.StorageHelper.TABLE_MENTOR;
-import static com.example.clement.studentplanner.database.StorageHelper.TABLE_NOTE;
-import static com.example.clement.studentplanner.database.StorageHelper.TABLE_TERM;
 
 /**
  * Created by Clement on 9/15/2017.
  */
 
 public class OmniProvider extends ContentProvider {
-    private static final String[] TABLES = {
-        null, // 0
-        TABLE_TERM, // 1
-        TABLE_COURSE, // 2
-        TABLE_ASSESSMENT, // 3
-        TABLE_MENTOR, // 4
-        TABLE_NOTE, // 5
-        TABLE_EVENT, // 6
-        TABLE_COURSE_MENTOR // 7
-    };
-    private static final String[][] COLUMNS = {
-        null, // 0
-        COLUMNS_TERM, // 1
-        COLUMNS_COURSE, // 2
-        COLUMNS_ASSESSMENT, // 3
-        COLUMNS_MENTOR, // 4
-        COLUMNS_NOTE, // 5
-        COLUMNS_EVENT, // 6
-        COLUMNS_COURSE_MENTOR // 7
-    };
+    private static final SparseArray<String> TABLES = new SparseArray<>(10);
+    static {
+        TABLES.append(Table.TERM, StorageHelper.TABLE_TERM);
+        TABLES.append(Table.COURSE, StorageHelper.TABLE_COURSE);
+        TABLES.append(Table.ASSESSMENT, StorageHelper.TABLE_ASSESSMENT);
+        TABLES.append(Table.MENTOR, StorageHelper.TABLE_MENTOR);
+        TABLES.append(Table.NOTE, StorageHelper.TABLE_NOTE);
+        TABLES.append(Table.EVENT, StorageHelper.TABLE_EVENT);
+        TABLES.append(Table.COURSEMENTOR, StorageHelper.TABLE_COURSE_MENTOR);
+    }
+    private static final SparseArray<String[]> COLUMNS = new SparseArray<>(10);
+    static {
+        COLUMNS.append(Table.TERM, StorageHelper.COLUMNS_TERM);
+        COLUMNS.append(Table.COURSE, StorageHelper.COLUMNS_COURSE);
+        COLUMNS.append(Table.ASSESSMENT, StorageHelper.COLUMNS_ASSESSMENT);
+        COLUMNS.append(Table.MENTOR, StorageHelper.COLUMNS_MENTOR);
+        COLUMNS.append(Table.NOTE, StorageHelper.COLUMNS_NOTE);
+        COLUMNS.append(Table.EVENT, StorageHelper.COLUMNS_EVENT);
+        COLUMNS.append(Table.COURSEMENTOR, StorageHelper.COLUMNS_COURSE_MENTOR);
+    }
+    private static final SparseArray<String> WHERE = new SparseArray<>(10);
+    static {
+        WHERE.append(Key.TERM, StorageHelper.COLUMN_TERM_ID + " = ?");
+        WHERE.append(Key.COURSE, StorageHelper.COLUMN_COURSE_ID + " = ?");
+        WHERE.append(Key.ID, StorageHelper.SELECT_BY_ID);
+        WHERE.append(Key.COURSE_AND_MENTOR, StorageHelper.COLUMN_COURSE_ID
+            +" = ? AND "+StorageHelper.COLUMN_MENTOR_ID+" = ?");
+    }
     private static final int MASK_TABLE = 0xFF;
-    private static final int MASK_SELECTION = 0xFF00;
-    private static final int TERM = 0x01;
-    private static final int COURSE = 0x02;
-    private static final int ASSESSMENT = 0x03;
-    private static final int MENTOR = 0x04;
-    private static final int NOTE = 0x05;
-    private static final int EVENT = 0x06;
-    private static final int COURSEMENTOR = 0x07;
-    private static final int SELECT_ID = 0x0100;
-    private static final int SELECT_ALL = 0x0200;
-    private static final int SELECT_EVENT = 0x0300;
-    private static final int SELECT_COURSE_ID = 0x0400;
-    private static final int SELECT_NOT_COURSE_ID = 0x0500;
-    private static final int TERM_ID = TERM | SELECT_ID;
-    private static final int TERM_ALL = TERM | SELECT_ALL;
-    private static final int TERM_EVENT = TERM | SELECT_EVENT;
-    private static final int COURSE_ID = COURSE | SELECT_ID;
-    private static final int COURSE_ALL = COURSE | SELECT_ALL;
-    private static final int COURSE_EVENT = COURSE | SELECT_EVENT;
-    private static final int ASSESSMENT_ID = ASSESSMENT | SELECT_ID;
-    private static final int ASSESSMENT_ALL = ASSESSMENT | SELECT_ALL;
-    private static final int ASSESSMENT_EVENT = ASSESSMENT | SELECT_EVENT;
-    private static final int MENTOR_ID = MENTOR | SELECT_ID;
-    private static final int MENTOR_ALL = MENTOR | SELECT_ALL;
-    private static final int MENTOR_COURSE_ID = MENTOR | SELECT_COURSE_ID;
-    private static final int MENTOR_NOT_COURSE_ID = MENTOR | SELECT_NOT_COURSE_ID;
-    private static final int NOTE_ID = NOTE | SELECT_ID;
-    private static final int NOTE_ALL = NOTE | SELECT_ALL;
-    private static final int EVENT_ALL = EVENT | SELECT_ALL;
-    private static final int EVENT_ID = EVENT | SELECT_ID;
-    private static final int COURSEMENTOR_ALL = COURSEMENTOR | SELECT_ALL;
-    private static final int COURSEMENTOR_ID = COURSEMENTOR | SELECT_ID;
+    private static final int MASK_KEY = 0xFF00;
+
+    private static class Table {
+
+        private static final int TERM = 0x01;
+        private static final int COURSE = 0x02; // gap left for NOT COURSE
+        private static final int ASSESSMENT = 0x04;
+        private static final int MENTOR = 0x05;
+        private static final int NOTE = 0x06;
+        private static final int EVENT = 0x07;
+        private static final int COURSEMENTOR = 0x08;
+    }
+    private static class Key {
+        private static final int TERM = 0x0100;
+        private static final int COURSE = 0x0200;
+        private static final int NOT_COURSE = 0x0300;
+        private static final int COURSE_AND_MENTOR = 0x0400;
+        private static final int ALL = 0xF000;
+        private static final int ID = 0xF100;
+    }
+    private static class Match{
+
+        private static final int TERM_ALL = Table.TERM | Key.ALL;
+        private static final int TERM_ID = Table.TERM | Key.ID;
+        private static final int COURSE_ID = Table.COURSE | Key.ID;
+        private static final int COURSE_ALL = Table.COURSE | Key.ALL;
+        private static final int COURSE_TERM_ID = Table.COURSE | Key.TERM;
+        private static final int ASSESSMENT_ID = Table.ASSESSMENT | Key.ID;
+        private static final int ASSESSMENT_ALL = Table.ASSESSMENT | Key.ALL;
+        private static final int ASSESSMENT_COURSE_ID = Table.ASSESSMENT | Key.COURSE;
+        private static final int MENTOR_ID = Table.MENTOR | Key.ID;
+        private static final int MENTOR_ALL = Table.MENTOR | Key.ALL;
+        private static final int MENTOR_COURSE_ID = Table.MENTOR | Key.COURSE;
+        private static final int MENTOR_NOT_COURSE_ID = Table.MENTOR | Key.NOT_COURSE;
+        private static final int NOTE_ID = Table.NOTE | Key.ID;
+        private static final int NOTE_ALL = Table.NOTE | Key.ALL;
+        private static final int EVENT_ALL = Table.EVENT | Key.ALL;
+        private static final int EVENT_ID = Table.EVENT | Key.ID;
+        private static final int COURSEMENTOR_ALL = Table.COURSEMENTOR | Key.ALL;
+        private static final int COURSEMENTOR_ID = Table.COURSEMENTOR | Key.ID;
+        private static final int COURSEMENTOR_COURSE_ID_MENTOR_ID = Table.COURSEMENTOR | Key.COURSE_AND_MENTOR;
+
+        //    private static final int TERM_EVENT = Table.TERM | Key.EVENT;
+        //    private static final int COURSE_EVENT = Table.COURSE | Key.EVENT;
+        //    private static final int ASSESSMENT_EVENT = Table.ASSESSMENT | Key.EVENT;
+    }
+
+    public static class Content {
+        public static final Uri TERM = addMatchUri(Match.TERM_ALL,   StorageHelper.TABLE_TERM);
+        public static final Uri COURSE = addMatchUri(Match.COURSE_ALL, StorageHelper.TABLE_COURSE);
+        public static final Uri COURSE_TERM_ID = appendMatchUri(Match.COURSE_TERM_ID, COURSE, StorageHelper.TABLE_TERM);
+        public static final Uri ASSESSMENT = addMatchUri(Match.ASSESSMENT_ALL, StorageHelper.TABLE_ASSESSMENT);
+        public static final Uri ASSESSMENT_COURSE_ID = appendMatchUri(Match.ASSESSMENT_COURSE_ID, ASSESSMENT, StorageHelper.TABLE_COURSE);
+        public static final Uri NOTE = addMatchUri(Match.NOTE_ALL, StorageHelper.TABLE_NOTE);
+        public static final Uri MENTOR = addMatchUri(Match.MENTOR_ALL, StorageHelper.TABLE_MENTOR);
+        public static final Uri MENTOR_NOT_COURSE = buildPath(MENTOR, "not_"+StorageHelper.TABLE_COURSE);
+        public static final Uri MENTOR_COURSE = buildPath(MENTOR, StorageHelper.TABLE_COURSE);
+        public static final Uri EVENT = addMatchUri(Match.EVENT_ALL, StorageHelper.TABLE_EVENT);
+        // package private
+        static final Uri COURSEMENTOR = addMatchUri(Match.COURSEMENTOR_ALL, StorageHelper.TABLE_COURSE_MENTOR);
+        static final Uri COURSEMENTOR_COURSE_ID_MENTOR_ID = buildPath(COURSEMENTOR, "both");
+
+        private Content() {}
+
+    }
 
     public static final String authority = "com.example.clement.studentplanner.provider";
     public static final Uri CONTENT_BASE = new Uri.Builder()
-        .scheme(SCHEME_CONTENT).authority(authority).build();
+        .scheme(ContentResolver.SCHEME_CONTENT).authority(authority).build();
 
     private static final UriMatcher URI_MATCHER = new UriMatcher(UriMatcher.NO_MATCH);
 
-    public static final Uri CONTENT_TERM   = addMatchUri(TERM_ALL,   TABLE_TERM);
-    public static final Uri CONTENT_COURSE = addMatchUri(COURSE_ALL, TABLE_COURSE);
-    public static final Uri CONTENT_ASSESSMENT = addMatchUri(ASSESSMENT_ALL, TABLE_ASSESSMENT);
-    public static final Uri CONTENT_NOTE   = addMatchUri(NOTE_ALL,   TABLE_NOTE);
-    public static final Uri CONTENT_MENTOR = addMatchUri(MENTOR_ALL, TABLE_MENTOR);
-    public static final Uri CONTENT_TERM_ID   = appendMatchUri(TERM_ID,   CONTENT_TERM,   "#");
-    public static final Uri CONTENT_COURSE_ID = appendMatchUri(COURSE_ID, CONTENT_COURSE, "#");
-    public static final Uri CONTENT_ASSESSMENT_ID = appendMatchUri(ASSESSMENT_ID, CONTENT_ASSESSMENT, "#");
-    public static final Uri CONTENT_NOTE_ID   = appendMatchUri(NOTE_ID,   CONTENT_NOTE,   "#");
-    public static final Uri CONTENT_MENTOR_ID = appendMatchUri(MENTOR_ID, CONTENT_MENTOR, "#");
-
-    public static final Uri CONTENT_EVENT = addMatchUri(EVENT_ALL, TABLE_EVENT);
-    public static final Uri CONTENT_EVENT_ID = appendMatchUri(EVENT_ID, CONTENT_EVENT, "#");
-
-    public static final Uri CONTENT_COURSEMENTOR = addMatchUri(
-        COURSEMENTOR_ALL, TABLE_COURSE_MENTOR);
-    public static final Uri CONTENT_COURSEMENTOR_ID = appendMatchUri(
-        COURSEMENTOR_ID, CONTENT_COURSEMENTOR, "#");
-
-    public static final Uri CONTENT_MENTOR_COURSE_ID = appendMatchUri(
-        MENTOR_COURSE_ID, CONTENT_MENTOR, TABLE_COURSE, "#");
-    public static final Uri CONTENT_MENTOR_NOT_COURSE_ID = appendMatchUri(
-        MENTOR_NOT_COURSE_ID, CONTENT_MENTOR, "not_"+TABLE_COURSE, "#");
+    static {
+        appendMatchUri(Match.TERM_ID, Content.TERM, "#");
+        appendMatchUri(Match.COURSE_ID, Content.COURSE, "#");
+        appendMatchUri(Match.COURSE_TERM_ID, Content.COURSE_TERM_ID, "#");
+        appendMatchUri(Match.ASSESSMENT_ID, Content.ASSESSMENT, "#");
+        appendMatchUri(Match.ASSESSMENT_COURSE_ID, Content.ASSESSMENT_COURSE_ID, "#");
+        appendMatchUri(Match.NOTE_ID,   Content.NOTE,   "#");
+        appendMatchUri(Match.MENTOR_ID, Content.MENTOR, "#");
+        appendMatchUri(Match.EVENT_ID, Content.EVENT, "#");
+        appendMatchUri(Match.COURSEMENTOR_ID, Content.COURSEMENTOR, "#");
+        appendMatchUri(Match.COURSEMENTOR_COURSE_ID_MENTOR_ID, Content.COURSEMENTOR_COURSE_ID_MENTOR_ID, "#", "#");
+        appendMatchUri(Match.MENTOR_COURSE_ID, Content.MENTOR_COURSE, "#");
+        appendMatchUri(Match.MENTOR_NOT_COURSE_ID, Content.MENTOR_NOT_COURSE, "#");
+    }
 
     private static final SQLiteQueryBuilder COURSE_QUERY = new SQLiteQueryBuilder();
     static {
@@ -127,15 +154,24 @@ public class OmniProvider extends ContentProvider {
             +TABLE_MENTOR+"."+COLUMN_ID+" = "+TABLE_COURSE_MENTOR+"."+COLUMN_MENTOR_ID);
 
         COURSE_QUERY.appendWhere(TABLE_COURSE_MENTOR+"."+COLUMN_COURSE_ID+" = ?");
+        HashMap<String,String> projectionMap = new HashMap<>();
+        // Set all columns to default values
+        for (String column : COLUMNS_MENTOR) {
+            projectionMap.put(column, column);
+        }
+        // Override column ID to disambiguate the two tables
+        projectionMap.put(COLUMN_ID, TABLE_MENTOR+"."+COLUMN_ID);
+        COURSE_QUERY.setProjectionMap(projectionMap);
     }
+    private static final String ORDER_MENTOR_JOIN = TABLE_MENTOR+"."+COLUMN_ID+" ASC";
     private Cursor mentorByCourseIdQuery(long id) {
         return COURSE_QUERY.query(getReadableDatabase(),
             COLUMNS_MENTOR,
+            null, // already set using appendWhere
+            new String[] { id + "" },
             null,
-            new String[] { Long.toString(id) },
             null,
-            null,
-            COLUMN_ID+" ASC");
+            ORDER_MENTOR_JOIN);
     }
 
     private static final SQLiteQueryBuilder NO_COURSE_QUERY = new SQLiteQueryBuilder();
@@ -144,7 +180,7 @@ public class OmniProvider extends ContentProvider {
         NO_COURSE_QUERY.setTables(TABLE_MENTOR);
         NO_COURSE_QUERY.appendWhere("NOT EXISTS ( SELECT 'x' FROM "+TABLE_COURSE_MENTOR
             +" WHERE "+TABLE_MENTOR+"."+COLUMN_ID+" = "+TABLE_COURSE_MENTOR+"."+COLUMN_MENTOR_ID
-            +" AND "+COLUMN_COURSE_ID+" = ?))");
+            +" AND "+COLUMN_COURSE_ID+" = ?)");
     }
 
     private Cursor mentorByNotCourseIdQuery(long id) {
@@ -154,21 +190,44 @@ public class OmniProvider extends ContentProvider {
             new String[] { id + "" },
             null,
             null,
-            COLUMN_ID+" ASC");
+            ORDER_MENTOR_JOIN);
     }
 
+    /**
+     * Take a Content URI and add additional path segments.
+     * @param base A Content URI to build off of.
+     * @param paths Additional path segments to add to the base.
+     * @return A new Content URI.
+     */
     private static Uri buildPath(Uri base, String... paths) {
         Uri.Builder builder = base.buildUpon();
         for(String path : paths) {
-            builder.appendPath(path);
+            // Don't URL encode '#'
+            builder.appendEncodedPath(path);
         }
         return builder.build();
     }
+
+    /**
+     * Construct a new Content URI and add it to the URI Matcher.
+     * @param id The integer ID of the match clause.
+     * @param paths A set of paths to append to the default authority.
+     * @return The resulting URI.
+     */
     private static Uri addMatchUri(int id, String... paths) {
         return appendMatchUri(id, CONTENT_BASE, paths);
     }
+
+    /**
+     * Construct a new Content URI and add it to the URI matcher.
+     * @param id The integer ID of the match clause.
+     * @param base A base Content URI to build from.
+     * @param paths Additional path segments to add to the base.
+     * @return
+     */
     private static Uri appendMatchUri(int id, Uri base, String... paths) {
         Uri uri = buildPath(base, paths);
+//        Log.d("OmniProvider", "Adding "+uri.toString()+" => "+id);
         URI_MATCHER.addURI(uri.getAuthority(), uri.getPath(), id);
         return uri;
     }
@@ -188,12 +247,16 @@ public class OmniProvider extends ContentProvider {
         return (endId << 1L) | 1L;
     }
 
-    public static final String SELECTION_ID = COLUMN_ID + " = ?";
     public static String[] toStringArray(String s) {
         return new String[] { s };
     }
-    public static String[] toStringArray(long l) {
-        return new String[] { Long.toString(l) };
+    public static String[] toStringArray(long... longs) {
+        int length = longs.length;
+        String[] result = new String[length];
+        for (int i = 0; i < length; i++) {
+            result[i] = Long.toString(longs[i]);
+        }
+        return result;
     }
     public static String[] toStringArray(Uri uri) {
         return new String[] { uri.toString() };
@@ -236,6 +299,7 @@ public class OmniProvider extends ContentProvider {
     }
 
     protected void notifyChange(@NonNull Uri uri) {
+        Log.d("OmniProvider", "Notifying change on "+uri.toString());
         Context context = getContext();
         if (context != null) {
             ContentResolver contentResolver = context.getContentResolver();
@@ -257,63 +321,72 @@ public class OmniProvider extends ContentProvider {
                         @Nullable String selection,
                         @Nullable String[] selectionArgs,
                         @Nullable String sortOrder) {
+        projection = null;
+        selection = null;
+        selectionArgs = null;
+        sortOrder = COLUMN_ID + " ASC";
         Cursor cursor;
-        long id;
         int match = URI_MATCHER.match(uri);
-        switch (match & MASK_SELECTION) {
-            case SELECT_ALL:
-                break;
-            case SELECT_EVENT:
-                if (projection == null) {
-                    projection = COLUMNS_EVENT;
+        int keyMatch = match & MASK_KEY;
+        int tableMatch = match & MASK_TABLE;
+        ContentResolver resolver = getContext().getContentResolver();
+        // Unique cases
+        switch (match) {
+            case Match.MENTOR_COURSE_ID:
+                cursor = mentorByCourseIdQuery(ContentUris.parseId(uri));
+                if (cursor != null) {
+                    cursor.setNotificationUri(resolver, Content.COURSEMENTOR);
                 }
-                break;
-            case SELECT_ID:
-                id = ContentUris.parseId(uri);
-                selection = COLUMN_ID + " = ?";
-//                if ((match & MASK_TABLE) == EVENT) {
-//                    switch(StorageHelper.classify(eventToSource(id))) {
-//                        case TERM:
-//                            match = TERM_ID;
-//                            break;
-//                        case COURSE:
-//                            match = COURSE_ID;
-//                            break;
-//                        case ASSESSMENT:
-//                            match = ASSESSMENT_ID;
-//                            break;
-//                    }
-//                    selectionArgs = new String[] { Long.toString(eventToSource(id)) };
-//                }
-//                else {
-                selectionArgs = new String[] { Long.toString(id) };
-//                }
-                break;
-            case SELECT_COURSE_ID:
-                if (match == MENTOR_COURSE_ID) {
-                    id = ContentUris.parseId(uri);
-                    cursor = mentorByCourseIdQuery(id);
-                    cursor.setNotificationUri(getContext().getContentResolver(), uri);
-                    return cursor;
+                return cursor;
+            case Match.MENTOR_NOT_COURSE_ID:
+                cursor = mentorByNotCourseIdQuery(ContentUris.parseId(uri));
+                if (cursor != null) {
+                    cursor.setNotificationUri(resolver, Content.COURSEMENTOR);
                 }
-                throw new IllegalArgumentException();
-            case SELECT_NOT_COURSE_ID:
-                if (match == MENTOR_NOT_COURSE_ID) {
-                    id = ContentUris.parseId(uri);
-                    cursor = mentorByNotCourseIdQuery(id);
-                    cursor.setNotificationUri(getContext().getContentResolver(), uri);
-                    return cursor;
+                return cursor;
+            case Match.COURSEMENTOR_COURSE_ID_MENTOR_ID:
+                List<String> segments = uri.getPathSegments();
+                if (segments.get(0).equals(StorageHelper.TABLE_COURSE_MENTOR)) {
+                    long courseId;
+                    long mentorId;
+                    try {
+                        courseId = Long.parseLong(segments.get(1));
+                        mentorId = Long.parseLong(segments.get(2));
+                    } catch (NumberFormatException e) {
+                        throw new IllegalArgumentException(uri.toString());
+                    }
+                    selection = WHERE.get(keyMatch);
+                    selectionArgs = toStringArray(courseId, mentorId);
+                    break;
                 }
-                throw new IllegalArgumentException();
+                throw new IllegalArgumentException(uri.toString());
             default:
-                throw new IllegalArgumentException();
+                // Generic cases
+                switch (keyMatch) {
+                    case Key.ALL:
+                        break;
+                    case Key.ID:
+                    case Key.TERM:
+                    case Key.COURSE:
+                        selection = WHERE.get(keyMatch);
+                        selectionArgs = toStringArray(ContentUris.parseId(uri));
+                        break;
+                    default:
+                        throw new IllegalArgumentException();
+                }
+                switch(tableMatch) {
+                    case Table.EVENT:
+                        sortOrder = COLUMN_TIME + " ASC";
+                        break;
+                    case Table.TERM:
+                    case Table.ASSESSMENT:
+                    case Table.COURSE:
+                        sortOrder = COLUMN_START + " ASC";
+                        break;
+                }
         }
-
-        int tableId = match & MASK_TABLE;
-        String table = TABLES[tableId];
-        if (projection == null) {
-            projection = COLUMNS[tableId];
-        }
+        String table = TABLES.get(tableMatch);
+        projection = COLUMNS.get(tableMatch);
 
         cursor = getWritableDatabase().query(
             table,
@@ -324,7 +397,7 @@ public class OmniProvider extends ContentProvider {
             null,
             sortOrder
         );
-        cursor.setNotificationUri(getContext().getContentResolver(), uri);
+        cursor.setNotificationUri(resolver, uri);
         return cursor;
     }
 
@@ -337,8 +410,10 @@ public class OmniProvider extends ContentProvider {
     @Nullable
     @Override
     public Uri insert(@NonNull Uri uri, @Nullable ContentValues contentValues) {
+        // FIXME TODO validation like for query()
         int match = URI_MATCHER.match(uri);
-        String table = TABLES[match & MASK_TABLE];
+        int matchTable = match & MASK_TABLE;
+        String table = TABLES.get(matchTable);
         long id = getWritableDatabase().insert(
             table,
             null,
@@ -352,8 +427,10 @@ public class OmniProvider extends ContentProvider {
     @Override
     public int delete(@NonNull Uri uri, @Nullable String selection,
                       @Nullable String[] selectionArgs) {
+        // FIXME TODO validation like for query()
         int match = URI_MATCHER.match(uri);
-        String table = TABLES[match & MASK_TABLE];
+        int matchTable = match & MASK_TABLE;
+        String table = TABLES.get(matchTable);
         int rowsAffected = getWritableDatabase().delete(table, selection, selectionArgs);
         if (rowsAffected > 0) {
             notifyChange(uri);
@@ -364,8 +441,9 @@ public class OmniProvider extends ContentProvider {
     @Override
     public int update(@NonNull Uri uri, @Nullable ContentValues contentValues,
                       @Nullable String selection, @Nullable String[] selectionArgs) {
+        // FIXME TODO validation like for query()
         int match = URI_MATCHER.match(uri);
-        String table = TABLES[match & MASK_TABLE];
+        String table = TABLES.get(match & MASK_TABLE);
         int rowsAffected = getWritableDatabase().update(
             table, contentValues, selection, selectionArgs);
         if (rowsAffected > 0) {
@@ -373,4 +451,5 @@ public class OmniProvider extends ContentProvider {
         }
         return rowsAffected;
     }
+
 }

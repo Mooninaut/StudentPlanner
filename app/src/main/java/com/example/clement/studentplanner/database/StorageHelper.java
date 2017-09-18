@@ -17,7 +17,7 @@ import java.util.ArrayList;
 
 public class StorageHelper extends SQLiteOpenHelper {
 
-    public static final int DATABASE_VERSION = 23;
+    public static final int DATABASE_VERSION = 24;
     public static final String TABLE_TERM = "term";
     public static final String COLUMN_ID = BaseColumns._ID;
     public static final String COLUMN_NAME = "name";
@@ -33,6 +33,7 @@ public class StorageHelper extends SQLiteOpenHelper {
     public static final String COLUMN_EMAIL = "email";
     public static final String COLUMN_TERMINUS = "terminus";
     public static final String COLUMN_PARENT_URI = "parent";
+    public static final String SELECT_BY_ID = COLUMN_ID + " = ?";
 
     public static final String[] COLUMNS_TERM = {
         COLUMN_ID, COLUMN_NAME, COLUMN_START, COLUMN_END, COLUMN_NUMBER
@@ -57,6 +58,8 @@ public class StorageHelper extends SQLiteOpenHelper {
     public static final String TABLE_MENTOR = "mentor";
     public static final String COLUMN_MENTOR_ID = TABLE_MENTOR + BaseColumns._ID;
 //    public static final String COLUMN_MENTOR_NAME = "name";
+    public static final String SELECT_BY_COURSE_ID_MENTOR_ID = COLUMN_COURSE_ID + " = ? AND " + COLUMN_MENTOR_ID + " = ?";
+
 
     public static final String[] COLUMNS_MENTOR = {
         COLUMN_ID, COLUMN_NAME, COLUMN_PHONE_NUMBER, COLUMN_EMAIL
@@ -119,9 +122,10 @@ public class StorageHelper extends SQLiteOpenHelper {
         schema.add("CREATE TABLE "+TABLE_MENTOR+"("+COLUMN_ID+" INTEGER PRIMARY KEY AUTOINCREMENT, "+
             COLUMN_NAME+" TEXT, "+COLUMN_PHONE_NUMBER+" TEXT, "+COLUMN_EMAIL+" TEXT)");
 
-        schema.add("CREATE TABLE "+TABLE_COURSE_MENTOR+"("+COLUMN_COURSE_ID+" INTEGER REFERENCES "+
-            TABLE_COURSE+"("+COLUMN_ID+"), "+COLUMN_MENTOR_ID+" INTEGER REFERENCES "+TABLE_MENTOR+"("+COLUMN_ID+
-            "), PRIMARY KEY("+COLUMN_COURSE_ID+", "+COLUMN_MENTOR_ID+"))");
+        schema.add("CREATE TABLE "+TABLE_COURSE_MENTOR+"("+COLUMN_ID+" INTEGER PRIMARY KEY AUTOINCREMENT, "+
+            COLUMN_COURSE_ID+" INTEGER REFERENCES "+TABLE_COURSE+"("+COLUMN_ID+"), "+
+            COLUMN_MENTOR_ID+" INTEGER REFERENCES "+TABLE_MENTOR+"("+COLUMN_ID+
+            "), UNIQUE("+COLUMN_COURSE_ID+", "+COLUMN_MENTOR_ID+"))");
         schema.add("DELETE FROM "+TABLE_ASSESSMENT+" WHERE "+COLUMN_ID+" = "+ASSESSMENT_ID_OFFSET+";");
         schema.add("DELETE FROM "+TABLE_COURSE+" WHERE "+COLUMN_ID+" = "+COURSE_ID_OFFSET+";");
         schema.add("DELETE FROM "+TABLE_TERM+" WHERE "+COLUMN_ID+" = "+TERM_ID_OFFSET+";");

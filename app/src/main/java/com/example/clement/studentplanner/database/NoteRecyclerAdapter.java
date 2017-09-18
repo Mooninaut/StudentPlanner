@@ -25,7 +25,7 @@ import static com.example.clement.studentplanner.database.StorageHelper.COLUMN_P
  * Based loosely on https://stackoverflow.com/a/27732748
  */
 
-public class NoteRecyclerAdapter extends RecyclerCursorAdapterBase<NoteHolder, NoteRecyclerAdapter.PhotoCursorAdapter> {
+public class NoteRecyclerAdapter extends RecyclerCursorAdapterBase<NoteHolder, NoteRecyclerAdapter.NoteCursorAdapter> {
     private static DateFormat dateFormat = DateFormat.getDateInstance();
 
     public static Note cursorToPhoto(Cursor cursor) {
@@ -41,14 +41,14 @@ public class NoteRecyclerAdapter extends RecyclerCursorAdapterBase<NoteHolder, N
     private ItemListener.OnClick clickListener;
     @Nullable
     private ItemListener.OnLongClick longClickListener;
-    private final PhotoCursorAdapter photoCursorAdapter;
+    private final NoteCursorAdapter noteCursorAdapter;
     private final Context context;
 
     public NoteRecyclerAdapter(Context context,
                                Cursor cursor,
                                @Nullable ItemListener.OnClick clickListener,
                                @Nullable ItemListener.OnLongClick longClickListener) {
-        photoCursorAdapter = new PhotoCursorAdapter(context, cursor, 0);
+        noteCursorAdapter = new NoteCursorAdapter(context, cursor, 0);
         this.context = context;
         this.clickListener = clickListener;
         this.longClickListener = longClickListener;
@@ -57,24 +57,24 @@ public class NoteRecyclerAdapter extends RecyclerCursorAdapterBase<NoteHolder, N
 
     @Override
     public NoteHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View v = photoCursorAdapter.newView(context, photoCursorAdapter.getCursor(), parent);
+        View v = noteCursorAdapter.newView(context, noteCursorAdapter.getCursor(), parent);
         return new NoteHolder(v, context, clickListener, longClickListener);
     }
 
     @Override
     public void onBindViewHolder(NoteHolder holder, int position) {
-        photoCursorAdapter.getCursor().moveToPosition(position);
-        holder.bindItem(photoCursorAdapter.getItem(position));
+        noteCursorAdapter.getCursor().moveToPosition(position);
+        holder.bindItem(noteCursorAdapter.getItem(position));
     }
 
     @Override
     public int getItemCount() {
-        return photoCursorAdapter.getCount();
+        return noteCursorAdapter.getCount();
     }
 
     @Override
-    public PhotoCursorAdapter getCursorAdapter() {
-        return photoCursorAdapter;
+    public NoteCursorAdapter getCursorAdapter() {
+        return noteCursorAdapter;
     }
 
     /**
@@ -82,9 +82,9 @@ public class NoteRecyclerAdapter extends RecyclerCursorAdapterBase<NoteHolder, N
      * infrastructure.
      */
 
-    public class PhotoCursorAdapter extends CursorAdapter {
+    public class NoteCursorAdapter extends CursorAdapter {
 
-        public PhotoCursorAdapter(Context context, Cursor cursor, int flags) {
+        public NoteCursorAdapter(Context context, Cursor cursor, int flags) {
             super(context, cursor, flags);
         }
 
@@ -101,7 +101,7 @@ public class NoteRecyclerAdapter extends RecyclerCursorAdapterBase<NoteHolder, N
             throw new UnsupportedOperationException();
 //            Note photo = cursorToPhoto(cursor);
 //            Uri photoUri = photo.fileUri();
-//            Log.d("PhotoCursorAdapter", "Id: "+photo.id());
+//            Log.d("NoteCursorAdapter", "Id: "+photo.id());
 //    //        ImageView photoIV = (ImageView) view.findViewById(R.id.note_image_button);
 //
 //            try {

@@ -14,7 +14,7 @@ import android.widget.Button;
 import com.example.clement.studentplanner.FragmentItemListener;
 import com.example.clement.studentplanner.MentorListingFragment;
 import com.example.clement.studentplanner.R;
-import com.example.clement.studentplanner.database.MentorProvider;
+import com.example.clement.studentplanner.database.OmniProvider;
 
 /**
  * Created by Clement on 9/9/2017.
@@ -69,7 +69,8 @@ public class MentorPickerActivity extends AppCompatActivity
     protected void onStart() {
         super.onStart();
         Long courseId = ContentUris.parseId(getIntent().getData());
-        Uri mentorWithoutCourseUri = MentorProvider.CONTRACT.noCourseUri(courseId);
+//        Uri mentorWithoutCourseUri = MentorProvider.CONTRACT.noCourseUri(courseId);
+        Uri mentorWithoutCourseUri = ContentUris.withAppendedId(OmniProvider.Content.MENTOR_NOT_COURSE, courseId);
         MentorListingFragment fragment = MentorListingFragment.newInstance(mentorWithoutCourseUri);
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         transaction.replace(R.id.mentor_picker_frame, fragment, TAG);
@@ -87,7 +88,8 @@ public class MentorPickerActivity extends AppCompatActivity
     public void onFragmentItemClick(long mentorId, View view, String tag) {
         if (tag.equals(TAG)) {
             Intent result = new Intent("com.example.clement.studentplanner.RESULT_MENTOR",
-                MentorProvider.CONTRACT.contentUri(mentorId)
+//                MentorProvider.CONTRACT.contentUri(mentorId)
+                ContentUris.withAppendedId(OmniProvider.Content.MENTOR, mentorId)
             );
             setResult(Activity.RESULT_OK, result);
             finish();

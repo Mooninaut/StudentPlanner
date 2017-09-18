@@ -1,8 +1,19 @@
 package com.example.clement.studentplanner.data;
 
+import android.content.ContentValues;
+import android.database.Cursor;
 import android.support.annotation.NonNull;
 
+import com.example.clement.studentplanner.database.StorageHelper;
+
 import java.util.Locale;
+
+import static com.example.clement.studentplanner.database.StorageHelper.COLUMN_END;
+import static com.example.clement.studentplanner.database.StorageHelper.COLUMN_ID;
+import static com.example.clement.studentplanner.database.StorageHelper.COLUMN_NAME;
+import static com.example.clement.studentplanner.database.StorageHelper.COLUMN_START;
+import static com.example.clement.studentplanner.database.StorageHelper.COLUMN_STATUS;
+import static com.example.clement.studentplanner.database.StorageHelper.COLUMN_TERM_ID;
 
 /**
  * Created by Clement on 8/8/2017.
@@ -68,6 +79,16 @@ public class Course extends ScheduleItem {
         this.status = other.status();
 //        this.notes = other.notes();
     }
+    public Course(@NonNull Cursor cursor) {
+        this(
+            cursor.getLong(cursor.getColumnIndex(COLUMN_ID)),
+            cursor.getString(cursor.getColumnIndex(COLUMN_NAME)),
+            cursor.getLong(cursor.getColumnIndex(COLUMN_START)),
+            cursor.getLong(cursor.getColumnIndex(COLUMN_END)),
+            cursor.getLong(cursor.getColumnIndex(COLUMN_TERM_ID)),
+            Course.Status.of(cursor.getInt(cursor.getColumnIndex(COLUMN_STATUS)))
+        );
+    }
 
     public long termId() {
         return termId;
@@ -115,5 +136,19 @@ public class Course extends ScheduleItem {
         return String.format(Locale.US, "Course: name '%s', startMillis '%d', endMillis '%d', term '%d', status '%s'", // , notes '%s'
             name(), startMillis(), endMillis(), termId(), status().toString()/*, notes*/);
     }
-
+    @Override
+    @NonNull
+    public ContentValues toValues() {
+        ContentValues values = new ContentValues();
+        if (hasId()) {
+            values.put(StorageHelper.COLUMN_ID, id());
+        }
+        values.put(StorageHelper.COLUMN_NAME, name());
+        values.put(StorageHelper.COLUMN_START, startMillis());
+        values.put(StorageHelper.COLUMN_END, endMillis());
+        values.put(StorageHelper.COLUMN_STATUS, status.value());
+        values.put(StorageHelper.COLUMN_TERM_ID, termId);
+//        values.put(StorageHelper.COLUMN_NOTE, course.notes());
+        return values;
+    }
 }

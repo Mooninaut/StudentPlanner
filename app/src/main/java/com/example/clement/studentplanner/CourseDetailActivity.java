@@ -20,11 +20,10 @@ import android.widget.Toast;
 
 import com.example.clement.studentplanner.data.Course;
 import com.example.clement.studentplanner.data.Mentor;
-import com.example.clement.studentplanner.database.AssessmentProvider;
 import com.example.clement.studentplanner.database.CourseCursorAdapter;
-import com.example.clement.studentplanner.database.CourseMentorProvider;
-import com.example.clement.studentplanner.database.CourseProvider;
+import com.example.clement.studentplanner.database.FrontEnd;
 import com.example.clement.studentplanner.database.OmniProvider;
+import com.example.clement.studentplanner.database.StorageHelper;
 import com.example.clement.studentplanner.input.AssessmentDataEntryActivity;
 import com.example.clement.studentplanner.input.CourseDataEntryActivity;
 import com.example.clement.studentplanner.input.MentorDataEntryActivity;
@@ -32,8 +31,6 @@ import com.example.clement.studentplanner.input.MentorPickerActivity;
 import com.example.clement.studentplanner.input.PhotoCaptureActivity;
 
 import static android.content.ContentUris.withAppendedId;
-import static com.example.clement.studentplanner.database.OmniProvider.CONTENT_ASSESSMENT;
-import static com.example.clement.studentplanner.database.OmniProvider.CONTENT_MENTOR;
 
 /**
  * An activity representing a single Course detail screen.
@@ -67,7 +64,7 @@ public class CourseDetailActivity extends AppCompatActivity
             courseContentUri = getIntent().getData();
         }
         if (courseContentUri == null && savedInstanceState != null) {
-            courseContentUri = savedInstanceState.getParcelable(CourseProvider.CONTRACT.contentItemType);
+            courseContentUri = savedInstanceState.getParcelable(StorageHelper.TABLE_COURSE);
         }
         if (courseContentUri == null) {
             throw new NullPointerException();
@@ -78,7 +75,8 @@ public class CourseDetailActivity extends AppCompatActivity
         FragmentManager fragmentManager = getSupportFragmentManager();
 
         // Initialize assessment list fragment
-        Uri assessmentContentUri = AssessmentProvider.CONTRACT.courseUri(courseId);
+//        Uri assessmentContentUri = AssessmentProvider.CONTRACT.courseUri(courseId);
+        Uri assessmentContentUri = ContentUris.withAppendedId(OmniProvider.Content.ASSESSMENT_COURSE_ID, courseId);
 
         assessmentFragment = AssessmentListingFragment.newInstance(assessmentContentUri);
         fragmentManager.beginTransaction()
@@ -86,7 +84,7 @@ public class CourseDetailActivity extends AppCompatActivity
             .commit();
 
         // Initialize mentor list fragment
-        Uri mentorContentUri = withAppendedId(OmniProvider.CONTENT_MENTOR_COURSE_ID, courseId);
+        Uri mentorContentUri = withAppendedId(OmniProvider.Content.MENTOR_COURSE, courseId);
 
         mentorFragment = MentorListingFragment.newInstance(mentorContentUri);
         fragmentManager.beginTransaction()
@@ -186,13 +184,13 @@ public class CourseDetailActivity extends AppCompatActivity
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putParcelable(CourseProvider.CONTRACT.contentItemType, courseContentUri);
+        outState.putParcelable(StorageHelper.TABLE_COURSE, courseContentUri);
     }
 
     @Override
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
-        courseContentUri = savedInstanceState.getParcelable(CourseProvider.CONTRACT.contentItemType);
+        courseContentUri = savedInstanceState.getParcelable(StorageHelper.TABLE_COURSE);
     }
 
     public void addAssessment(View view) {
@@ -216,25 +214,9 @@ public class CourseDetailActivity extends AppCompatActivity
      */
     public void onMentorToggled(long mentorId) {
         long courseId = ContentUris.parseId(courseContentUri);
-        Uri courseMentorContentUri = CourseMentorProvider.CONTRACT.courseMentorContentUri(courseId, mentorId);
-        Cursor cursor = null;
-        try {
-            cursor = getContentResolver().query(courseMentorContentUri, null, null, null, null);
-            if (cursor != null && cursor.moveToFirst()) {
-                Mentor mentor = Util.getMentor(this, mentorId);
-                if (mentor != null) {
-                    Toast.makeText(this, getResources().getString(R.string.mentor_removed, mentor.name()), Toast.LENGTH_LONG).show();
-                }
-                getContentResolver().delete(courseMentorContentUri, null, null);
-            }
-            else {
-                getContentResolver().insert(courseMentorContentUri, CourseMentorProvider.courseMentorToValues(courseId, mentorId));
-            }
-        }
-        finally {
-            if (cursor != null) {
-                cursor.close();
-            }
+        Mentor mentor = FrontEnd.get(this, Mentor.class, mentorId);
+        if (!FrontEnd.toggleCourseMentor(this, courseId, mentorId)) {
+            Toast.makeText(this, getResources().getString(R.string.mentor_removed, mentor.name()), Toast.LENGTH_LONG).show();
         }
     }
 
@@ -245,13 +227,13 @@ public class CourseDetailActivity extends AppCompatActivity
             case Util.Tag.MENTOR:
                 intent = new Intent(this, MentorDataEntryActivity.class);
                 intent.setAction(Intent.ACTION_EDIT);
-                intent.setData(withAppendedId(CONTENT_MENTOR, itemId));
+                intent.setData(withAppendedId(OmniProvider.Content.MENTOR, itemId));
                 startActivity(intent);
                 break;
             case Util.Tag.ASSESSMENT:
                 intent = new Intent(this, AssessmentDetailActivity.class);
                 intent.setAction(Intent.ACTION_VIEW);
-                intent.setData(withAppendedId(CONTENT_ASSESSMENT, itemId));
+                intent.setData(withAppendedId(OmniProvider.Content.ASSESSMENT, itemId));
                 startActivity(intent);
                 break;
             default:

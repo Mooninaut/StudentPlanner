@@ -29,6 +29,7 @@ public class MentorRecyclerAdapter extends RecyclerCursorAdapterBase<MentorHolde
         this.context = context;
         this.onClick = onClick;
         this.onLongClick = onLongClick;
+        setHasStableIds(true);
     }
 
     @Override
