@@ -128,7 +128,7 @@ public class OmniProvider extends ContentProvider {
         public static final Uri MENTOR_NOT_COURSE = buildPath(MENTOR, "not_"+StorageHelper.TABLE_COURSE);
         public static final Uri MENTOR_COURSE = buildPath(MENTOR, StorageHelper.TABLE_COURSE);
         public static final Uri EVENT = addMatchUri(Match.EVENT_ALL, StorageHelper.TABLE_EVENT);
-        // package private, for internal use
+        // package private, for use by FrontEnd only
         static final Uri COURSEMENTOR = addMatchUri(Match.COURSEMENTOR_ALL, StorageHelper.TABLE_COURSE_MENTOR);
         static final Uri COURSEMENTOR_COURSE_ID_MENTOR_ID = buildPath(COURSEMENTOR, "both");
 
@@ -453,8 +453,8 @@ public class OmniProvider extends ContentProvider {
         int matchKey = match & MASK_KEY;
         int matchTable = match & MASK_TABLE;
         selection =  WHERE.get(matchKey);
-        // FIXME TODO unfinished
-        throw new UnsupportedOperationException();
+        // FIXME unfinished
+//        throw new UnsupportedOperationException();
         String table = TABLES.get(matchTable);
         int rowsAffected = getWritableDatabase().delete(table, selection, selectionArgs);
         if (rowsAffected > 0) {
@@ -466,7 +466,7 @@ public class OmniProvider extends ContentProvider {
     @Override
     public int update(@NonNull Uri uri, @Nullable ContentValues contentValues,
                       @Nullable String selection, @Nullable String[] selectionArgs) {
-        // FIXME TODO validation like for query()
+        // FIXME validation like for query()
         int match = URI_MATCHER.match(uri);
         String table = TABLES.get(match & MASK_TABLE);
         int rowsAffected = getWritableDatabase().update(
