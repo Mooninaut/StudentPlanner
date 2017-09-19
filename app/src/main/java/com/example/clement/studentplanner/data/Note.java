@@ -5,12 +5,10 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 
+import com.example.clement.studentplanner.database.StorageHelper;
+
 import java.util.Locale;
 
-import static com.example.clement.studentplanner.database.StorageHelper.COLUMN_ID;
-import static com.example.clement.studentplanner.database.StorageHelper.COLUMN_NOTE;
-import static com.example.clement.studentplanner.database.StorageHelper.COLUMN_PARENT_URI;
-import static com.example.clement.studentplanner.database.StorageHelper.COLUMN_PHOTO_FILE_URI;
 
 /**
  * Created by Clement on 9/12/2017.
@@ -18,27 +16,31 @@ import static com.example.clement.studentplanner.database.StorageHelper.COLUMN_P
 
 public class Note implements HasId{
     private @NonNull Uri fileUri = Uri.EMPTY;
-    private @NonNull Uri parentUri = Uri.EMPTY;
+    private long courseId = NO_ID;
+    private long assessmentId = NO_ID;
     private long id = NO_ID;
     private String note = "";
     public Note() { }
-    public Note(long id, @NonNull String note, @NonNull Uri parentUri, @NonNull Uri fileUri) {
+    public Note(long id, @NonNull String note, long assessmentId, long courseId, @NonNull Uri fileUri) {
         this.id = id;
         this.note = note;
-        this.parentUri = parentUri;
+        this.assessmentId = assessmentId;
+        this.courseId = courseId;
         this.fileUri = fileUri;
     }
-    public Note(@NonNull String note, @NonNull Uri parentUri, @NonNull Uri fileUri) {
+    public Note(@NonNull String note, long assessmentId, long courseId, @NonNull Uri fileUri) {
         this.note = note;
-        this.parentUri = parentUri;
+        this.assessmentId = assessmentId;
+        this.courseId = courseId;
         this.fileUri = fileUri;
     }
     public Note(@NonNull Cursor cursor) {
         this(
-            cursor.getLong(cursor.getColumnIndex(COLUMN_ID)),
-            cursor.getString(cursor.getColumnIndex(COLUMN_NOTE)),
-            Uri.parse(cursor.getString(cursor.getColumnIndex(COLUMN_PARENT_URI))),
-            Uri.parse(cursor.getString(cursor.getColumnIndex(COLUMN_PHOTO_FILE_URI)))
+                cursor.getLong(cursor.getColumnIndex(StorageHelper.COLUMN_ID)),
+                cursor.getString(cursor.getColumnIndex(StorageHelper.COLUMN_NOTE)),
+                cursor.getLong(cursor.getColumnIndex(StorageHelper.COLUMN_ASSESSMENT_ID)),
+                cursor.getLong(cursor.getColumnIndex(StorageHelper.COLUMN_COURSE_ID)),
+                Uri.parse(cursor.getString(cursor.getColumnIndex(StorageHelper.COLUMN_PHOTO_FILE_URI)))
         );
     }
     @Override
@@ -59,13 +61,25 @@ public class Note implements HasId{
     public boolean hasId() {
         return id != NO_ID;
     }
-    @NonNull
-    public Uri parentUri() {
-        return parentUri;
+    public long assessmentId() {
+        return assessmentId;
     }
-    public void parentUri(@NonNull Uri parentUri) {
-        this.parentUri = parentUri;
+    public void assessmentId(long assessmentId) {
+        this.assessmentId = assessmentId;
     }
+    public boolean hasAssessmentId() {
+        return assessmentId != NO_ID;
+    }
+    public long courseId() {
+        return courseId;
+    }
+    public void courseId(long courseId) {
+        this.courseId = courseId;
+    }
+    public boolean hasCourseId() {
+        return courseId != NO_ID;
+    }
+
     @NonNull
     public Uri fileUri() {
         return fileUri;
@@ -77,19 +91,32 @@ public class Note implements HasId{
     public String toString() {
         return String.format(
             Locale.getDefault(),
-            "Note: {id: \"%d\", note: \"%s\", parentUri: \"%s\", fileUri: \"%s\"}",
-            id, note, parentUri.toString(), fileUri.toString()
+            "Note: {id: \"%d\", note: \"%s\", assessmentId: \"%d\", courseId: \"%d\", fileUri: \"%s\"}",
+            id, note, assessmentId, courseId, fileUri.toString()
         );
     }
     @Override
     @NonNull
     public ContentValues toValues() {
         ContentValues values = new ContentValues();
-        values.put(COLUMN_NOTE, note);
-        values.put(COLUMN_PARENT_URI, parentUri.toString());
-        values.put(COLUMN_PHOTO_FILE_URI, fileUri.toString());
+        values.put(StorageHelper.COLUMN_NOTE, note);
+        if (hasAssessmentId()) {
+            values.put(StorageHelper.COLUMN_ASSESSMENT_ID, assessmentId);
+        }
+        else {
+            values.putNull(StorageHelper.COLUMN_ASSESSMENT_ID);
+        }
+
+        if (hasCourseId()) {
+            values.put(StorageHelper.COLUMN_COURSE_ID, courseId);
+        }
+        else {
+            values.putNull(StorageHelper.COLUMN_COURSE_ID);
+        }
+
+        values.put(StorageHelper.COLUMN_PHOTO_FILE_URI, fileUri.toString());
         if (hasId()) {
-            values.put(COLUMN_ID, id);
+            values.put(StorageHelper.COLUMN_ID, id);
         }
         return values;
     }

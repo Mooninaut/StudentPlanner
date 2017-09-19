@@ -5,8 +5,8 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.view.View;
 
-import com.example.clement.studentplanner.database.NoteProvider;
 import com.example.clement.studentplanner.database.NoteRecyclerAdapter;
+import com.example.clement.studentplanner.database.OmniProvider;
 
 /**
  * Created by Clement on 9/13/2017.
@@ -23,7 +23,7 @@ public class NoteListingFragment extends RecyclerListingFragmentBase<NoteRecycle
      * fragment (e.g. upon screen orientation changes).
      */
     public NoteListingFragment() {
-        super(NoteProvider.CONTRACT,
+        super(OmniProvider.Content.NOTE,
             R.layout.photo_recycler_view,
             PHOTO_LOADER_ID
         );

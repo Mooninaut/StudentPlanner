@@ -15,11 +15,6 @@ import com.example.clement.studentplanner.data.Note;
 
 import java.text.DateFormat;
 
-import static com.example.clement.studentplanner.database.StorageHelper.COLUMN_ID;
-import static com.example.clement.studentplanner.database.StorageHelper.COLUMN_NOTE;
-import static com.example.clement.studentplanner.database.StorageHelper.COLUMN_PARENT_URI;
-import static com.example.clement.studentplanner.database.StorageHelper.COLUMN_PHOTO_FILE_URI;
-
 /**
  * Created by Clement on 9/10/2017.
  * Based loosely on https://stackoverflow.com/a/27732748
@@ -28,12 +23,13 @@ import static com.example.clement.studentplanner.database.StorageHelper.COLUMN_P
 public class NoteRecyclerAdapter extends RecyclerCursorAdapterBase<NoteHolder, NoteRecyclerAdapter.NoteCursorAdapter> {
     private static DateFormat dateFormat = DateFormat.getDateInstance();
 
-    public static Note cursorToPhoto(Cursor cursor) {
+    public static Note cursorToNote(Cursor cursor) {
         return new Note(
-            cursor.getLong(cursor.getColumnIndex(COLUMN_ID)),
-            cursor.getString(cursor.getColumnIndex(COLUMN_NOTE)),
-            Uri.parse(cursor.getString(cursor.getColumnIndex(COLUMN_PARENT_URI))),
-            Uri.parse(cursor.getString(cursor.getColumnIndex(COLUMN_PHOTO_FILE_URI)))
+            cursor.getLong(cursor.getColumnIndex(StorageHelper.COLUMN_ID)),
+            cursor.getString(cursor.getColumnIndex(StorageHelper.COLUMN_NOTE)),
+            cursor.getLong(cursor.getColumnIndex(StorageHelper.COLUMN_ASSESSMENT_ID)),
+            cursor.getLong(cursor.getColumnIndex(StorageHelper.COLUMN_COURSE_ID)),
+            Uri.parse(cursor.getString(cursor.getColumnIndex(StorageHelper.COLUMN_PHOTO_FILE_URI)))
         );
     }
 
@@ -99,7 +95,7 @@ public class NoteRecyclerAdapter extends RecyclerCursorAdapterBase<NoteHolder, N
         @Override
         public void bindView(View view, Context context, Cursor cursor) {
             throw new UnsupportedOperationException();
-//            Note photo = cursorToPhoto(cursor);
+//            Note photo = cursorToNote(cursor);
 //            Uri photoUri = photo.fileUri();
 //            Log.d("NoteCursorAdapter", "Id: "+photo.id());
 //    //        ImageView photoIV = (ImageView) view.findViewById(R.id.note_image_button);
@@ -122,7 +118,7 @@ public class NoteRecyclerAdapter extends RecyclerCursorAdapterBase<NoteHolder, N
             Cursor cursor = getCursor();
             Note note = null;
             if (cursor.moveToPosition(position)) {
-                note = cursorToPhoto(cursor);
+                note = cursorToNote(cursor);
             }
             return note;
         }

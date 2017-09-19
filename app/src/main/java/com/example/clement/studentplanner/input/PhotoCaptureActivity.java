@@ -15,8 +15,9 @@ import android.widget.Toast;
 import com.example.clement.studentplanner.NoteListingFragment;
 import com.example.clement.studentplanner.R;
 import com.example.clement.studentplanner.Util;
+import com.example.clement.studentplanner.data.HasId;
 import com.example.clement.studentplanner.data.Note;
-import com.example.clement.studentplanner.database.NoteProvider;
+import com.example.clement.studentplanner.database.OmniProvider;
 
 public class PhotoCaptureActivity extends AppCompatActivity {
 
@@ -33,7 +34,7 @@ public class PhotoCaptureActivity extends AppCompatActivity {
 
         fab = (FloatingActionButton) findViewById(R.id.fab);
 
-        photoContentUri = NoteProvider.CONTRACT.contentUri;
+        photoContentUri = OmniProvider.Content.NOTE;
         FragmentManager fragmentManager = getSupportFragmentManager();
         photoFragment = NoteListingFragment.newInstance(photoContentUri);
         fragmentManager.beginTransaction()
@@ -74,9 +75,9 @@ public class PhotoCaptureActivity extends AppCompatActivity {
                     Uri courseOrAssessmentUri = intent.getData();
                     Uri fileUri = Util.Photo.storeThumbnail(this, resultCode, data, "Test");
                     Uri parentUri = Uri.EMPTY;
-                    Note note = new Note("", parentUri, fileUri);
+                    Note note = new Note("", HasId.NO_ID, HasId.NO_ID, fileUri);
                     Log.d("PhotoCaptureActivity", fileUri.toString());
-                    Uri contentUri = getContentResolver().insert(NoteProvider.CONTRACT.contentUri, NoteProvider.photoToValues(note));
+                    Uri contentUri = getContentResolver().insert(OmniProvider.Content.NOTE, note.toValues());
                     Log.d("PhotoCaptureActivity", contentUri.toString());
 /*                    Cursor cursor = null;
                     NoteCursorAdapter pca = null;

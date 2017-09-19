@@ -91,7 +91,7 @@ public class CourseDetailActivity extends AppCompatActivity
             .commit();
 
         // Initialize note list fragment
-        Uri noteContentUri = withAppendedId(OmniProvider.Content.NOTE_COURSE, courseId);
+        Uri noteContentUri = withAppendedId(OmniProvider.Content.NOTE_COURSE_ID, courseId);
     }
     protected void initializeCourseView(Uri courseUri) {
         Cursor cursor = null;

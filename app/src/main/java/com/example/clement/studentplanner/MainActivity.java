@@ -25,7 +25,6 @@ import com.example.clement.studentplanner.data.Term;
 import com.example.clement.studentplanner.database.AssessmentProvider;
 import com.example.clement.studentplanner.database.CourseMentorProvider;
 import com.example.clement.studentplanner.database.CourseProvider;
-import com.example.clement.studentplanner.database.NoteProvider;
 import com.example.clement.studentplanner.database.OmniProvider;
 import com.example.clement.studentplanner.database.ProviderContract;
 import com.example.clement.studentplanner.database.StorageHelper;
@@ -148,7 +147,7 @@ public class MainActivity extends AppCompatActivity
     private void deleteSampleData() {
         getContentResolver().delete(CourseMentorProvider.CONTRACT.contentUri, null, null);
         getContentResolver().delete(OmniProvider.Content.MENTOR, null, null);
-        getContentResolver().delete(NoteProvider.CONTRACT.contentUri, null, null);
+        getContentResolver().delete(OmniProvider.Content.NOTE, null, null);
         getContentResolver().delete(AssessmentProvider.CONTRACT.contentUri, null, null);
         getContentResolver().delete(CourseProvider.CONTRACT.contentUri, null, null);
         getContentResolver().delete(TermProvider.CONTRACT.contentUri, null, null);
