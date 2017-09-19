@@ -54,31 +54,33 @@ public class OmniProvider extends ContentProvider {
     }
     private static final SparseArray<String> WHERE = new SparseArray<>(10);
     static {
-        WHERE.append(Key.TERM, StorageHelper.COLUMN_TERM_ID + " = ?");
-        WHERE.append(Key.COURSE, StorageHelper.COLUMN_COURSE_ID + " = ?");
+        WHERE.append(Key.TERM, StorageHelper.COLUMN_TERM_ID+" = ?");
+        WHERE.append(Key.COURSE, StorageHelper.COLUMN_COURSE_ID+" = ?");
+        WHERE.append(Key.ASSESSMENT, StorageHelper.COLUMN_ASSESSMENT_ID+" = ?");
         WHERE.append(Key.ID, StorageHelper.SELECT_BY_ID);
         WHERE.append(Key.COURSE_AND_MENTOR, StorageHelper.COLUMN_COURSE_ID
             +" = ? AND "+StorageHelper.COLUMN_MENTOR_ID+" = ?");
     }
-    private static final int MASK_TABLE = 0xFF;
-    private static final int MASK_KEY = 0xFF00;
+    private static final int MASK_TABLE = 0x00FF;
+    private static final int MASK_KEY   = 0xFF00;
 
     private static class Table {
 
         private static final int TERM = 0x01;
-        private static final int COURSE = 0x02; // gap left for NOT COURSE
-        private static final int ASSESSMENT = 0x04;
-        private static final int MENTOR = 0x05;
-        private static final int NOTE = 0x06;
-        private static final int EVENT = 0x07;
-        private static final int COURSEMENTOR = 0x08;
+        private static final int COURSE = 0x02;
+        private static final int ASSESSMENT = 0x03;
+        private static final int MENTOR = 0x04;
+        private static final int NOTE = 0x05;
+        private static final int EVENT = 0x06;
+        private static final int COURSEMENTOR = 0x07;
     }
     private static class Key {
-        private static final int TERM = 0x0100;
-        private static final int COURSE = 0x0200;
-        private static final int NOT_COURSE = 0x0300;
-        private static final int COURSE_AND_MENTOR = 0x0400;
-        private static final int ALL = 0xF000;
+        private static final int TERM = 0x1000;
+        private static final int COURSE = 0x2000;
+        private static final int NOT_COURSE = 0x2F00;
+        private static final int COURSE_AND_MENTOR = 0x2400;
+        private static final int ASSESSMENT = 0x3000;
+        private static final int ALL = 0xFF00;
         private static final int ID = 0xF100;
     }
     private static class Match{
@@ -97,6 +99,8 @@ public class OmniProvider extends ContentProvider {
         private static final int MENTOR_NOT_COURSE_ID = Table.MENTOR | Key.NOT_COURSE;
         private static final int NOTE_ID = Table.NOTE | Key.ID;
         private static final int NOTE_ALL = Table.NOTE | Key.ALL;
+        private static final int NOTE_COURSE_ID = Table.NOTE | Key.COURSE;
+        private static final int NOTE_ASSESSMENT_ID = Table.NOTE | Key.ASSESSMENT;
         private static final int EVENT_ALL = Table.EVENT | Key.ALL;
         private static final int EVENT_ID = Table.EVENT | Key.ID;
         private static final int COURSEMENTOR_ALL = Table.COURSEMENTOR | Key.ALL;
@@ -108,18 +112,23 @@ public class OmniProvider extends ContentProvider {
         //    private static final int ASSESSMENT_EVENT = Table.ASSESSMENT | Key.EVENT;
     }
 
+    // Literal match entries.
+    // Lines with addMatchUri have both URIs and match entries
+    // Lines with buildPath have just URIs, and are used as a base for wildcard match URIs.
     public static class Content {
         public static final Uri TERM = addMatchUri(Match.TERM_ALL,   StorageHelper.TABLE_TERM);
         public static final Uri COURSE = addMatchUri(Match.COURSE_ALL, StorageHelper.TABLE_COURSE);
-        public static final Uri COURSE_TERM_ID = appendMatchUri(Match.COURSE_TERM_ID, COURSE, StorageHelper.TABLE_TERM);
+        public static final Uri COURSE_TERM_ID = buildPath(COURSE, StorageHelper.TABLE_TERM);
         public static final Uri ASSESSMENT = addMatchUri(Match.ASSESSMENT_ALL, StorageHelper.TABLE_ASSESSMENT);
-        public static final Uri ASSESSMENT_COURSE_ID = appendMatchUri(Match.ASSESSMENT_COURSE_ID, ASSESSMENT, StorageHelper.TABLE_COURSE);
+        public static final Uri ASSESSMENT_COURSE_ID = buildPath(ASSESSMENT, StorageHelper.TABLE_COURSE);
         public static final Uri NOTE = addMatchUri(Match.NOTE_ALL, StorageHelper.TABLE_NOTE);
+        public static final Uri NOTE_COURSE_ID = buildPath(NOTE, StorageHelper.TABLE_COURSE);
+        public static final Uri NOTE_ASSESSMENT_ID = buildPath(NOTE, StorageHelper.TABLE_ASSESSMENT);
         public static final Uri MENTOR = addMatchUri(Match.MENTOR_ALL, StorageHelper.TABLE_MENTOR);
         public static final Uri MENTOR_NOT_COURSE = buildPath(MENTOR, "not_"+StorageHelper.TABLE_COURSE);
         public static final Uri MENTOR_COURSE = buildPath(MENTOR, StorageHelper.TABLE_COURSE);
         public static final Uri EVENT = addMatchUri(Match.EVENT_ALL, StorageHelper.TABLE_EVENT);
-        // package private
+        // package private, for internal use
         static final Uri COURSEMENTOR = addMatchUri(Match.COURSEMENTOR_ALL, StorageHelper.TABLE_COURSE_MENTOR);
         static final Uri COURSEMENTOR_COURSE_ID_MENTOR_ID = buildPath(COURSEMENTOR, "both");
 
@@ -133,13 +142,16 @@ public class OmniProvider extends ContentProvider {
 
     private static final UriMatcher URI_MATCHER = new UriMatcher(UriMatcher.NO_MATCH);
 
+    // Wildcard match entries that are not content URIs.
     static {
         appendMatchUri(Match.TERM_ID, Content.TERM, "#");
         appendMatchUri(Match.COURSE_ID, Content.COURSE, "#");
         appendMatchUri(Match.COURSE_TERM_ID, Content.COURSE_TERM_ID, "#");
         appendMatchUri(Match.ASSESSMENT_ID, Content.ASSESSMENT, "#");
         appendMatchUri(Match.ASSESSMENT_COURSE_ID, Content.ASSESSMENT_COURSE_ID, "#");
-        appendMatchUri(Match.NOTE_ID,   Content.NOTE,   "#");
+        appendMatchUri(Match.NOTE_ID, Content.NOTE, "#");
+        appendMatchUri(Match.NOTE_COURSE_ID, Content.NOTE_COURSE_ID, "#");
+        appendMatchUri(Match.NOTE_ASSESSMENT_ID, Content.NOTE_ASSESSMENT_ID, "#");
         appendMatchUri(Match.MENTOR_ID, Content.MENTOR, "#");
         appendMatchUri(Match.EVENT_ID, Content.EVENT, "#");
         appendMatchUri(Match.COURSEMENTOR_ID, Content.COURSEMENTOR, "#");
@@ -327,8 +339,8 @@ public class OmniProvider extends ContentProvider {
         sortOrder = COLUMN_ID + " ASC";
         Cursor cursor;
         int match = URI_MATCHER.match(uri);
-        int keyMatch = match & MASK_KEY;
-        int tableMatch = match & MASK_TABLE;
+        int matchKey = match & MASK_KEY;
+        int matchTable = match & MASK_TABLE;
         ContentResolver resolver = getContext().getContentResolver();
         // Unique cases
         switch (match) {
@@ -345,36 +357,40 @@ public class OmniProvider extends ContentProvider {
                 }
                 return cursor;
             case Match.COURSEMENTOR_COURSE_ID_MENTOR_ID:
-                List<String> segments = uri.getPathSegments();
-                if (segments.get(0).equals(StorageHelper.TABLE_COURSE_MENTOR)) {
+                // Format is /course_mentor/both/<courseId>/<mentorId>
+                List<String> matchSegments = uri.getPathSegments();
+                List<String> uriSegments = Content.COURSEMENTOR_COURSE_ID_MENTOR_ID.getPathSegments();
+                if (matchSegments.get(0).equals(uriSegments.get(0))
+                    && matchSegments.get(1).equals(uriSegments.get(1))) {
                     long courseId;
                     long mentorId;
                     try {
-                        courseId = Long.parseLong(segments.get(1));
-                        mentorId = Long.parseLong(segments.get(2));
+                        courseId = Long.parseLong(matchSegments.get(2));
+                        mentorId = Long.parseLong(matchSegments.get(3));
                     } catch (NumberFormatException e) {
                         throw new IllegalArgumentException(uri.toString());
                     }
-                    selection = WHERE.get(keyMatch);
+                    selection = WHERE.get(matchKey);
                     selectionArgs = toStringArray(courseId, mentorId);
                     break;
                 }
                 throw new IllegalArgumentException(uri.toString());
             default:
                 // Generic cases
-                switch (keyMatch) {
+                switch (matchKey) {
                     case Key.ALL:
                         break;
                     case Key.ID:
                     case Key.TERM:
                     case Key.COURSE:
-                        selection = WHERE.get(keyMatch);
+                    case Key.ASSESSMENT:
+                        selection = WHERE.get(matchKey);
                         selectionArgs = toStringArray(ContentUris.parseId(uri));
                         break;
                     default:
                         throw new IllegalArgumentException();
                 }
-                switch(tableMatch) {
+                switch(matchTable) {
                     case Table.EVENT:
                         sortOrder = COLUMN_TIME + " ASC";
                         break;
@@ -385,8 +401,8 @@ public class OmniProvider extends ContentProvider {
                         break;
                 }
         }
-        String table = TABLES.get(tableMatch);
-        projection = COLUMNS.get(tableMatch);
+        String table = TABLES.get(matchTable);
+        projection = COLUMNS.get(matchTable);
 
         cursor = getWritableDatabase().query(
             table,
@@ -410,9 +426,15 @@ public class OmniProvider extends ContentProvider {
     @Nullable
     @Override
     public Uri insert(@NonNull Uri uri, @Nullable ContentValues contentValues) {
-        // FIXME TODO validation like for query()
         int match = URI_MATCHER.match(uri);
+        int matchKey = match & MASK_KEY;
         int matchTable = match & MASK_TABLE;
+        if (matchKey != Key.ALL) {
+            throw new IllegalArgumentException(uri.toString());
+        }
+        if (matchTable == Table.EVENT) {
+            throw new IllegalArgumentException(uri.toString());
+        }
         String table = TABLES.get(matchTable);
         long id = getWritableDatabase().insert(
             table,
@@ -427,9 +449,12 @@ public class OmniProvider extends ContentProvider {
     @Override
     public int delete(@NonNull Uri uri, @Nullable String selection,
                       @Nullable String[] selectionArgs) {
-        // FIXME TODO validation like for query()
         int match = URI_MATCHER.match(uri);
+        int matchKey = match & MASK_KEY;
         int matchTable = match & MASK_TABLE;
+        selection =  WHERE.get(matchKey);
+        // FIXME TODO unfinished
+        throw new UnsupportedOperationException();
         String table = TABLES.get(matchTable);
         int rowsAffected = getWritableDatabase().delete(table, selection, selectionArgs);
         if (rowsAffected > 0) {

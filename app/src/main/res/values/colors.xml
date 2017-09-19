@@ -16,4 +16,5 @@
     <color name="colorStart">#2E7D32</color> <!-- Material Green 800 -->
     <color name="editControlBackground">#e0e0e0</color>
     <color name="colorDarkGray">#303030</color>
+    <color name="colorNote">#ab47bc</color>
 </resources>

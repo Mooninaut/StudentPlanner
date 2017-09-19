@@ -9,8 +9,8 @@
         android:title="@string/add_reminder"
         android:orderInCategory="200"
         app:showAsAction="never" />
-    <item android:id="@+id/take_photo"
-        android:title="@string/take_photo"
+    <item android:id="@+id/add_note"
+        android:title="@string/add_note"
         android:orderInCategory="300"
         app:showAsAction="never"/>
 </menu>

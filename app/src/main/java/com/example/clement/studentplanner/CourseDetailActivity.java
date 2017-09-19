@@ -51,7 +51,6 @@ public class CourseDetailActivity extends AppCompatActivity
 
         setContentView(R.layout.course_detail_activity);
 
-
         Toolbar myToolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(myToolbar);
         // Show the Up button in the action bar.
@@ -90,6 +89,9 @@ public class CourseDetailActivity extends AppCompatActivity
         fragmentManager.beginTransaction()
             .replace(R.id.mentor_list_fragment, mentorFragment, Util.Tag.MENTOR)
             .commit();
+
+        // Initialize note list fragment
+        Uri noteContentUri = withAppendedId(OmniProvider.Content.NOTE_COURSE, courseId);
     }
     protected void initializeCourseView(Uri courseUri) {
         Cursor cursor = null;
@@ -98,13 +100,7 @@ public class CourseDetailActivity extends AppCompatActivity
             if (cursor != null && cursor.moveToFirst()) {
                 // Initialize course view
                 CourseCursorAdapter courseAdapter = new CourseCursorAdapter(this, cursor, 0);
-//                cursor.registerContentObserver();
-//                courseLoaderListener = new CourseLoaderListener(this, courseUri, courseAdapter);
-//                getSupportLoaderManager().initLoader(COURSE_LOADER_ID, null, courseLoaderListener);
                 courseAdapter.bindView(findViewById(R.id.course_detail), this, cursor);
-//                courseAdapter.
-//                course = courseAdapter.getItem(0);
-
             }
         } finally {
             if (cursor != null) {
@@ -130,10 +126,10 @@ public class CourseDetailActivity extends AppCompatActivity
                 intent.setData(courseContentUri);
                 startActivityForResult(intent, Util.RequestCode.ADD_ASSESSMENT);
                 return true;*/
-            case R.id.take_photo:
+            case R.id.add_note:
                 intent = new Intent(this, PhotoCaptureActivity.class);
                 intent.setAction(Intent.ACTION_INSERT);
-                startActivityForResult(intent, Util.RequestCode.ADD_PHOTO);
+                startActivityForResult(intent, Util.RequestCode.ADD_NOTE);
                 return true;
             case R.id.edit:
                 intent = new Intent(this, CourseDataEntryActivity.class);
@@ -160,24 +156,26 @@ public class CourseDetailActivity extends AppCompatActivity
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == Util.RequestCode.ADD_ASSESSMENT) {
-            if (resultCode == Activity.RESULT_OK) {
-                Uri assessmentUri = data.getData();
-                Intent intent = new Intent(this, AssessmentDetailActivity.class);
-                intent.setAction(Intent.ACTION_VIEW);
-                intent.setData(assessmentUri);
-                startActivity(intent);
-            }
-        }
-        else if (requestCode == Util.RequestCode.EDIT_COURSE) {
-            if (resultCode == Activity.RESULT_OK) {
-                initializeCourseView(courseContentUri);
-            }
-        }
-        else if (requestCode == Util.RequestCode.PICK_MENTOR) {
-            if (resultCode == Activity.RESULT_OK) {
-                onMentorToggled(ContentUris.parseId(data.getData()));
-            }
+        switch (requestCode) {
+            case Util.RequestCode.ADD_ASSESSMENT:
+                if (resultCode == Activity.RESULT_OK) {
+                    Uri assessmentUri = data.getData();
+                    Intent intent = new Intent(this, AssessmentDetailActivity.class);
+                    intent.setAction(Intent.ACTION_VIEW);
+                    intent.setData(assessmentUri);
+                    startActivity(intent);
+                }
+                break;
+            case Util.RequestCode.EDIT_COURSE:
+                if (resultCode == Activity.RESULT_OK) {
+                    initializeCourseView(courseContentUri);
+                }
+                break;
+            case Util.RequestCode.PICK_MENTOR:
+                if (resultCode == Activity.RESULT_OK) {
+                    onMentorToggled(ContentUris.parseId(data.getData()));
+                }
+                break;
         }
     }
 
@@ -236,6 +234,9 @@ public class CourseDetailActivity extends AppCompatActivity
                 intent.setData(withAppendedId(OmniProvider.Content.ASSESSMENT, itemId));
                 startActivity(intent);
                 break;
+            case Util.Tag.NOTE:
+                throw new UnsupportedOperationException();
+//                break;
             default:
                 throw new IllegalStateException("Unknown tag "+tag);
         }

@@ -37,7 +37,7 @@ public class PhotoCaptureActivity extends AppCompatActivity {
         FragmentManager fragmentManager = getSupportFragmentManager();
         photoFragment = NoteListingFragment.newInstance(photoContentUri);
         fragmentManager.beginTransaction()
-            .replace(R.id.photo_list_fragment, photoFragment, Util.Tag.PHOTO)
+            .replace(R.id.photo_list_fragment, photoFragment, Util.Tag.NOTE)
             .commit();
 
     }
@@ -68,7 +68,7 @@ public class PhotoCaptureActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode) {
-            case Util.RequestCode.ADD_PHOTO:
+            case Util.RequestCode.ADD_NOTE:
                 if (resultCode == Activity.RESULT_OK) {
                     Intent intent = getIntent();
                     Uri courseOrAssessmentUri = intent.getData();

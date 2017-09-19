@@ -160,7 +160,7 @@
         </activity>
         <activity
             android:name=".input.PhotoCaptureActivity"
-            android:label="@string/title_activity_photo_capture"
+            android:label="@string/take_photo"
             android:launchMode="singleTop"
             android:parentActivityName=".MainActivity"
             android:theme="@style/AppTheme">

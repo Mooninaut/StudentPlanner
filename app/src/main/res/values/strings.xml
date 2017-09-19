@@ -85,11 +85,11 @@
         <item>2</item>
         <item>1</item>
     </integer-array>
-    <string name="title_activity_photo_capture">Take Photo</string>
     <string name="take_photo">Take Photo</string>
     <string name="note">Photo</string>
     <string name="view_photo">View Photo</string>
     <string name="time_paradox">Time paradox! Start must be before end.</string>
     <string name="negative_term_error">Term number cannot be negative</string>
     <string name="invalid_term_error">Invalid term number</string>
+    <string name="add_note">Add Note</string>
 </resources>
