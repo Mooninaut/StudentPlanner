@@ -122,48 +122,41 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/course_end_text_view"/>
 
-    <ImageButton
-        android:contentDescription="@string/add_mentor"
-        android:id="@+id/add_mentor_button"
-        android:layout_height="0dp"
-        android:layout_width="0dp"
-        app:layout_constraintDimensionRatio="1"
-        android:layout_marginBottom="0dp"
-        android:layout_marginRight="0dp"
-        android:layout_marginEnd="0dp"
-        android:layout_marginTop="0dp"
-        android:background="@android:color/transparent"
-        app:layout_constraintBottom_toBottomOf="@+id/mentor_header"
-        app:layout_constraintRight_toRightOf="parent"
-        android:onClick="addCourseMentor"
-        app:layout_constraintTop_toTopOf="@+id/mentor_header"
-        app:srcCompat="@drawable/ic_action_add"/>
+        <ImageButton
+            android:id="@+id/add_mentor_button"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:background="@android:color/transparent"
+            android:contentDescription="@string/add_mentor"
+            android:onClick="addCourseMentor"
+            app:layout_constraintBottom_toBottomOf="@+id/mentor_header"
+            app:layout_constraintDimensionRatio="1"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/mentor_header"
+            app:srcCompat="@drawable/ic_action_add"/>
 
-    <FrameLayout
-        android:id="@+id/mentor_list_fragment"
-        app:layout_constraintTop_toBottomOf="@+id/mentor_header"
-        android:layout_marginTop="0dp"
-        app:layout_constraintBottom_toTopOf="@+id/assessment_header"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_weight="0"/>
+        <FrameLayout
+            android:id="@+id/mentor_list_fragment"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/mentor_header"/>
 
-    <TextView
-        android:id="@+id/assessment_header"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:textAlignment="center"
-        android:textSize="24sp"
-        android:padding="@dimen/margin_small"
-        android:background="@color/colorAssessment"
-        android:textAppearance="@style/TextAppearance.AppCompat.Inverse"
-        android:text="@string/assessments"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintBottom_toTopOf="@+id/assessment_list_fragment"
-        app:layout_constraintTop_toBottomOf="@+id/mentor_list_fragment"/>
+        <TextView
+            android:id="@+id/assessment_header"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:background="@color/colorAssessment"
+            android:padding="@dimen/margin_small"
+            android:text="@string/assessments"
+            android:textAlignment="center"
+            android:textAppearance="@style/TextAppearance.AppCompat.Inverse"
+            android:textSize="24sp"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/mentor_list_fragment"/>
 
     <ImageButton
         android:contentDescription="@string/add_assessment"
@@ -177,30 +170,29 @@
         app:layout_constraintBottom_toBottomOf="@id/assessment_header"
         app:layout_constraintTop_toTopOf="@id/assessment_header"
         app:layout_constraintRight_toRightOf="parent"/>
-    <FrameLayout
-        android:id="@+id/assessment_list_fragment"
-        app:layout_constraintTop_toBottomOf="@+id/assessment_header"
-        android:layout_marginTop="0dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_weight="0"/>
-    <TextView
-        android:id="@+id/note_header"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:textAlignment="center"
-        android:textSize="24sp"
-        android:padding="@dimen/margin_small"
-        android:background="@color/colorNote"
-        android:textAppearance="@style/TextAppearance.AppCompat.Inverse"
-        android:text="@string/notes"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintBottom_toTopOf="@+id/note_list_fragment"
-        app:layout_constraintTop_toBottomOf="@+id/assessment_list_fragment"/>
+
+        <FrameLayout
+            android:id="@+id/assessment_list_fragment"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/assessment_header"/>
+
+        <TextView
+            android:id="@+id/note_header"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:background="@color/colorNote"
+            android:padding="@dimen/margin_small"
+            android:text="@string/notes"
+            android:textAlignment="center"
+            android:textAppearance="@style/TextAppearance.AppCompat.Inverse"
+            android:textSize="24sp"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/assessment_list_fragment"/>
 
     <ImageButton
         android:contentDescription="@string/add_note"
@@ -208,7 +200,7 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:background="@android:color/transparent"
-        android:onClick="addAssessment"
+        android:onClick="addNote"
         app:layout_constraintDimensionRatio="1"
         app:srcCompat="@drawable/ic_action_add"
         app:layout_constraintBottom_toBottomOf="@id/note_header"

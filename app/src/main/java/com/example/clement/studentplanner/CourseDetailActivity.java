@@ -28,7 +28,7 @@ import com.example.clement.studentplanner.input.AssessmentDataEntryActivity;
 import com.example.clement.studentplanner.input.CourseDataEntryActivity;
 import com.example.clement.studentplanner.input.MentorDataEntryActivity;
 import com.example.clement.studentplanner.input.MentorPickerActivity;
-import com.example.clement.studentplanner.input.PhotoCaptureActivity;
+import com.example.clement.studentplanner.input.NoteDataEntryActivity;
 
 import static android.content.ContentUris.withAppendedId;
 
@@ -127,7 +127,7 @@ public class CourseDetailActivity extends AppCompatActivity
                 startActivityForResult(intent, Util.RequestCode.ADD_ASSESSMENT);
                 return true;*/
             case R.id.add_note:
-                intent = new Intent(this, PhotoCaptureActivity.class);
+                intent = new Intent(this, NoteDataEntryActivity.class);
                 intent.setAction(Intent.ACTION_INSERT);
                 startActivityForResult(intent, Util.RequestCode.ADD_NOTE);
                 return true;
@@ -204,7 +204,13 @@ public class CourseDetailActivity extends AppCompatActivity
         intent.setData(courseContentUri);
         startActivityForResult(intent, Util.RequestCode.PICK_MENTOR);
     }
-
+    public void addNote(View view) {
+        Intent intent = new Intent(this, NoteDataEntryActivity.class);
+        intent.setAction(Intent.ACTION_INSERT);
+        intent.setData(courseContentUri);
+        intent.putExtra(NoteDataEntryActivity.TYPE, Util.Tag.COURSE);
+        startActivity(intent);
+    }
 
     /**
      * Add mentor to this course, or remove mentor from this course (but do not delete it from the database).

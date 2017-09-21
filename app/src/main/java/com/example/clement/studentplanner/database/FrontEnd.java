@@ -6,7 +6,6 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.util.Log;
 
 import com.example.clement.studentplanner.data.Assessment;
 import com.example.clement.studentplanner.data.Course;
@@ -53,29 +52,40 @@ public class FrontEnd {
         return false;
     }
     public static boolean delete(@NonNull Context context, @NonNull HasId hasId) {
-        return hasId.hasId() &&
-            0 < context.getContentResolver()
-                .delete(
+        return hasId.hasId()
+            && 0 < context.getContentResolver().delete(
+                ContentUris.withAppendedId(
                     contentUriMap.get(hasId.getClass()),
-                    StorageHelper.SELECT_BY_ID,
-                    new String[]{ hasId.id() + ""});
+                    hasId.id()),
+                null,
+                null
+            );
     }
     public static boolean update(@NonNull Context context, @NonNull HasId hasId) {
         return hasId.hasId() &&
-            0 < context.getContentResolver()
-                .update(
+            0 < context.getContentResolver().update(
+                ContentUris.withAppendedId(
                     contentUriMap.get(hasId.getClass()),
-                    hasId.toValues(),
-                    StorageHelper.SELECT_BY_ID,
-                    new String[]{ hasId.id() + ""});
+                    hasId.id()),
+                hasId.toValues(),
+                null,
+                null
+            );
     }
     public static boolean addCourseMentor(@NonNull Context context, long courseId, long mentorId) {
         CourseMentor cm = new CourseMentor(courseId, mentorId);
         return insert(context, cm); // Doesn't return ID, hmm... but CourseMentor row IDs don't matter.
     }
     public static boolean deleteCourseMentor(@NonNull Context context, long courseId, long mentorId) {
-        CourseMentor cm = new CourseMentor(courseId, mentorId);
-        return delete(context, cm);
+//        CourseMentor cm = new CourseMentor(courseId, mentorId);
+//        return delete(context, cm);
+        Uri courseMentorContentUri = ContentUris.appendId(
+            ContentUris.appendId(
+                OmniProvider.Content.COURSEMENTOR_COURSE_ID_MENTOR_ID.buildUpon(),
+                courseId),
+            mentorId)
+            .build();
+        return 0 < context.getContentResolver().delete(courseMentorContentUri, null, null);
     }
     public static Uri createCourseMentorUri(long courseId, long mentorId) {
         return ContentUris.withAppendedId(
@@ -117,27 +127,26 @@ public class FrontEnd {
         CourseMentor courseMentor = getCourseMentor(context, courseId, mentorId);
         if (courseMentor != null) {
             // returns true if deleted, false if not
-            if (!delete(context, courseMentor)) {
-                // failure
-                Log.e("FrontEnd", "Failed to remove " + courseMentor.toString() + " from database.");
+            if (deleteCourseMentor(context, courseId, mentorId)) {
+                return false;
             }
-            return false;
+            throw new RuntimeException("Failed to remove " + courseMentor.toString() + " from database.");
         }
-        courseMentor = new CourseMentor(courseId, mentorId);
-        if (!insert(context, courseMentor)) {
-            Log.e("FrontEnd", "Failed to add "+ courseMentor.toString() + " to the database.");
+
+        if (addCourseMentor(context, courseId, mentorId)) {
+            return true;
         }
-        return true;
+        throw new RuntimeException("Failed to add mentor "+mentorId+" to course "+courseId+".");
     }
     @Nullable
     public static <T extends HasId> T get(@NonNull Context context, @NonNull Class<T> tClass, long id) {
         Cursor cursor = null;
         try {
             cursor = context.getContentResolver().query(
-                contentUriMap.get(tClass),
+                ContentUris.withAppendedId(contentUriMap.get(tClass), id),
                 projectionMap.get(tClass),
-                StorageHelper.SELECT_BY_ID,
-                new String[] { id + ""},
+                null,
+                null,
                 null);
             if (cursor != null && cursor.moveToFirst()) {
                 return newFromCursor(cursor, tClass);

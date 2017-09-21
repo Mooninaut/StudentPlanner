@@ -15,6 +15,8 @@ import android.support.annotation.Nullable;
 import android.util.Log;
 import android.util.SparseArray;
 
+import com.example.clement.studentplanner.data.CourseMentor;
+
 import java.util.HashMap;
 import java.util.List;
 
@@ -358,23 +360,10 @@ public class OmniProvider extends ContentProvider {
                 return cursor;
             case Match.COURSEMENTOR_COURSE_ID_MENTOR_ID:
                 // Format is /course_mentor/both/<courseId>/<mentorId>
-                List<String> matchSegments = uri.getPathSegments();
-                List<String> uriSegments = Content.COURSEMENTOR_COURSE_ID_MENTOR_ID.getPathSegments();
-                if (matchSegments.get(0).equals(uriSegments.get(0))
-                    && matchSegments.get(1).equals(uriSegments.get(1))) {
-                    long courseId;
-                    long mentorId;
-                    try {
-                        courseId = Long.parseLong(matchSegments.get(2));
-                        mentorId = Long.parseLong(matchSegments.get(3));
-                    } catch (NumberFormatException e) {
-                        throw new IllegalArgumentException(uri.toString());
-                    }
-                    selection = WHERE.get(matchKey);
-                    selectionArgs = toStringArray(courseId, mentorId);
-                    break;
-                }
-                throw new IllegalArgumentException(uri.toString());
+                CourseMentor courseMentor = parseCourseMentorUri(uri);
+                selection = WHERE.get(matchKey);
+                selectionArgs = toStringArray(courseMentor.courseId(), courseMentor.mentorId());
+                break;
             default:
                 // Generic cases
                 switch (matchKey) {
@@ -429,13 +418,25 @@ public class OmniProvider extends ContentProvider {
         int match = URI_MATCHER.match(uri);
         int matchKey = match & MASK_KEY;
         int matchTable = match & MASK_TABLE;
-        if (matchKey != Key.ALL) {
+        if (contentValues == null) {
+            if (match == Match.COURSEMENTOR_COURSE_ID_MENTOR_ID) {
+                List<String> pathSegments = uri.getPathSegments();
+                contentValues = parseCourseMentorUri(uri).toValues();
+            }
+            else {
+                throw new NullPointerException();
+            }
+        }
+        if (matchKey != Key.ALL && match != Match.COURSEMENTOR_COURSE_ID_MENTOR_ID) {
             throw new IllegalArgumentException(uri.toString());
         }
         if (matchTable == Table.EVENT) {
             throw new IllegalArgumentException(uri.toString());
         }
         String table = TABLES.get(matchTable);
+        if (table == null) {
+            throw new IllegalArgumentException(uri.toString());
+        }
         long id = getWritableDatabase().insert(
             table,
             null,
@@ -452,7 +453,25 @@ public class OmniProvider extends ContentProvider {
         int match = URI_MATCHER.match(uri);
         int matchKey = match & MASK_KEY;
         int matchTable = match & MASK_TABLE;
-        selection =  WHERE.get(matchKey);
+        if (matchTable == Table.EVENT) {
+            throw new IllegalArgumentException();
+        }
+        switch(matchKey) {
+            case Key.ALL:
+                selection = null;
+                selectionArgs = null;
+                break;
+            case Key.COURSE_AND_MENTOR:
+                CourseMentor courseMentor = parseCourseMentorUri(uri);
+                selection = WHERE.get(matchKey);
+                selectionArgs = toStringArray(courseMentor.courseId(), courseMentor.mentorId());
+                break;
+            default:
+                selection = WHERE.get(matchKey);
+                selectionArgs = toStringArray(ContentUris.parseId(uri));
+                break;
+        }
+
         // FIXME unfinished
 //        throw new UnsupportedOperationException();
         String table = TABLES.get(matchTable);
@@ -476,5 +495,11 @@ public class OmniProvider extends ContentProvider {
         }
         return rowsAffected;
     }
-
+    public CourseMentor parseCourseMentorUri(Uri uri) {
+        List<String> pathSegments = uri.getPathSegments();
+        return new CourseMentor(
+            Long.parseLong(pathSegments.get(pathSegments.size()-2)),
+            Long.parseLong(pathSegments.get(pathSegments.size()-1))
+        );
+    }
 }

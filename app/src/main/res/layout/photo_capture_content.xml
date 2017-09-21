@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:context="com.example.clement.studentplanner.input.PhotoCaptureActivity"
+    tools:context="com.example.clement.studentplanner.input.NoteDataEntryActivity"
     tools:showIn="@layout/photo_capture_activity">
     <FrameLayout
         android:id="@+id/photo_list_fragment"

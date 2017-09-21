@@ -54,7 +54,6 @@ public class AssessmentDataEntryActivity extends AppCompatActivity implements
         super.onCreate(savedInstanceState);
         setContentView(R.layout.assessment_data_entry);
         Intent intent = getIntent();
-        String action = intent.getAction();
         Uri courseUri;
 
         // Initialize spinner position lookup table
@@ -65,23 +64,24 @@ public class AssessmentDataEntryActivity extends AppCompatActivity implements
         }
 
         // Retrieve data from database
-        if (action.equals(Intent.ACTION_INSERT)) {
-            setTitle(R.string.add_assessment);
-            courseUri = intent.getData();
-        }
-        else if (action.equals(Intent.ACTION_EDIT)) {
-            setTitle(R.string.edit_assessment);
-            Button saveButton = (Button) findViewById(R.id.create_button);
-            saveButton.setText(R.string.save_changes);
-            Uri assessmentUri = intent.getData();
-            if (assessmentUri == null) {
-                throw new NullPointerException();
-            }
-            assessment = editAssessment(assessmentUri);
-            courseUri = CourseProvider.CONTRACT.contentUri(assessment.courseId());
-        }
-        else {
-            throw new IllegalStateException();
+        switch (intent.getAction()) {
+            case Intent.ACTION_INSERT:
+                setTitle(R.string.add_assessment);
+                courseUri = intent.getData();
+                break;
+            case Intent.ACTION_EDIT:
+                setTitle(R.string.edit_assessment);
+                Button saveButton = (Button) findViewById(R.id.create_button);
+                saveButton.setText(R.string.save_changes);
+                Uri assessmentUri = intent.getData();
+                if (assessmentUri == null) {
+                    throw new NullPointerException();
+                }
+                assessment = editAssessment(assessmentUri);
+                courseUri = CourseProvider.CONTRACT.contentUri(assessment.courseId());
+                break;
+            default:
+                throw new IllegalStateException();
         }
         course = setCourseView(courseUri);
 
