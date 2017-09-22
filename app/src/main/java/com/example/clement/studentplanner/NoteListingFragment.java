@@ -24,7 +24,7 @@ public class NoteListingFragment extends RecyclerListingFragmentBase<NoteRecycle
      */
     public NoteListingFragment() {
         super(OmniProvider.Content.NOTE,
-            R.layout.photo_recycler_view,
+            R.layout.note_recycler_view,
             PHOTO_LOADER_ID
         );
     }

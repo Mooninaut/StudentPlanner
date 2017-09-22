@@ -3,6 +3,7 @@
     <color name="colorPrimary">#3F51B5</color> <!--Material Indigo 500-->
     <color name="colorPrimaryDark">#303F9F</color> <!--Material Indigo 700-->
     <color name="colorAccent">#304ffe</color> <!-- Material Indigo A700 -->
+    <color name="colorButton">#e040fb</color> <!-- Material Purple A200 -->
     <color name="colorLightGray">#e0e0e0</color>
     <color name="colorMediumGray">#d0d0d0</color>
     <color name="colorTerm">#5c6bbf</color> <!-- Material Indigo 400 -->

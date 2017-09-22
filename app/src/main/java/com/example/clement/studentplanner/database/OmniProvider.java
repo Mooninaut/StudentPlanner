@@ -15,7 +15,14 @@ import android.support.annotation.Nullable;
 import android.util.Log;
 import android.util.SparseArray;
 
+import com.example.clement.studentplanner.data.Assessment;
+import com.example.clement.studentplanner.data.Course;
 import com.example.clement.studentplanner.data.CourseMentor;
+import com.example.clement.studentplanner.data.Event;
+import com.example.clement.studentplanner.data.HasId;
+import com.example.clement.studentplanner.data.Mentor;
+import com.example.clement.studentplanner.data.Note;
+import com.example.clement.studentplanner.data.Term;
 
 import java.util.HashMap;
 import java.util.List;
@@ -501,5 +508,27 @@ public class OmniProvider extends ContentProvider {
             Long.parseLong(pathSegments.get(pathSegments.size()-2)),
             Long.parseLong(pathSegments.get(pathSegments.size()-1))
         );
+    }
+    public static @NonNull Class<? extends HasId> classOf(@NonNull Uri uri) {
+        int match = URI_MATCHER.match(uri);
+        int matchTable = match & MASK_TABLE;
+        switch(matchTable) {
+            case Table.ASSESSMENT:
+                return Assessment.class;
+            case Table.COURSE:
+                return Course.class;
+            case Table.COURSEMENTOR:
+                return CourseMentor.class;
+            case Table.EVENT:
+                return Event.class;
+            case Table.MENTOR:
+                return Mentor.class;
+            case Table.NOTE:
+                return Note.class;
+            case Table.TERM:
+                return Term.class;
+            default:
+                throw new IllegalArgumentException();
+        }
     }
 }

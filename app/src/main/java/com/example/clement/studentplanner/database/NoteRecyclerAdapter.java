@@ -88,7 +88,7 @@ public class NoteRecyclerAdapter extends RecyclerCursorAdapterBase<NoteHolder, N
         public View newView(Context context, Cursor cursor, ViewGroup parent) {
 
             return LayoutInflater.from(context).inflate(
-                R.layout.photo_list_item, parent, false
+                R.layout.note_list_item, parent, false
             );
         }
 

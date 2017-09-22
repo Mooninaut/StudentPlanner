@@ -10,4 +10,4 @@
     android:background="#FFFF"
     app:layoutManager="LinearLayoutManager"
     tools:context="com.example.clement.studentplanner.NoteListingFragment"
-    tools:listitem="@layout/photo_list_item"/>
+    tools:listitem="@layout/note_list_item"/>

@@ -158,6 +158,7 @@ public class FrontEnd {
         }
         return null;
     }
+
     @Nullable
     public static <T extends HasId> T newFromCursor(Cursor cursor, Class<T> tClass) {
         HasId hasId;

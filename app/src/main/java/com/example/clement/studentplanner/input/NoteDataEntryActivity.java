@@ -1,28 +1,28 @@
 package com.example.clement.studentplanner.input;
 
 import android.app.Activity;
+import android.content.ContentUris;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.v4.app.FragmentManager;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
-import com.example.clement.studentplanner.NoteListingFragment;
 import com.example.clement.studentplanner.R;
 import com.example.clement.studentplanner.Util;
 import com.example.clement.studentplanner.data.HasId;
 import com.example.clement.studentplanner.data.Note;
+import com.example.clement.studentplanner.database.FrontEnd;
 import com.example.clement.studentplanner.database.OmniProvider;
 
 public class NoteDataEntryActivity extends AppCompatActivity {
     public static final String TYPE = "type";
 
-    private NoteListingFragment noteFragment;
     private FloatingActionButton fab;
     private Uri noteUri;
     private Uri courseUri;
@@ -30,10 +30,14 @@ public class NoteDataEntryActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.photo_capture_activity);
+        setContentView(R.layout.note_data_entry_activity);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.setDisplayHomeAsUpEnabled(true);
+        }
 
         fab = (FloatingActionButton) findViewById(R.id.fab);
 
@@ -44,44 +48,25 @@ public class NoteDataEntryActivity extends AppCompatActivity {
                 switch(intent.getStringExtra(TYPE)) {
                     case Util.Tag.COURSE:
                         courseUri = intent.getData();
+                        long courseId = ContentUris.parseId(courseUri);
+                        noteUri = ContentUris.withAppendedId(OmniProvider.Content.NOTE_COURSE_ID, courseId);
                         break;
                     case Util.Tag.ASSESSMENT:
                         assessmentUri = intent.getData();
+                        long assessmentId = ContentUris.parseId(assessmentUri);
+                        noteUri = ContentUris.withAppendedId(OmniProvider.Content.NOTE_ASSESSMENT_ID, assessmentId);
                         break;
                 }
                 break;
             case Intent.ACTION_EDIT:
                 noteUri = intent.getData();
+                Note note = FrontEnd.get(this, Note.class, ContentUris.parseId(noteUri));
+                // TODO 2017-09-21
                 break;
-        }
-        // FIXME TODO FIXME TODO 2017-09-20
-//        noteUri = OmniProvider.Content.NOTE;
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        noteFragment = NoteListingFragment.newInstance(noteUri);
-        fragmentManager.beginTransaction()
-            .replace(R.id.photo_list_fragment, noteFragment, Util.Tag.NOTE)
-            .commit();
-
-    }
-    private void hideOrShowFAB() {
-        if (noteFragment.getCount() == 0) {
-            fab.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    Util.Photo.capture(NoteDataEntryActivity.this);
-                }
-            });
-        }
-        else {
-            fab.hide();
+            default:
+                throw new UnsupportedOperationException();
         }
 
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-        hideOrShowFAB();
     }
 
     public void imageButtonClick(View view) {

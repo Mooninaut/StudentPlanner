@@ -10,7 +10,7 @@ public class PhotoViewActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.photo_view_activity);
+        setContentView(R.layout.note_view_activity);
         Intent intent = getIntent();
         String action = intent.getAction();
         if (action == null) {
