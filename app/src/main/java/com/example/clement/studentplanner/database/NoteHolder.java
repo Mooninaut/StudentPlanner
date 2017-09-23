@@ -3,7 +3,6 @@ package com.example.clement.studentplanner.database;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.net.Uri;
 import android.support.annotation.Nullable;
 import android.view.View;
 import android.widget.ImageButton;
@@ -46,13 +45,14 @@ class NoteHolder extends RecyclerViewHolderBase<Note> {
     public void bindItem(Note note) {
         super.bindItem(note);
         noteView.setText(note.text());
-        Uri fileUri = note.fileUri();
-        try {
-            InputStream inputStream = context.getContentResolver().openInputStream(fileUri);
-            Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
-            imageButton.setImageBitmap(bitmap);
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
+        if (note.hasFileUri()) {
+            try {
+                InputStream inputStream = context.getContentResolver().openInputStream(note.fileUri());
+                Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
+                imageButton.setImageBitmap(bitmap);
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
         }
     }
 }
