@@ -40,6 +40,7 @@ public class CourseDetailActivity extends AppCompatActivity
     FragmentItemListener.OnClick, FragmentItemListener.OnLongClick {
     private AssessmentListingFragment assessmentFragment;
     private MentorListingFragment mentorFragment;
+    private NoteListingFragment noteFragment;
 //    private CourseLoaderListener courseLoaderListener;
 //    private Course course;
     private Uri courseContentUri;
@@ -92,6 +93,11 @@ public class CourseDetailActivity extends AppCompatActivity
 
         // Initialize note list fragment
         Uri noteContentUri = withAppendedId(OmniProvider.Content.NOTE_COURSE_ID, courseId);
+
+        noteFragment = NoteListingFragment.newInstance(noteContentUri);
+        fragmentManager.beginTransaction()
+            .replace(R.id.note_list_fragment, noteFragment, Util.Tag.NOTE)
+            .commit();
     }
     protected void initializeCourseView(Uri courseUri) {
         Cursor cursor = null;
@@ -110,7 +116,7 @@ public class CourseDetailActivity extends AppCompatActivity
     }
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.course_options_menu, menu);
+        inflater.inflate(R.menu.course_menu, menu);
         return true;
     }
     @Override
@@ -241,8 +247,11 @@ public class CourseDetailActivity extends AppCompatActivity
                 startActivity(intent);
                 break;
             case Util.Tag.NOTE:
-                throw new UnsupportedOperationException();
-//                break;
+                intent = new Intent(this, NoteDataEntryActivity.class);
+                intent.setAction(Intent.ACTION_EDIT);
+                intent.setData(withAppendedId(OmniProvider.Content.NOTE, itemId));
+                startActivity(intent);
+                break;
             default:
                 throw new IllegalStateException("Unknown tag "+tag);
         }
@@ -257,6 +266,8 @@ public class CourseDetailActivity extends AppCompatActivity
             case Util.Tag.ASSESSMENT:
                 Toast.makeText(this, "Deleting assessments is not supported yet", Toast.LENGTH_SHORT).show();
                 break;
+            case Util.Tag.NOTE:
+                Toast.makeText(this, "Deleting notes is not supported yet", Toast.LENGTH_SHORT).show();
             default:
                 throw new IllegalStateException("Unknown tag "+tag);
         }

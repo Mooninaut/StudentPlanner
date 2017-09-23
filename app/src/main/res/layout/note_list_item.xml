@@ -5,13 +5,13 @@
     android:layout_height="@dimen/item_height"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/note_list_item"
-    android:background="@color/colorDarkGray">
+    android:background="@color/colorLightGray">
     <ImageButton
         android:id="@+id/note_image_button"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:maxWidth="@dimen/keyline"
-        android:contentDescription="@string/note"
+        android:contentDescription="@string/text"
         app:layout_constraintDimensionRatio="1"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
@@ -22,15 +22,17 @@
         android:id="@+id/note_text_view"
         android:layout_width="0dp"
         android:layout_height="0dp"
+        android:textSize="20sp"
+
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
+        android:text="default"
         android:layout_marginEnd="@dimen/margin_small"
         android:layout_marginRight="@dimen/margin_small"
         android:layout_marginLeft="@dimen/keyline"
         android:layout_marginStart="@dimen/keyline"
         android:layout_marginTop="@dimen/margin_small"
-        android:layout_marginBottom="@dimen/margin_small"
-        android:background="@color/colorLightGray"/>
+        android:layout_marginBottom="@dimen/margin_small"/>
 </android.support.constraint.ConstraintLayout>

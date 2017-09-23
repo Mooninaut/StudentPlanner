@@ -170,7 +170,7 @@ public class CourseProvider extends ContentProviderBase {
         values.put(StorageHelper.COLUMN_END, course.endMillis());
         values.put(StorageHelper.COLUMN_STATUS, course.status().value());
         values.put(StorageHelper.COLUMN_TERM_ID, course.termId());
-//        values.put(StorageHelper.COLUMN_NOTE, course.notes());
+//        values.put(StorageHelper.COLUMN_TEXT, course.notes());
         return values;
     }
 }

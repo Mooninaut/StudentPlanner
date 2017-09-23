@@ -88,7 +88,7 @@ public class AssessmentDetailActivity extends AppCompatActivity {
 
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.assessment_options_menu, menu);
+        inflater.inflate(R.menu.assessment_menu, menu);
         return true;
     }
 

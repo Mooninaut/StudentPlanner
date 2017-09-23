@@ -25,7 +25,7 @@ public class MentorPickerActivity extends AppCompatActivity
 
 //    private Uri courseUri;
     private static final int ADD_MENTOR_REQUEST_CODE = 777;
-    private static final String TAG = "mentor";
+    private static final String TAG = "mentor picker";
     public MentorPickerActivity() {}
 
 //    public static MentorPickerActivity newInstance(Uri courseUri) {

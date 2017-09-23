@@ -2,6 +2,8 @@ package com.example.clement.studentplanner.data;
 
 import android.support.annotation.NonNull;
 
+import com.example.clement.studentplanner.Util;
+
 import java.util.Calendar;
 import java.util.Date;
 import java.util.TimeZone;
@@ -12,7 +14,7 @@ import java.util.TimeZone;
 
 public abstract class ScheduleItem implements HasId {
     private static final String TIME_PARADOX = "startMillis must be less than or equal to endMillis";
-    private long id = NO_ID;
+    private long id = Util.NO_ID;
     private Calendar startMillis = Calendar.getInstance(TimeZone.getDefault());
     private Calendar endMillis = Calendar.getInstance(TimeZone.getDefault());
     {
@@ -47,7 +49,7 @@ public abstract class ScheduleItem implements HasId {
     }
     @Override
     public boolean hasId() {
-        return id != NO_ID;
+        return id != Util.NO_ID;
     }
     public long startMillis() {
         return startMillis.getTimeInMillis();

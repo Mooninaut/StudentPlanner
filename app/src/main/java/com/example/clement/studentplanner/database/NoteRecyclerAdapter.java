@@ -26,7 +26,7 @@ public class NoteRecyclerAdapter extends RecyclerCursorAdapterBase<NoteHolder, N
     public static Note cursorToNote(Cursor cursor) {
         return new Note(
             cursor.getLong(cursor.getColumnIndex(StorageHelper.COLUMN_ID)),
-            cursor.getString(cursor.getColumnIndex(StorageHelper.COLUMN_NOTE)),
+            cursor.getString(cursor.getColumnIndex(StorageHelper.COLUMN_TEXT)),
             cursor.getLong(cursor.getColumnIndex(StorageHelper.COLUMN_ASSESSMENT_ID)),
             cursor.getLong(cursor.getColumnIndex(StorageHelper.COLUMN_COURSE_ID)),
             Uri.parse(cursor.getString(cursor.getColumnIndex(StorageHelper.COLUMN_PHOTO_FILE_URI)))

@@ -1,8 +1,14 @@
 package com.example.clement.studentplanner.data;
 
+import android.content.ContentUris;
 import android.content.ContentValues;
 import android.database.Cursor;
+import android.net.Uri;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+
+import com.example.clement.studentplanner.Util;
+import com.example.clement.studentplanner.database.OmniProvider;
 
 import static com.example.clement.studentplanner.database.StorageHelper.COLUMN_COURSE_ID;
 import static com.example.clement.studentplanner.database.StorageHelper.COLUMN_ID;
@@ -13,9 +19,9 @@ import static com.example.clement.studentplanner.database.StorageHelper.COLUMN_M
  */
 
 public class CourseMentor implements HasId {
-    private long id = NO_ID;
-    private long courseId = NO_ID;
-    private long mentorId = NO_ID;
+    private long id = Util.NO_ID;
+    private long courseId = Util.NO_ID;
+    private long mentorId = Util.NO_ID;
     public CourseMentor() {}
     public CourseMentor(long courseId, long mentorId) {
         this.courseId = courseId;
@@ -56,7 +62,7 @@ public class CourseMentor implements HasId {
 
     @Override
     public boolean hasId() {
-        return id != NO_ID;
+        return id != Util.NO_ID;
     }
 
     @NonNull
@@ -69,5 +75,14 @@ public class CourseMentor implements HasId {
             values.put(COLUMN_ID, id);
         }
         return values;
+    }
+    @Nullable
+    @Override
+    public Uri toUri() {
+        if (hasId()) {
+            return ContentUris.withAppendedId(OmniProvider.Content.COURSEMENTOR, id());
+        } else {
+            return null;
+        }
     }
 }

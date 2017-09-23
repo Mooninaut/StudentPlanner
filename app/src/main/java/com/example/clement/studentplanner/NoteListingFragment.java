@@ -31,7 +31,7 @@ public class NoteListingFragment extends RecyclerListingFragmentBase<NoteRecycle
 
     @Override
     protected NoteRecyclerAdapter createAdapter(Context context, Cursor cursor) {
-        return new NoteRecyclerAdapter(context, cursor, null, null);
+        return new NoteRecyclerAdapter(context, cursor, this, this);
     }
 
     public static NoteListingFragment newInstance(Uri contentUri) {

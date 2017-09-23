@@ -34,16 +34,18 @@ class NoteHolder extends RecyclerViewHolderBase<Note> {
         this.context = context;
         this.noteView = itemView.findViewById(R.id.note_text_view);
         this.imageButton = itemView.findViewById(R.id.note_image_button);
-        noteView.setOnClickListener(this);
+/*        noteView.setOnClickListener(this);
         noteView.setOnLongClickListener(this);
         imageButton.setOnClickListener(this);
-        imageButton.setOnLongClickListener(this);
+        imageButton.setOnLongClickListener(this);*/
+        itemView.setOnClickListener(this);
+        itemView.setOnLongClickListener(this);
     }
 
     @Override
     public void bindItem(Note note) {
         super.bindItem(note);
-        noteView.setText(note.note());
+        noteView.setText(note.text());
         Uri fileUri = note.fileUri();
         try {
             InputStream inputStream = context.getContentResolver().openInputStream(fileUri);

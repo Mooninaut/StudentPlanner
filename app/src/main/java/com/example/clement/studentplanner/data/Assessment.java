@@ -1,11 +1,16 @@
 package com.example.clement.studentplanner.data;
 
+import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.net.Uri;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import com.example.clement.studentplanner.R;
+import com.example.clement.studentplanner.Util;
+import com.example.clement.studentplanner.database.OmniProvider;
 
 import java.util.Locale;
 
@@ -52,7 +57,7 @@ public class Assessment extends ScheduleItem {
         }
     }
     //private String name;
-    private long courseId = ScheduleItem.NO_ID;
+    private long courseId = Util.NO_ID;
     @NonNull
     private Type type = Type.NONE;
     //private long startMillis;
@@ -78,14 +83,14 @@ public class Assessment extends ScheduleItem {
 
     public Assessment(@NonNull String name, long startMillis, long endMillis,
                       long courseId, @NonNull Type type/*, @NonNull String notes*/) {
-        super(ScheduleItem.NO_ID, name, startMillis, endMillis);
+        super(Util.NO_ID, name, startMillis, endMillis);
         this.type = type;
 //        this.notes = notes;
         this.courseId = courseId;
     }
     public Assessment(@NonNull String name, long startMillis, long endMillis,
                       @NonNull Course course, @NonNull Type type/*, @NonNull String notes*/) {
-        super(ScheduleItem.NO_ID, name, startMillis, endMillis);
+        super(Util.NO_ID, name, startMillis, endMillis);
         this.type = type;
 //        this.notes = notes;
         this.courseId = course.id();
@@ -145,7 +150,16 @@ public class Assessment extends ScheduleItem {
         values.put(COLUMN_END, endMillis());
         values.put(COLUMN_COURSE_ID, courseId);
         values.put(COLUMN_TYPE, type.value());
-//        values.put(COLUMN_NOTE, assessment.notes());
+//        values.put(COLUMN_TEXT, assessment.notes());
         return values;
+    }
+    @Nullable
+    @Override
+    public Uri toUri() {
+        if (hasId()) {
+            return ContentUris.withAppendedId(OmniProvider.Content.ASSESSMENT, id());
+        } else {
+            return null;
+        }
     }
 }

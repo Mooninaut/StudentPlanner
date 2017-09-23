@@ -1,8 +1,13 @@
 package com.example.clement.studentplanner.data;
 
+import android.content.ContentUris;
 import android.content.ContentValues;
 import android.database.Cursor;
+import android.net.Uri;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+
+import com.example.clement.studentplanner.database.OmniProvider;
 
 import java.util.Locale;
 
@@ -71,5 +76,14 @@ public class Term extends ScheduleItem {
             cursor.getLong(cursor.getColumnIndex(COLUMN_END)),
             cursor.getInt(cursor.getColumnIndex(COLUMN_NUMBER))
         );
+    }
+    @Nullable
+    @Override
+    public Uri toUri() {
+        if (hasId()) {
+            return ContentUris.withAppendedId(OmniProvider.Content.TERM, id());
+        } else {
+            return null;
+        }
     }
 }

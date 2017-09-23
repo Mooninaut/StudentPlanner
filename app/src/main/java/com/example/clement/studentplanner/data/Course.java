@@ -1,9 +1,14 @@
 package com.example.clement.studentplanner.data;
 
+import android.content.ContentUris;
 import android.content.ContentValues;
 import android.database.Cursor;
+import android.net.Uri;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
+import com.example.clement.studentplanner.Util;
+import com.example.clement.studentplanner.database.OmniProvider;
 import com.example.clement.studentplanner.database.StorageHelper;
 
 import java.util.Locale;
@@ -50,7 +55,7 @@ public class Course extends ScheduleItem {
 //    private long endMillis;
 //    @NonNull
 //    private final List<Assessment> assessmentList;
-    private long termId = NO_ID;
+    private long termId = Util.NO_ID;
     @NonNull
     private Status status = Status.NONE;
 //    @NonNull
@@ -65,13 +70,13 @@ public class Course extends ScheduleItem {
 //        this.notes = notes;
     }
     public Course (@NonNull String name, long startMillis, long endMillis, long termId, @NonNull Status status/*, @NonNull String notes*/) {
-        this(NO_ID, name, startMillis, endMillis, termId, status/*, notes*/);
+        this(Util.NO_ID, name, startMillis, endMillis, termId, status/*, notes*/);
     }
     public Course(long id, @NonNull String name, long startMillis, long endMillis, Term term, @NonNull Status status/*, @NonNull String notes*/) {
         this(id, name, startMillis, endMillis, term.id(), status/*, notes*/);
     }
     public Course(@NonNull String name, long startMillis, long endMillis, Term term, @NonNull Status status/*, @NonNull String notes*/) {
-        this(NO_ID, name, startMillis, endMillis, term.id(), status/*, notes*/);
+        this(Util.NO_ID, name, startMillis, endMillis, term.id(), status/*, notes*/);
     }
     public Course(@NonNull Course other) {
         super(other);
@@ -148,7 +153,16 @@ public class Course extends ScheduleItem {
         values.put(StorageHelper.COLUMN_END, endMillis());
         values.put(StorageHelper.COLUMN_STATUS, status.value());
         values.put(StorageHelper.COLUMN_TERM_ID, termId);
-//        values.put(StorageHelper.COLUMN_NOTE, course.notes());
+//        values.put(StorageHelper.COLUMN_TEXT, course.notes());
         return values;
+    }
+    @Nullable
+    @Override
+    public Uri toUri() {
+        if (hasId()) {
+            return ContentUris.withAppendedId(OmniProvider.Content.COURSE, id());
+        } else {
+            return null;
+        }
     }
 }

@@ -41,6 +41,7 @@ import java.io.OutputStream;
  */
 
 public final class Util {
+    public static final long NO_ID = -1;
     private static final int ADD = 0x100;
     private static final int EDIT = 0x200;
     private static final int PICK = 0x300;

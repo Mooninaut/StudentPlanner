@@ -137,7 +137,7 @@ public class AssessmentProvider extends ContentProviderBase {
         values.put(COLUMN_END, assessment.endMillis());
         values.put(COLUMN_COURSE_ID, assessment.courseId());
         values.put(COLUMN_TYPE, assessment.type().value());
-//        values.put(COLUMN_NOTE, assessment.notes());
+//        values.put(COLUMN_TEXT, assessment.notes());
         return values;
     }
 

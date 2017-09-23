@@ -1,8 +1,14 @@
 package com.example.clement.studentplanner.data;
 
+import android.content.ContentUris;
 import android.content.ContentValues;
 import android.database.Cursor;
+import android.net.Uri;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+
+import com.example.clement.studentplanner.Util;
+import com.example.clement.studentplanner.database.OmniProvider;
 
 import java.util.Locale;
 
@@ -16,7 +22,7 @@ import static com.example.clement.studentplanner.database.StorageHelper.COLUMN_P
  */
 
 public class Mentor implements HasId {
-    private long id = NO_ID;
+    private long id = Util.NO_ID;
     private @NonNull String name = "";
     private @NonNull String phoneNumber = "";
     private @NonNull String emailAddress = "";
@@ -57,7 +63,7 @@ public class Mentor implements HasId {
         this.id = id;
     }
     public boolean hasId() {
-        return id != NO_ID;
+        return id != Util.NO_ID;
     }
     @NonNull
     public String name() {
@@ -97,5 +103,14 @@ public class Mentor implements HasId {
             values.put(COLUMN_ID, id);
         }
         return values;
+    }
+    @Nullable
+    @Override
+    public Uri toUri() {
+        if (hasId()) {
+            return ContentUris.withAppendedId(OmniProvider.Content.MENTOR, id);
+        } else {
+            return null;
+        }
     }
 }

@@ -17,7 +17,7 @@ import java.util.ArrayList;
 
 public class StorageHelper extends SQLiteOpenHelper {
 
-    public static final int DATABASE_VERSION = 25;
+    public static final int DATABASE_VERSION = 27;
     public static final String TABLE_TERM = "term";
     public static final String COLUMN_ID = BaseColumns._ID;
     public static final String COLUMN_NAME = "name";
@@ -26,7 +26,7 @@ public class StorageHelper extends SQLiteOpenHelper {
     public static final String COLUMN_END = "end";
     public static final String COLUMN_TIME = "time";
     public static final String COLUMN_TYPE = "type";
-    public static final String COLUMN_NOTE = "note";
+    public static final String COLUMN_TEXT = "text";
     public static final String COLUMN_STATUS = "status";
     public static final String COLUMN_PHOTO_FILE_URI = "file_uri";
     public static final String COLUMN_PHONE_NUMBER = "phone";
@@ -42,18 +42,18 @@ public class StorageHelper extends SQLiteOpenHelper {
 
     public static final String COLUMN_TERM_ID = TABLE_TERM + BaseColumns._ID;
     public static final String[] COLUMNS_COURSE = {
-        COLUMN_ID, COLUMN_NAME, COLUMN_START, COLUMN_END, COLUMN_TERM_ID, COLUMN_STATUS//, COLUMN_NOTE
+        COLUMN_ID, COLUMN_NAME, COLUMN_START, COLUMN_END, COLUMN_TERM_ID, COLUMN_STATUS//, COLUMN_TEXT
     };
     public static final String TABLE_ASSESSMENT = "assessment";
     public static final String COLUMN_COURSE_ID = TABLE_COURSE + BaseColumns._ID;
 
     public static final String[] COLUMNS_ASSESSMENT = {
-        COLUMN_ID, COLUMN_NAME, COLUMN_START, COLUMN_END, COLUMN_COURSE_ID, COLUMN_TYPE//, COLUMN_NOTE
+        COLUMN_ID, COLUMN_NAME, COLUMN_START, COLUMN_END, COLUMN_COURSE_ID, COLUMN_TYPE//, COLUMN_TEXT
     };
     public static final String TABLE_NOTE = "note";
     public static final String COLUMN_ASSESSMENT_ID = TABLE_ASSESSMENT + BaseColumns._ID;
     public static final String[] COLUMNS_NOTE = {
-        COLUMN_ID, COLUMN_COURSE_ID, COLUMN_ASSESSMENT_ID, COLUMN_NOTE, COLUMN_PHOTO_FILE_URI
+        COLUMN_ID, COLUMN_COURSE_ID, COLUMN_ASSESSMENT_ID, COLUMN_TEXT, COLUMN_PHOTO_FILE_URI
     };
 
     public static final String TABLE_MENTOR = "mentor";
@@ -104,19 +104,19 @@ public class StorageHelper extends SQLiteOpenHelper {
         schema.add("CREATE TABLE "+TABLE_COURSE+ "("+COLUMN_ID+" INTEGER PRIMARY KEY AUTOINCREMENT, "+
             COLUMN_NAME+" TEXT, "+COLUMN_START+" INTEGER, "+COLUMN_END+" INTEGER, " +
             COLUMN_TERM_ID+" INTEGER REFERENCES "+TABLE_TERM+"("+COLUMN_ID+"), "+
-            COLUMN_STATUS+" INTEGER)"); // , "+COLUMN_NOTE+" TEXT
+            COLUMN_STATUS+" INTEGER)"); // , "+COLUMN_TEXT+" TEXT
         schema.add("INSERT INTO "+TABLE_COURSE+" ("+COLUMN_ID+", "+COLUMN_NAME+", "+COLUMN_START+", "+
             COLUMN_END+", "+COLUMN_TERM_ID+", "+COLUMN_STATUS+") VALUES ("+ COURSE_ID_OFFSET +", 'B', 2, 2, "+TERM_ID_OFFSET+", 2);");
 
         schema.add("CREATE TABLE "+TABLE_ASSESSMENT+"("+COLUMN_ID+" INTEGER PRIMARY KEY AUTOINCREMENT, "+
             COLUMN_NAME+" TEXT, "+COLUMN_START+" INTEGER, "+COLUMN_END+" INTEGER, "+
             COLUMN_COURSE_ID+" INTEGER REFERENCES "+TABLE_COURSE+"("+COLUMN_ID+"), "+
-            COLUMN_TYPE+" INTEGER)"); // , "+COLUMN_NOTE+" TEXT
+            COLUMN_TYPE+" INTEGER)"); // , "+COLUMN_TEXT+" TEXT
         schema.add("INSERT INTO "+TABLE_ASSESSMENT+" ("+COLUMN_ID+", "+COLUMN_NAME+", "+COLUMN_START+", "+
             COLUMN_END+", "+COLUMN_COURSE_ID+", "+COLUMN_TYPE+") VALUES ("+ ASSESSMENT_ID_OFFSET +", 'C', 3, 3, "+COURSE_ID_OFFSET+", 3);");
-        // ", "+COLUMN_NOTE+
+        // ", "+COLUMN_TEXT+
         // , 'C'
-        schema.add("CREATE TABLE "+ TABLE_NOTE +"("+COLUMN_ID+" INTEGER PRIMARY KEY AUTOINCREMENT, "+COLUMN_NOTE+" TEXT, "+
+        schema.add("CREATE TABLE "+ TABLE_NOTE +"("+COLUMN_ID+" INTEGER PRIMARY KEY AUTOINCREMENT, "+ COLUMN_TEXT +" TEXT, "+
             COLUMN_ASSESSMENT_ID+" INTEGER REFERENCES "+TABLE_ASSESSMENT+"("+COLUMN_ID+"), "+
             COLUMN_COURSE_ID+" INTEGER REFERENCES "+TABLE_COURSE+"("+COLUMN_ID+"), "+COLUMN_PHOTO_FILE_URI +" TEXT)");
 

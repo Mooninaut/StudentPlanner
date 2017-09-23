@@ -67,8 +67,6 @@ public class TermDetailActivity extends AppCompatActivity
         transaction.replace(R.id.course_list_fragment, fragment);
         transaction.commit();
 
-
-
     }
 
     /**
@@ -99,26 +97,8 @@ public class TermDetailActivity extends AppCompatActivity
     }
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.term_options_menu, menu);
+        getMenuInflater().inflate(R.menu.term_menu, menu);
         return true;
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == CREATE_COURSE_REQUEST_CODE) {
-            if (resultCode == Activity.RESULT_OK) {
-                Uri courseUri = data.getData();
-                Intent intent = new Intent(this, CourseDetailActivity.class);
-                intent.setAction(Intent.ACTION_VIEW);
-                intent.setData(courseUri);
-                startActivity(intent);
-            }
-        }
-        else if (requestCode == EDIT_TERM_REQUEST_CODE) {
-            if (resultCode == Activity.RESULT_OK) {
-                // TODO FIXME Refresh data
-            }
-        }
     }
 
     @Override
@@ -145,6 +125,25 @@ public class TermDetailActivity extends AppCompatActivity
                 return super.onOptionsItemSelected(item);
         }
     }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == CREATE_COURSE_REQUEST_CODE) {
+            if (resultCode == Activity.RESULT_OK) {
+                Uri courseUri = data.getData();
+                Intent intent = new Intent(this, CourseDetailActivity.class);
+                intent.setAction(Intent.ACTION_VIEW);
+                intent.setData(courseUri);
+                startActivity(intent);
+            }
+        }
+        else if (requestCode == EDIT_TERM_REQUEST_CODE) {
+            if (resultCode == Activity.RESULT_OK) {
+                // TODO FIXME Refresh data
+            }
+        }
+    }
+
     @Override
     public void onCourseSelected(long courseId) {
         Intent intent = new Intent(this, CourseDetailActivity.class);

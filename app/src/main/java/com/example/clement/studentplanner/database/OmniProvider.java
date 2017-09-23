@@ -138,8 +138,8 @@ public class OmniProvider extends ContentProvider {
         public static final Uri MENTOR_COURSE = buildPath(MENTOR, StorageHelper.TABLE_COURSE);
         public static final Uri EVENT = addMatchUri(Match.EVENT_ALL, StorageHelper.TABLE_EVENT);
         // package private, for use by FrontEnd only
-        static final Uri COURSEMENTOR = addMatchUri(Match.COURSEMENTOR_ALL, StorageHelper.TABLE_COURSE_MENTOR);
-        static final Uri COURSEMENTOR_COURSE_ID_MENTOR_ID = buildPath(COURSEMENTOR, "both");
+        public static final Uri COURSEMENTOR = addMatchUri(Match.COURSEMENTOR_ALL, StorageHelper.TABLE_COURSE_MENTOR);
+        public static final Uri COURSEMENTOR_COURSE_ID_MENTOR_ID = buildPath(COURSEMENTOR, "both");
 
         private Content() {}
 
@@ -494,7 +494,11 @@ public class OmniProvider extends ContentProvider {
                       @Nullable String selection, @Nullable String[] selectionArgs) {
         // FIXME validation like for query()
         int match = URI_MATCHER.match(uri);
-        String table = TABLES.get(match & MASK_TABLE);
+        int matchKey = match & MASK_KEY;
+        int matchTable = match & MASK_TABLE;
+        String table = TABLES.get(matchTable);
+        selection = WHERE.get(matchKey);
+        selectionArgs = toStringArray(ContentUris.parseId(uri));
         int rowsAffected = getWritableDatabase().update(
             table, contentValues, selection, selectionArgs);
         if (rowsAffected > 0) {

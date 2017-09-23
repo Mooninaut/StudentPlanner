@@ -1,11 +1,16 @@
 package com.example.clement.studentplanner.data;
 
+import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.res.Resources;
 import android.database.Cursor;
+import android.net.Uri;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import com.example.clement.studentplanner.R;
+import com.example.clement.studentplanner.Util;
+import com.example.clement.studentplanner.database.OmniProvider;
 import com.example.clement.studentplanner.database.StorageHelper;
 
 import static com.example.clement.studentplanner.database.StorageHelper.COLUMN_END;
@@ -104,7 +109,7 @@ public class Event implements HasId {
             Event.Terminus.of(cursor.getString(cursor.getColumnIndex(COLUMN_TERMINUS)))
         );
     }
-    private long id = NO_ID;
+    private long id = Util.NO_ID;
     private long timeInMillis = Long.MIN_VALUE;
     @NonNull
     private Terminus terminus = Terminus.NONE;
@@ -147,7 +152,7 @@ public class Event implements HasId {
 
     @Override
     public boolean hasId() {
-        return id != NO_ID;
+        return id != Util.NO_ID;
     }
 
     @Override
@@ -176,5 +181,15 @@ public class Event implements HasId {
     }
     public void timeInMillis(long timeInMillis) {
         this.timeInMillis = timeInMillis;
+    }
+
+    @Nullable
+    @Override
+    public Uri toUri() {
+        if (hasId()) {
+            return ContentUris.withAppendedId(OmniProvider.Content.EVENT, id());
+        } else {
+            return null;
+        }
     }
 }
