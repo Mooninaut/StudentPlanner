@@ -7,8 +7,7 @@ import android.net.Uri;
 
 import com.example.clement.studentplanner.data.Mentor;
 import com.example.clement.studentplanner.database.MentorRecyclerAdapter;
-
-import static com.example.clement.studentplanner.database.OmniProvider.Content.MENTOR;
+import com.example.clement.studentplanner.database.OmniProvider;
 
 /**
  * A fragment containing a list of {@link Mentor}s.
@@ -28,7 +27,7 @@ public class MentorListingFragment
      * fragment (e.g. upon screen orientation changes).
      */
     public MentorListingFragment() {
-        super(MENTOR,
+        super(OmniProvider.Content.MENTOR,
             R.layout.mentor_recycler_view,
             MENTOR_LOADER_ID
         );

@@ -11,6 +11,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -22,22 +23,17 @@ import com.example.clement.studentplanner.R;
 import com.example.clement.studentplanner.Util;
 import com.example.clement.studentplanner.data.Note;
 import com.example.clement.studentplanner.database.FrontEnd;
-import com.example.clement.studentplanner.database.OmniProvider;
 
 import java.io.FileNotFoundException;
 
 public class NoteDataEntryActivity extends AppCompatActivity {
-    public static final String TYPE = "type";
+    public static final String TYPE = "type"; // Values: StorageHelper.TABLE_COURSE or StorageHelper.TABLE_ASSESSMENT
     private static final String NOTE = "note";
-    private static final String NOTE_URI = "note-uri";
-    private static final String COURSE_URI = "course-uri";
-    private static final String ASSESSMENT_URI = "assessment-uri";
+    private static final String TEMP_FILE_URI = "temp-file-uri";
 
     private FloatingActionButton fab;
-    private Uri noteUri;
-    private Uri courseUri;
-    private Uri assessmentUri;
-    private Note note = new Note();
+    private Uri tempFileUri;
+    private Note note;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -61,30 +57,25 @@ public class NoteDataEntryActivity extends AppCompatActivity {
         });
         if (savedInstanceState != null) {
             setNote((Note) savedInstanceState.getParcelable(NOTE));
-            noteUri = savedInstanceState.getParcelable(NOTE_URI);
-            courseUri = savedInstanceState.getParcelable(COURSE_URI);
-            assessmentUri = savedInstanceState.getParcelable(ASSESSMENT_URI);
         } else {
             Intent intent = getIntent();
 
             switch (intent.getAction()) {
                 case Intent.ACTION_INSERT:
+                    note = new Note();
                     switch (intent.getStringExtra(TYPE)) {
                         case Util.Tag.COURSE:
-                            courseUri = intent.getData();
-                            note.courseId(ContentUris.parseId(courseUri));
-                            noteUri = ContentUris.withAppendedId(OmniProvider.Content.NOTE_COURSE_ID, note.courseId());
+                            note.courseId(ContentUris.parseId(intent.getData()));
                             break;
                         case Util.Tag.ASSESSMENT:
-                            assessmentUri = intent.getData();
-                            note.assessmentId(ContentUris.parseId(assessmentUri));
-                            noteUri = ContentUris.withAppendedId(OmniProvider.Content.NOTE_ASSESSMENT_ID, note.assessmentId());
+                            note.assessmentId(ContentUris.parseId(intent.getData()));
                             break;
+                        default:
+                            throw new IllegalArgumentException("Caller must provide TYPE string extra in intent.");
                     }
                     break;
                 case Intent.ACTION_EDIT:
-                    noteUri = intent.getData();
-                    setNote(FrontEnd.get(this, Note.class, ContentUris.parseId(noteUri)));
+                    setNote(FrontEnd.get(this, Note.class, ContentUris.parseId(intent.getData())));
                     break;
                 default:
                     throw new UnsupportedOperationException();
@@ -105,6 +96,12 @@ public class NoteDataEntryActivity extends AppCompatActivity {
             case R.id.save:
                 intent = new Intent();
                 EditText editText = findViewById(R.id.note_text_view);
+                if (note.hasFileUri() && tempFileUri != null) {
+                    int result = getContentResolver().delete(note.fileUri(), null, null);
+                    Log.d("NoteDataEntryActivity", "Attempting to delete "+note.fileUri().toString()+": "+result);
+                    note.fileUri(tempFileUri);
+                    tempFileUri = null;
+                }
                 note.text(editText.getText().toString());
                 if (note.hasId()) {
                     FrontEnd.update(this, note);
@@ -117,6 +114,11 @@ public class NoteDataEntryActivity extends AppCompatActivity {
                 finish();
                 return true;
             case android.R.id.home:
+                if (tempFileUri != null) {
+                    int result = getContentResolver().delete(tempFileUri, null, null);
+                    Log.d("NoteDataEntryActivity", "Attempting to delete "+tempFileUri.toString()+": "+result);
+                    tempFileUri = null;
+                }
                 finish();
                 return true;
             default:
@@ -125,12 +127,16 @@ public class NoteDataEntryActivity extends AppCompatActivity {
     }
 
     @Override
+    protected void onDestroy() {
+
+        super.onDestroy();
+    }
+
+    @Override
     protected void onSaveInstanceState(Bundle outState) {
         if (note != null) {
             outState.putParcelable(NOTE, note);
-            outState.putParcelable(NOTE_URI, noteUri);
-            outState.putParcelable(COURSE_URI, courseUri);
-            outState.putParcelable(ASSESSMENT_URI, assessmentUri);
+            outState.putParcelable(TEMP_FILE_URI, tempFileUri);
         }
         super.onSaveInstanceState(outState);
     }
@@ -158,29 +164,15 @@ public class NoteDataEntryActivity extends AppCompatActivity {
         }
     }
 
-    public void imageButtonClick(View view) {
-        Util.Photo.capture(NoteDataEntryActivity.this);
-    }
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode) {
             case Util.RequestCode.ADD_NOTE:
                 if (resultCode == Activity.RESULT_OK) {
+                    tempFileUri = Util.Photo.storeThumbnail(this, resultCode, data, "Test");
 
-                    Uri fileUri = Util.Photo.storeThumbnail(this, resultCode, data, "Test");
-                    long courseId = Util.NO_ID;
-                    if (courseUri != null) {
-                        courseId = ContentUris.parseId(courseUri);
-                    }
-                    long assessmentId = Util.NO_ID;
-                    if (assessmentUri != null) {
-                        assessmentId = ContentUris.parseId(assessmentUri);
-                    }
-                    note = new Note("", assessmentId, courseId, fileUri);
-//                    Log.d("NoteDataEntryActivity", fileUri.toString());
-                    Uri contentUri = getContentResolver().insert(OmniProvider.Content.NOTE, note.toValues());
-//                    Log.d("NoteDataEntryActivity", contentUri.toString());
-                    setImageView(fileUri);
+//                    note.fileUri(tempFileUri);
+                    setImageView(tempFileUri);
                 }
                 else {
                     Toast.makeText(this, "FAIL", Toast.LENGTH_LONG).show();

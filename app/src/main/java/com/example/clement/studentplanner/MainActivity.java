@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Intent;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -13,6 +14,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -21,6 +23,7 @@ import android.widget.Toast;
 
 import com.example.clement.studentplanner.data.Assessment;
 import com.example.clement.studentplanner.data.Course;
+import com.example.clement.studentplanner.data.Note;
 import com.example.clement.studentplanner.data.Term;
 import com.example.clement.studentplanner.database.AssessmentProvider;
 import com.example.clement.studentplanner.database.CourseMentorProvider;
@@ -31,6 +34,7 @@ import com.example.clement.studentplanner.database.StorageHelper;
 import com.example.clement.studentplanner.database.TermProvider;
 import com.example.clement.studentplanner.input.TermDataEntryActivity;
 
+import java.io.File;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 
@@ -53,6 +57,36 @@ public class MainActivity extends AppCompatActivity
     private String currentFragment = null;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        File filesDir = getFilesDir();
+        for (File file : filesDir.listFiles()) {
+            file = file.getAbsoluteFile();
+            Log.d("MainActivity", "File: "+file.getName()+" is "+(file.isDirectory() ? "" : "not ")+"a directory.");
+            if (file.isDirectory()) {
+                for (File subfile : file.listFiles()) {
+                    Log.d("MainActivity", "Subfile: "+subfile.getAbsolutePath());
+                }
+            }
+        }
+        Cursor cursor = null;
+        try {
+            cursor = getContentResolver().query(OmniProvider.Content.NOTE, null, null, null, null);
+            if (cursor != null) {
+                while(cursor.moveToNext()) {
+                    Note note = new Note(cursor);
+                    if (note.hasFileUri()) {
+                        Log.d("MainActivity", note.fileUri().toString());
+                    }
+                    else {
+                        Log.d("MainActivity", note.toString());
+                    }
+                }
+            }
+        }
+        finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main_activity);
 

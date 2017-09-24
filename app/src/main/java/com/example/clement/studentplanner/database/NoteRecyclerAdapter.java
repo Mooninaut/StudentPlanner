@@ -2,7 +2,6 @@ package com.example.clement.studentplanner.database;
 
 import android.content.Context;
 import android.database.Cursor;
-import android.net.Uri;
 import android.support.annotation.Nullable;
 import android.support.v4.widget.CursorAdapter;
 import android.view.LayoutInflater;
@@ -13,25 +12,12 @@ import com.example.clement.studentplanner.ItemListener;
 import com.example.clement.studentplanner.R;
 import com.example.clement.studentplanner.data.Note;
 
-import java.text.DateFormat;
-
 /**
  * Created by Clement on 9/10/2017.
  * Based loosely on https://stackoverflow.com/a/27732748
  */
 
 public class NoteRecyclerAdapter extends RecyclerCursorAdapterBase<NoteHolder, NoteRecyclerAdapter.NoteCursorAdapter> {
-    private static DateFormat dateFormat = DateFormat.getDateInstance();
-
-    public static Note cursorToNote(Cursor cursor) {
-        return new Note(
-            cursor.getLong(cursor.getColumnIndex(StorageHelper.COLUMN_ID)),
-            cursor.getString(cursor.getColumnIndex(StorageHelper.COLUMN_TEXT)),
-            cursor.getLong(cursor.getColumnIndex(StorageHelper.COLUMN_ASSESSMENT_ID)),
-            cursor.getLong(cursor.getColumnIndex(StorageHelper.COLUMN_COURSE_ID)),
-            Uri.parse(cursor.getString(cursor.getColumnIndex(StorageHelper.COLUMN_PHOTO_FILE_URI)))
-        );
-    }
 
     @Nullable
     private ItemListener.OnClick clickListener;
@@ -64,11 +50,6 @@ public class NoteRecyclerAdapter extends RecyclerCursorAdapterBase<NoteHolder, N
     }
 
     @Override
-    public int getItemCount() {
-        return noteCursorAdapter.getCount();
-    }
-
-    @Override
     public NoteCursorAdapter getCursorAdapter() {
         return noteCursorAdapter;
     }
@@ -95,22 +76,7 @@ public class NoteRecyclerAdapter extends RecyclerCursorAdapterBase<NoteHolder, N
         @Override
         public void bindView(View view, Context context, Cursor cursor) {
             throw new UnsupportedOperationException();
-//            Note photo = cursorToNote(cursor);
-//            Uri photoUri = photo.fileUri();
-//            Log.d("NoteCursorAdapter", "Id: "+photo.id());
-//    //        ImageView photoIV = (ImageView) view.findViewById(R.id.note_image_button);
-//
-//            try {
-//                InputStream inputStream = context.getContentResolver().openInputStream(photoUri);
-//                Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
-//                ((ImageButton) view).setImageBitmap(bitmap);
-//            } catch (FileNotFoundException e) {
-//                e.printStackTrace();
-//            }
-
         }
-
-
 
         @Override
         @Nullable
@@ -118,7 +84,7 @@ public class NoteRecyclerAdapter extends RecyclerCursorAdapterBase<NoteHolder, N
             Cursor cursor = getCursor();
             Note note = null;
             if (cursor.moveToPosition(position)) {
-                note = cursorToNote(cursor);
+                note = new Note(cursor);
             }
             return note;
         }

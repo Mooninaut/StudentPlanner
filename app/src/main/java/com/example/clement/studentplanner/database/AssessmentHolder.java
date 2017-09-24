@@ -63,4 +63,6 @@ public class AssessmentHolder extends RecyclerViewHolderBase<Assessment> {
 //        notes.setText(assessment.notes());
         type.setText(assessment.type().name().substring(0, 1));
     }
+
+
 }

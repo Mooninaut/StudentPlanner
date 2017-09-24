@@ -142,8 +142,19 @@ public class OmniProvider extends ContentProvider {
         public static final Uri COURSEMENTOR_COURSE_ID_MENTOR_ID = buildPath(COURSEMENTOR, "both");
 
         private Content() {}
-
+        // Nested class is initialized after outer class, avoid null pointer exception
+        // by initializing CONTENT_URIS after Content inner class static variables
+        static {
+            CONTENT_URIS.append(Table.ASSESSMENT, Content.ASSESSMENT);
+            CONTENT_URIS.append(Table.COURSEMENTOR, Content.COURSEMENTOR);
+            CONTENT_URIS.append(Table.COURSE, Content.COURSE);
+            CONTENT_URIS.append(Table.EVENT, Content.EVENT);
+            CONTENT_URIS.append(Table.NOTE, Content.NOTE);
+            CONTENT_URIS.append(Table.MENTOR, Content.MENTOR);
+            CONTENT_URIS.append(Table.TERM, Content.TERM);
+        }
     }
+    private static final SparseArray<Uri> CONTENT_URIS = new SparseArray<>(10);
 
     public static final String authority = "com.example.clement.studentplanner.provider";
     public static final Uri CONTENT_BASE = new Uri.Builder()
@@ -319,13 +330,36 @@ public class OmniProvider extends ContentProvider {
         return readableDatabase;
     }
 
-    protected void notifyChange(@NonNull Uri uri) {
+    /**
+     * Notify the appropriate listeners. Notify both mentor and coursementor listeners of
+     * changes to either table.
+     * @param uri
+     */
+    public void notifyChange(@NonNull Uri uri) {
         Log.d("OmniProvider", "Notifying change on "+uri.toString());
         Context context = getContext();
         if (context != null) {
             ContentResolver contentResolver = context.getContentResolver();
             if (contentResolver != null) {
-                contentResolver.notifyChange(uri, null);
+                int match = URI_MATCHER.match(uri);
+                int matchKey = match & MASK_KEY;
+                if (matchKey == Key.ALL) {
+                    contentResolver.notifyChange(uri, null);
+                }
+                else {
+                    int matchTable = match & MASK_TABLE;
+                    Uri contentUri;
+                    switch(matchTable) {
+                        case Table.MENTOR:
+                        case Table.COURSEMENTOR:
+                            contentUri = Content.MENTOR;
+                            break;
+                        default:
+                            contentUri = CONTENT_URIS.get(matchTable);
+                            break;
+                    }
+                    contentResolver.notifyChange(contentUri, null);
+                }
             }
         }
     }
@@ -345,6 +379,7 @@ public class OmniProvider extends ContentProvider {
         projection = null;
         selection = null;
         selectionArgs = null;
+        Uri notificationUri = CONTENT_BASE;
         sortOrder = COLUMN_ID + " ASC";
         Cursor cursor;
         int match = URI_MATCHER.match(uri);
@@ -356,13 +391,15 @@ public class OmniProvider extends ContentProvider {
             case Match.MENTOR_COURSE_ID:
                 cursor = mentorByCourseIdQuery(ContentUris.parseId(uri));
                 if (cursor != null) {
-                    cursor.setNotificationUri(resolver, Content.COURSEMENTOR);
+                    Log.d("OmniProvider", "Setting notification uri for "+uri.toString()+" to "+Content.MENTOR.toString());
+                    cursor.setNotificationUri(resolver, Content.MENTOR);
                 }
                 return cursor;
             case Match.MENTOR_NOT_COURSE_ID:
                 cursor = mentorByNotCourseIdQuery(ContentUris.parseId(uri));
                 if (cursor != null) {
-                    cursor.setNotificationUri(resolver, Content.COURSEMENTOR);
+                    Log.d("OmniProvider", "Setting notification uri for "+uri.toString()+" to "+Content.MENTOR.toString());
+                    cursor.setNotificationUri(resolver, Content.MENTOR);
                 }
                 return cursor;
             case Match.COURSEMENTOR_COURSE_ID_MENTOR_ID:
@@ -370,9 +407,11 @@ public class OmniProvider extends ContentProvider {
                 CourseMentor courseMentor = parseCourseMentorUri(uri);
                 selection = WHERE.get(matchKey);
                 selectionArgs = toStringArray(courseMentor.courseId(), courseMentor.mentorId());
+                notificationUri = Content.MENTOR;
                 break;
             default:
                 // Generic cases
+
                 switch (matchKey) {
                     case Key.ALL:
                         break;
@@ -395,6 +434,12 @@ public class OmniProvider extends ContentProvider {
                     case Table.COURSE:
                         sortOrder = COLUMN_START + " ASC";
                         break;
+                    case Table.COURSEMENTOR:
+                        notificationUri = Content.MENTOR;
+                        sortOrder = StorageHelper.COLUMN_ID + " ASC";
+                        break;
+                    default:
+                        sortOrder = StorageHelper.COLUMN_ID + " ASC";
                 }
         }
         String table = TABLES.get(matchTable);
@@ -409,6 +454,7 @@ public class OmniProvider extends ContentProvider {
             null,
             sortOrder
         );
+        Log.d("OmniProvider", "Setting notification uri to "+uri);
         cursor.setNotificationUri(resolver, uri);
         return cursor;
     }
@@ -488,6 +534,7 @@ public class OmniProvider extends ContentProvider {
         }
         return rowsAffected;
     }
+
 
     @Override
     public int update(@NonNull Uri uri, @Nullable ContentValues contentValues,

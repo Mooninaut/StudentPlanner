@@ -34,6 +34,18 @@ public abstract class RecyclerCursorAdapterBase<H extends RecyclerView.ViewHolde
         }
 
     }
+    @Override
+    public long getItemId(int position) {
+        Cursor cursor = getCursorAdapter().getCursor();
+        cursor.moveToPosition(position);
+        return cursor.getLong(cursor.getColumnIndex(StorageHelper.COLUMN_ID));
+    }
+
+    @Override
+    public int getItemCount() {
+        return getCursorAdapter().getCursor().getCount();
+    }
+
     public class CursorDiff extends DiffUtil.Callback {
         private Cursor oldCursor;
         private Cursor newCursor;

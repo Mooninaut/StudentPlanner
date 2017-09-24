@@ -19,7 +19,7 @@ import java.io.InputStream;
  * Created by Clement on 9/13/2017.
  */
 
-class NoteHolder extends RecyclerViewHolderBase<Note> {
+public class NoteHolder extends RecyclerViewHolderBase<Note> {
 
     private final ImageButton imageButton;
     private final TextView noteView;
