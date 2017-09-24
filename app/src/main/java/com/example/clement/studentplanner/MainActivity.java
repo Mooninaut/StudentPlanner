@@ -60,10 +60,10 @@ public class MainActivity extends AppCompatActivity
         File filesDir = getFilesDir();
         for (File file : filesDir.listFiles()) {
             file = file.getAbsoluteFile();
-            Log.d("MainActivity", "File: "+file.getName()+" is "+(file.isDirectory() ? "" : "not ")+"a directory.");
+            Log.d("StudentPlanner", "MainActivity.onCreate: File \""+file.getName()+"\" is "+(file.isDirectory() ? "" : "not ")+"a directory.");
             if (file.isDirectory()) {
                 for (File subfile : file.listFiles()) {
-                    Log.d("MainActivity", "Subfile: "+subfile.getAbsolutePath());
+                    Log.d("StudentPlanner", "MainActivity.onCreate: Subfile: \""+subfile.getAbsolutePath()+"\"");
                 }
             }
         }
@@ -73,12 +73,7 @@ public class MainActivity extends AppCompatActivity
             if (cursor != null) {
                 while(cursor.moveToNext()) {
                     Note note = new Note(cursor);
-                    if (note.hasFileUri()) {
-                        Log.d("MainActivity", note.fileUri().toString());
-                    }
-                    else {
-                        Log.d("MainActivity", note.toString());
-                    }
+                    Log.d("StudentPlanner", "MainActivity.onCreate: \""+note.toString()+"\"");
                 }
             }
         }

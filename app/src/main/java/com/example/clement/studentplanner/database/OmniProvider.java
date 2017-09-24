@@ -259,7 +259,7 @@ public class OmniProvider extends ContentProvider {
      */
     private static Uri appendMatchUri(int id, Uri base, String... paths) {
         Uri uri = buildPath(base, paths);
-//        Log.d("OmniProvider", "Adding "+uri.toString()+" => "+id);
+//        Log.d("StudentPlanner", "OmniProvider: Adding "+uri.toString()+" => "+id);
         URI_MATCHER.addURI(uri.getAuthority(), uri.getPath(), id);
         return uri;
     }
@@ -336,7 +336,7 @@ public class OmniProvider extends ContentProvider {
      * @param uri
      */
     public void notifyChange(@NonNull Uri uri) {
-        Log.d("OmniProvider", "Notifying change on "+uri.toString());
+        Log.d("StudentPlanner", "OmniProvider.notifyChange: uri = '"+uri.toString()+"'");
         Context context = getContext();
         if (context != null) {
             ContentResolver contentResolver = context.getContentResolver();
@@ -391,14 +391,14 @@ public class OmniProvider extends ContentProvider {
             case Match.MENTOR_COURSE_ID:
                 cursor = mentorByCourseIdQuery(ContentUris.parseId(uri));
                 if (cursor != null) {
-                    Log.d("OmniProvider", "Setting notification uri for "+uri.toString()+" to "+Content.MENTOR.toString());
+                    Log.d("StudentPlanner", "OmniProvider.query: Setting notification uri for '"+uri.toString()+"' to '"+Content.MENTOR.toString()+"'");
                     cursor.setNotificationUri(resolver, Content.MENTOR);
                 }
                 return cursor;
             case Match.MENTOR_NOT_COURSE_ID:
                 cursor = mentorByNotCourseIdQuery(ContentUris.parseId(uri));
                 if (cursor != null) {
-                    Log.d("OmniProvider", "Setting notification uri for "+uri.toString()+" to "+Content.MENTOR.toString());
+                    Log.d("StudentPlanner", "OmniProvider.query: Setting notification uri for "+uri.toString()+" to "+Content.MENTOR.toString());
                     cursor.setNotificationUri(resolver, Content.MENTOR);
                 }
                 return cursor;
@@ -454,7 +454,7 @@ public class OmniProvider extends ContentProvider {
             null,
             sortOrder
         );
-        Log.d("OmniProvider", "Setting notification uri to "+uri);
+        Log.d("StudentPlanner", "OmniProvider.query: URI is '"+uri+"'");
         cursor.setNotificationUri(resolver, uri);
         return cursor;
     }

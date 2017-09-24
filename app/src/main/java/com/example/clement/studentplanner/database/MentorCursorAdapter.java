@@ -40,7 +40,7 @@ public class MentorCursorAdapter extends CursorAdapter {
     public void bindView(View view, Context context, Cursor cursor) {
         Mentor mentor = cursorToCourseMentor(cursor);
 
-        Log.d("CourseMentorCursorAdapt", "Id: "+ mentor.id());
+        Log.d("StudentPlanner", "MentorCursorAdapter.bindView(): ID = \""+ mentor.id()+"\"");
 
         TextView nameTV = (TextView) view.findViewById(R.id.mentor_name_text_view);
         TextView emailTV = (TextView) view.findViewById(R.id.mentor_email_text_view);

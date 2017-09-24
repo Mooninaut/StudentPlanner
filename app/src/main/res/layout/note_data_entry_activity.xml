@@ -47,10 +47,10 @@
             android:id="@+id/note_text_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:inputType="textMultiLine"
+            android:inputType="textMultiLine|textCapSentences|textAutoCorrect"
             android:textSize="20sp"
             android:minHeight="30dp"
-            android:text="texty"
+            android:hint="@string/note_prompt"
             android:layout_margin="@dimen/margin_large"/>
     </android.support.v4.widget.NestedScrollView>
 

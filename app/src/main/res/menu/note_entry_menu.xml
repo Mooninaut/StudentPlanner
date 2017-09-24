@@ -5,4 +5,8 @@
             android:title="@string/save_changes"
             android:orderInCategory="100"
             app:showAsAction="always" />
+    <item android:id="@+id/share"
+        android:title="@string/share"
+        android:orderInCategory="200"
+        app:showAsAction="ifRoom"/>
 </menu>

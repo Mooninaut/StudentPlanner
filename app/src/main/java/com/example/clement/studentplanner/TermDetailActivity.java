@@ -109,7 +109,7 @@ public class TermDetailActivity extends AppCompatActivity
                 finish();
                 return true;
             case R.id.add:
-                Log.d("MainActivity", "New Course");
+                Log.d("StudentPlanner", "TermDetailActivity.onOptionsItemSelected: New Course");
                 intent = new Intent(this, CourseDataEntryActivity.class);
                 intent.setAction(Intent.ACTION_INSERT);
                 intent.setData(termContentUri);

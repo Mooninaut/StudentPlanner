@@ -8,7 +8,6 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.util.Log;
 
 import com.example.clement.studentplanner.data.Term;
 
@@ -77,7 +76,6 @@ public class TermProvider extends ContentProviderBase {
     private static final UriMatcher uriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
     public static final TermContract CONTRACT = TermContract.INSTANCE;
     static {
-        Log.i(TermProvider.class.getSimpleName(), CONTRACT.eventUri.getPath());
         uriMatcher.addURI(CONTRACT.authority, CONTRACT.basePath + "/#", TERM_ID);
         uriMatcher.addURI(CONTRACT.authority, CONTRACT.basePath+"/"+CONTRACT.pathEvent, TERM_EVENT);
         uriMatcher.addURI(CONTRACT.authority, CONTRACT.basePath+"/"+CONTRACT.pathMax, TERM_MAX);

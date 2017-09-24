@@ -8,8 +8,10 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.ShareActionProvider;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
@@ -34,6 +36,9 @@ public class NoteDataEntryActivity extends AppCompatActivity {
     private FloatingActionButton fab;
     private Uri tempFileUri;
     private Note note;
+    private ShareActionProvider shareActionProvider;
+    private Intent shareIntent = new Intent(Intent.ACTION_SEND);
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -55,6 +60,7 @@ public class NoteDataEntryActivity extends AppCompatActivity {
                 Util.Photo.capture(NoteDataEntryActivity.this);
             }
         });
+        fab.bringToFront();
         if (savedInstanceState != null) {
             setNote((Note) savedInstanceState.getParcelable(NOTE));
         } else {
@@ -75,7 +81,7 @@ public class NoteDataEntryActivity extends AppCompatActivity {
                     }
                     break;
                 case Intent.ACTION_EDIT:
-                    setNote(FrontEnd.get(this, Note.class, ContentUris.parseId(intent.getData())));
+                    setNote(FrontEnd.get(this, Note.class, intent.getData()));
                     break;
                 default:
                     throw new UnsupportedOperationException();
@@ -86,20 +92,36 @@ public class NoteDataEntryActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.note_entry_menu, menu);
+
+        MenuItem item = menu.findItem(R.id.share);
+
+        shareActionProvider = (ShareActionProvider) MenuItemCompat.getActionProvider(item);
         return true;
     }
 
+    private void setTempFileUri(Uri uri) {
+        if (tempFileUri != null) {
+            int result = getContentResolver().delete(tempFileUri, null, null);
+            Log.d("StudentPlanner", "NoteDataEntryActivity: Delete of " + tempFileUri.toString()+" "+(result == 0 ? "failed" : "succeeded"));
+            tempFileUri = uri;
+        }
+    }
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         Intent intent;
         switch(item.getItemId()) {
             case R.id.save:
+                Log.d("StudentPlanner", "NoteDataEntryActivity: Saving. "+(note != null ? note.toString() : "note is null"));
                 intent = new Intent();
                 EditText editText = findViewById(R.id.note_text_view);
-                if (note.hasFileUri() && tempFileUri != null) {
-                    int result = getContentResolver().delete(note.fileUri(), null, null);
-                    Log.d("NoteDataEntryActivity", "Attempting to delete "+note.fileUri().toString()+": "+result);
+                if (tempFileUri != null) {
+                    if (note.hasFileUri()) {
+                        // Replace existing file
+                        int result = getContentResolver().delete(note.fileUri(), null, null);
+                        Log.d("StudentPlanner", "NoteDataEntryActivity: Delete of " + note.fileUri().toString()+" "+(result == 0 ? "failed" : "succeeded"));
+                    }
                     note.fileUri(tempFileUri);
+                    // deliberately not using setTempFileUri, as that would delete the file
                     tempFileUri = null;
                 }
                 note.text(editText.getText().toString());
@@ -114,11 +136,7 @@ public class NoteDataEntryActivity extends AppCompatActivity {
                 finish();
                 return true;
             case android.R.id.home:
-                if (tempFileUri != null) {
-                    int result = getContentResolver().delete(tempFileUri, null, null);
-                    Log.d("NoteDataEntryActivity", "Attempting to delete "+tempFileUri.toString()+": "+result);
-                    tempFileUri = null;
-                }
+                setTempFileUri(null);
                 finish();
                 return true;
             default:
@@ -169,7 +187,7 @@ public class NoteDataEntryActivity extends AppCompatActivity {
         switch (requestCode) {
             case Util.RequestCode.ADD_NOTE:
                 if (resultCode == Activity.RESULT_OK) {
-                    tempFileUri = Util.Photo.storeThumbnail(this, resultCode, data, "Test");
+                    setTempFileUri(Util.Photo.storeThumbnail(this, resultCode, data, "Test"));
 
 //                    note.fileUri(tempFileUri);
                     setImageView(tempFileUri);

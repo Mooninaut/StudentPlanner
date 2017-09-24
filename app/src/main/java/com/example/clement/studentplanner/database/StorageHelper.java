@@ -140,11 +140,11 @@ public class StorageHelper extends SQLiteOpenHelper {
         CREATE_DATABASE = schema.toArray(new String[schema.size()]);
     }
     private static void createDatabase(SQLiteDatabase db) {
-        Log.i(StorageHelper.class.getSimpleName(), "Creating database!");
+        Log.d("StudentPlanner", "StorageHelper.createDatabase: Creating database, version"+DATABASE_VERSION+".");
         for (String sql : CREATE_DATABASE) {
             db.execSQL(sql);
         }
-        Log.i(StorageHelper.class.getSimpleName(), "Database created!");
+        Log.d("StudentPlanner", "StorageHelper.createDatabase: Database created.");
     }
     public StorageHelper(@NonNull Context context) {
         super(context, DATABASE_FILE_NAME, null, DATABASE_VERSION);

@@ -57,7 +57,7 @@ public class TermCursorAdapter extends CursorAdapter{
     public void bindView(View view, Context context, Cursor cursor) {
         Term term = cursorToTerm(cursor);
 
-        Log.d("TermCursorAdapter", "Id: "+term.id());
+        Log.d("StudentPlanner", "TermCursorAdapter.bindView: ID = '"+term.id()+"'");
         TextView nameTV = (TextView) view.findViewById(R.id.termNameTextView);
         TextView numberTV = (TextView) view.findViewById(R.id.termNumberTextView);
         TextView startTV = (TextView) view.findViewById(R.id.termStartTextView);

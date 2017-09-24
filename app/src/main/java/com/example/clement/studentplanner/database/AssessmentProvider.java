@@ -80,7 +80,7 @@ public class AssessmentProvider extends ContentProviderBase {
     public static final AssessmentContract CONTRACT = AssessmentContract.INSTANCE;
     static {
 
-//        Log.i(AssessmentProvider.class.getSimpleName(), eventUri.getPath());
+//        Log.d(StudentPlanner, "AssessmentProvider: "+eventUri.getPath());
         uriMatcher.addURI(CONTRACT.authority, CONTRACT.basePath + "/#", ASSESSMENT_ID);
         uriMatcher.addURI(CONTRACT.authority, CONTRACT.eventUri.getPath(), ASSESSMENT_EVENT);
         uriMatcher.addURI(CONTRACT.authority, CONTRACT.courseUri.getPath() + "/#", ASSESSMENT_COURSE);

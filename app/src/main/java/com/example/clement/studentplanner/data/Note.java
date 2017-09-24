@@ -49,6 +49,20 @@ public class Note implements HasId, Parcelable{
                 cursor.getLong(cursor.getColumnIndex(StorageHelper.COLUMN_COURSE_ID)),
                 Uri.parse(cursor.getString(cursor.getColumnIndex(StorageHelper.COLUMN_PHOTO_FILE_URI)))
         );
+//        boolean wasNull = false;
+        if (cursor.isNull(cursor.getColumnIndex(StorageHelper.COLUMN_ASSESSMENT_ID))) {
+            assessmentId = Util.NO_ID;
+//            Log.d("StudentPlanner", "Note(cursor): Assessment ID is null.");
+//            wasNull = true;
+        }
+        if (cursor.isNull(cursor.getColumnIndex(StorageHelper.COLUMN_COURSE_ID))) {
+            courseId = Util.NO_ID;
+//            Log.d("StudentPlanner", "Note(cursor): Course ID is null.");
+//            wasNull = true;
+        }
+/*        if (wasNull) {
+            Log.d("StudentPlanner", "Note(cursor): Note = "+toString());
+        }*/
     }
 
     protected Note(Parcel in) {

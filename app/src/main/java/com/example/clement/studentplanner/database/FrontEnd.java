@@ -160,6 +160,10 @@ public class FrontEnd {
     }
 
     @Nullable
+    public static <T extends HasId> T get(@NonNull Context context, @NonNull Class<T> tClass, Uri uri) {
+        return get(context, tClass, ContentUris.parseId(uri));
+    }
+    @Nullable
     public static <T extends HasId> T newFromCursor(Cursor cursor, Class<T> tClass) {
         HasId hasId;
         switch (tClass.getCanonicalName()) {

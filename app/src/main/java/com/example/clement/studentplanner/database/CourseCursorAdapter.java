@@ -46,7 +46,7 @@ public class CourseCursorAdapter extends CursorAdapter {
     public void bindView(View view, Context context, Cursor cursor) {
 
         Course course = cursorToCourse(cursor);
-        Log.d("CourseCursorAdapter", "Id: "+course.id()+" termId: "+course.termId());
+        Log.d("StudentPlanner", "CourseCursorAdapter: ID = \""+course.id()+"\" term ID = \""+course.termId()+"\"");
         TextView nameTV = (TextView) view.findViewById(R.id.course_name_text_view);
         TextView numberTV = (TextView) view.findViewById(R.id.course_number_text_view);
         TextView startTV = (TextView) view.findViewById(R.id.course_start_text_view);

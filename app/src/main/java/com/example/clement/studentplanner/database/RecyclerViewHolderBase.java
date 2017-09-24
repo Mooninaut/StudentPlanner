@@ -48,7 +48,7 @@ public abstract class RecyclerViewHolderBase<T extends HasId> extends RecyclerVi
         if (clickListener != null && item != null) {
             clickListener.onItemClick(view, item.id());
         }
-        Log.d(this.getClass().getSimpleName(),"clickListener is" +(clickListener == null ? "":"not ")+"null. item is " + (item == null ? "":"not ")+"null.");
+        Log.d("StudentPlanner","RecyclerViewHolderBase.onClick: clickListener is " +(clickListener == null ? "":"not ")+"null. item is " + (item == null ? "":"not ")+"null.");
     }
 
     @Override

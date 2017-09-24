@@ -87,7 +87,7 @@ public class MentorDataEntryActivity extends AppCompatActivity {
         mentor.name(name.getText().toString().trim());
         mentor.emailAddress(email.getText().toString().trim());
         mentor.phoneNumber(number.getText().toString().trim());
-        Log.d(MentorDataEntryActivity.class.getSimpleName(), mentor.toString());
+        Log.d("StudentPlanner", "MentorDataEntryActivity.createCourseMentor: mentor = '"+mentor.toString()+"'");
 
         Intent result = new Intent();
         if (action.equals(Intent.ACTION_EDIT)) {
