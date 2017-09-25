@@ -35,7 +35,6 @@ public class AssessmentHolder extends RecyclerViewHolderBase<Assessment> {
 
         super(itemView, onClick, onLongClick);
         name = itemView.findViewById(R.id.assessment_name_text_view);
-//        notes = itemView.findViewById(R.id.assessment_notes_view);
         type = itemView.findViewById(R.id.assessment_type_text_view);
         start = itemView.findViewById(R.id.assessment_start_text_view);
         end = itemView.findViewById(R.id.assessment_end_text_view);

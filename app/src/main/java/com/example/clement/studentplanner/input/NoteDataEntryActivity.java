@@ -27,6 +27,7 @@ import com.example.clement.studentplanner.data.Note;
 import com.example.clement.studentplanner.database.FrontEnd;
 
 import java.io.FileNotFoundException;
+import java.io.InputStream;
 
 public class NoteDataEntryActivity extends AppCompatActivity {
     public static final String TYPE = "type"; // Values: StorageHelper.TABLE_COURSE or StorageHelper.TABLE_ASSESSMENT
@@ -103,8 +104,8 @@ public class NoteDataEntryActivity extends AppCompatActivity {
         if (tempFileUri != null) {
             int result = getContentResolver().delete(tempFileUri, null, null);
             Log.d("StudentPlanner", "NoteDataEntryActivity: Delete of " + tempFileUri.toString()+" "+(result == 0 ? "failed" : "succeeded"));
-            tempFileUri = uri;
         }
+        tempFileUri = uri;
     }
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -134,6 +135,16 @@ public class NoteDataEntryActivity extends AppCompatActivity {
                 intent.setData(note.toUri());
                 setResult(Activity.RESULT_OK, intent);
                 finish();
+                return true;
+            case R.id.share:
+                shareActionProvider = (ShareActionProvider) MenuItemCompat.getActionProvider(item);
+                shareIntent.setType("image/*");
+                if (tempFileUri != null) {
+                    shareIntent.putExtra(Intent.EXTRA_STREAM, tempFileUri);
+                } else if (note.hasFileUri()) {
+                    shareIntent.putExtra(Intent.EXTRA_STREAM, note.fileUri());
+                }
+                shareActionProvider.setShareIntent(shareIntent);
                 return true;
             case android.R.id.home:
                 setTempFileUri(null);
@@ -174,8 +185,10 @@ public class NoteDataEntryActivity extends AppCompatActivity {
     }
     private void setImageView(Uri fileUri) {
         ImageView imageView = findViewById(R.id.note_image_view);
+        Log.d("StudentPlanner", "NoteDataEntryActivity: fileUri = '"+fileUri.toString()+"'");
         try {
-            Bitmap bitmap = BitmapFactory.decodeStream(getContentResolver().openInputStream(fileUri));
+            InputStream inputStream = getContentResolver().openInputStream(fileUri);
+            Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
             imageView.setImageBitmap(bitmap);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
@@ -187,7 +200,11 @@ public class NoteDataEntryActivity extends AppCompatActivity {
         switch (requestCode) {
             case Util.RequestCode.ADD_NOTE:
                 if (resultCode == Activity.RESULT_OK) {
-                    setTempFileUri(Util.Photo.storeThumbnail(this, resultCode, data, "Test"));
+                    Uri newTempFileUri = Util.Photo.storeThumbnail(this, resultCode, data, "Test");
+                    if (newTempFileUri == null) {
+                        throw new NullPointerException("newTempFileUri is null");
+                    }
+                    setTempFileUri(newTempFileUri);
 
 //                    note.fileUri(tempFileUri);
                     setImageView(tempFileUri);

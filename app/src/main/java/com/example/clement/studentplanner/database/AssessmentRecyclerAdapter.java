@@ -44,8 +44,6 @@ public class AssessmentRecyclerAdapter extends RecyclerCursorAdapterBase<Assessm
         holder.bindItem(assessmentCursorAdapter.getItem(position));
     }
 
-
-
     @Override
     public int getItemCount() {
         return assessmentCursorAdapter.getCount();

@@ -23,7 +23,6 @@ import com.example.clement.studentplanner.data.Mentor;
 import com.example.clement.studentplanner.database.CourseCursorAdapter;
 import com.example.clement.studentplanner.database.FrontEnd;
 import com.example.clement.studentplanner.database.OmniProvider;
-import com.example.clement.studentplanner.database.StorageHelper;
 import com.example.clement.studentplanner.input.AssessmentDataEntryActivity;
 import com.example.clement.studentplanner.input.CourseDataEntryActivity;
 import com.example.clement.studentplanner.input.MentorDataEntryActivity;
@@ -36,15 +35,11 @@ import static android.content.ContentUris.withAppendedId;
  * An activity representing a single Course detail screen.
  */
 public class CourseDetailActivity extends AppCompatActivity
-    implements //AssessmentListingFragment.HostActivity,
-    FragmentItemListener.OnClick, FragmentItemListener.OnLongClick {
+        implements FragmentItemListener.OnClick, FragmentItemListener.OnLongClick {
     private AssessmentListingFragment assessmentFragment;
     private MentorListingFragment mentorFragment;
     private NoteListingFragment noteFragment;
-//    private CourseLoaderListener courseLoaderListener;
-//    private Course course;
     private Uri courseContentUri;
-//    private static final int COURSE_LOADER_ID = 301;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,7 +59,7 @@ public class CourseDetailActivity extends AppCompatActivity
             courseContentUri = getIntent().getData();
         }
         if (courseContentUri == null && savedInstanceState != null) {
-            courseContentUri = savedInstanceState.getParcelable(StorageHelper.TABLE_COURSE);
+            courseContentUri = savedInstanceState.getParcelable(Util.Tag.COURSE);
         }
         if (courseContentUri == null) {
             throw new NullPointerException();
@@ -188,13 +183,13 @@ public class CourseDetailActivity extends AppCompatActivity
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putParcelable(StorageHelper.TABLE_COURSE, courseContentUri);
+        outState.putParcelable(Util.Tag.COURSE, courseContentUri);
     }
 
     @Override
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
-        courseContentUri = savedInstanceState.getParcelable(StorageHelper.TABLE_COURSE);
+        courseContentUri = savedInstanceState.getParcelable(Util.Tag.COURSE);
     }
 
     public void addAssessment(View view) {

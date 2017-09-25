@@ -27,6 +27,7 @@ import com.example.clement.studentplanner.database.RecyclerCursorAdapterBase;
 public abstract class RecyclerListingFragmentBase<A extends RecyclerCursorAdapterBase> extends Fragment
     implements ItemListener.OnClick, ItemListener.OnLongClick {
     private static final String CONTENT_URI_KEY = "content-uri";
+    private int itemViewId = Integer.MIN_VALUE;
     private Cursor cursor;
     private A adapter;
     private Context context;
@@ -39,9 +40,9 @@ public abstract class RecyclerListingFragmentBase<A extends RecyclerCursorAdapte
 
     /**
      * For use with multi-providers
-     * @param contract
-     * @param recyclerViewId
-     * @param loaderId
+     * @param contract Contract to retrieve the content URI from
+     * @param recyclerViewId RecyclerView widget to display items in
+     * @param loaderId An arbitrary constant to identify the content loader
      */
     protected RecyclerListingFragmentBase(ProviderContract contract, int recyclerViewId, int loaderId) {
         this.defaultContentUri = contract.contentUri();
@@ -51,9 +52,9 @@ public abstract class RecyclerListingFragmentBase<A extends RecyclerCursorAdapte
 
     /**
      * For use with OmniProvider
-     * @param contentUri
-     * @param recyclerViewId
-     * @param loaderId
+     * @param contentUri URI to load items from
+     * @param recyclerViewId RecyclerView widget to display items in
+     * @param loaderId An arbitrary constant to identify the content loader
      */
     protected RecyclerListingFragmentBase(Uri contentUri, int recyclerViewId, int loaderId) {
         this.defaultContentUri = contentUri;

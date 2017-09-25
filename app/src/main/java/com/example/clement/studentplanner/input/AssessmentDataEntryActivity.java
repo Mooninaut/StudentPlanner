@@ -146,10 +146,8 @@ public class AssessmentDataEntryActivity extends AppCompatActivity implements
 
                 // Fill other views
                 EditText nameET = (EditText) findViewById(R.id.edit_name);
-                EditText notesET = (EditText) findViewById(R.id.edit_notes);
                 Spinner typeSpinner = (Spinner) findViewById(R.id.spinner_assessment_type);
                 nameET.setText(localAssessment.name());
-//                notesET.setText(localAssessment.notes());
                 setTypeSpinnerFromAssessment(typeSpinner, localAssessment);
             }
         }
@@ -277,7 +275,6 @@ public class AssessmentDataEntryActivity extends AppCompatActivity implements
     public void createAssessment(View view) {
         EditText name = (EditText) findViewById(R.id.edit_name);
         Spinner type = (Spinner) findViewById(R.id.spinner_assessment_type);
-        EditText notes = (EditText) findViewById(R.id.edit_notes);
 
         assessment.name(name.getText().toString().trim());
         assessment.startEndMillis(start.getTimeInMillis(), end.getTimeInMillis());
@@ -289,8 +286,6 @@ public class AssessmentDataEntryActivity extends AppCompatActivity implements
         int spinnerPosition = type.getSelectedItemPosition();
         int assessmentType = getResources().getIntArray(R.array.assessment_type_id)[spinnerPosition];
         assessment.type(Assessment.Type.of(assessmentType));
-
-//        assessment.notes(notes.getText().toString().trim());
 
         Intent intent = getIntent();
         Uri resultUri = null;
