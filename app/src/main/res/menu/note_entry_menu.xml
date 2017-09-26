@@ -8,5 +8,10 @@
     <item android:id="@+id/share"
         android:title="@string/share"
         android:orderInCategory="200"
+        app:actionProviderClass="android.support.v7.widget.ShareActionProvider"
+        app:showAsAction="ifRoom"/>
+    <item android:id="@+id/delete"
+        android:title="@string/delete"
+        android:orderInCategory="300"
         app:showAsAction="ifRoom"/>
 </menu>

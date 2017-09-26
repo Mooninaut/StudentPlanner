@@ -5,11 +5,12 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.support.annotation.Nullable;
 import android.view.View;
-import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.clement.studentplanner.ItemListener;
 import com.example.clement.studentplanner.R;
+import com.example.clement.studentplanner.Util;
 import com.example.clement.studentplanner.data.Note;
 
 import java.io.FileNotFoundException;
@@ -21,7 +22,7 @@ import java.io.InputStream;
 
 public class NoteHolder extends RecyclerViewHolderBase<Note> {
 
-    private final ImageButton imageButton;
+    private final ImageView imageView;
     private final TextView noteView;
     private final Context context;
 
@@ -32,11 +33,11 @@ public class NoteHolder extends RecyclerViewHolderBase<Note> {
         super(itemView, clickListener, longClickListener);
         this.context = context;
         this.noteView = itemView.findViewById(R.id.note_text_view);
-        this.imageButton = itemView.findViewById(R.id.note_image_button);
+        this.imageView = itemView.findViewById(R.id.note_image_view);
 /*        noteView.setOnClickListener(this);
         noteView.setOnLongClickListener(this);
-        imageButton.setOnClickListener(this);
-        imageButton.setOnLongClickListener(this);*/
+        imageView.setOnClickListener(this);
+        imageView.setOnLongClickListener(this);*/
         itemView.setOnClickListener(this);
         itemView.setOnLongClickListener(this);
     }
@@ -49,7 +50,8 @@ public class NoteHolder extends RecyclerViewHolderBase<Note> {
             try {
                 InputStream inputStream = context.getContentResolver().openInputStream(note.fileUri());
                 Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
-                imageButton.setImageBitmap(bitmap);
+                imageView.setImageBitmap(bitmap);
+                Util.setViewBackground(imageView,null);
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
             }

@@ -145,7 +145,7 @@ public class AssessmentDetailActivity extends AppCompatActivity
                 startActivityForResult(intent, Util.RequestCode.EDIT_ASSESSMENT);
                 return true;
             case R.id.reminder:
-                Assessment assessment = Util.getAssessment(this, assessmentContentUri);
+                Assessment assessment = Util.get(this, Assessment.class, assessmentContentUri);
                 intent = new Intent(Intent.ACTION_INSERT)
                     .setData(CalendarContract.Events.CONTENT_URI)
                     .putExtra(CalendarContract.EXTRA_EVENT_BEGIN_TIME, assessment.startMillis())

@@ -7,34 +7,33 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.FileProvider;
+import android.view.View;
 
 import com.example.clement.studentplanner.data.Assessment;
 import com.example.clement.studentplanner.data.Course;
+import com.example.clement.studentplanner.data.CourseMentor;
 import com.example.clement.studentplanner.data.Event;
+import com.example.clement.studentplanner.data.HasId;
 import com.example.clement.studentplanner.data.Mentor;
+import com.example.clement.studentplanner.data.Note;
 import com.example.clement.studentplanner.data.Term;
-import com.example.clement.studentplanner.database.AssessmentCursorAdapter;
-import com.example.clement.studentplanner.database.AssessmentProvider;
-import com.example.clement.studentplanner.database.CourseCursorAdapter;
-import com.example.clement.studentplanner.database.CourseProvider;
-import com.example.clement.studentplanner.database.EventCursorAdapter;
-import com.example.clement.studentplanner.database.EventProvider;
-import com.example.clement.studentplanner.database.MentorCursorAdapter;
-import com.example.clement.studentplanner.database.MentorProvider;
+import com.example.clement.studentplanner.database.OmniProvider;
 import com.example.clement.studentplanner.database.StorageHelper;
-import com.example.clement.studentplanner.database.TermCursorAdapter;
-import com.example.clement.studentplanner.database.TermProvider;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.HashMap;
 
 /**
  * Created by Clement on 9/9/2017.
@@ -51,6 +50,209 @@ public final class Util {
     private static final int MENTOR = 0x4;
     private static final int NOTE = 0x5;
     private static final int CALENDAR_EVENT = 0x6;
+    private static final int PHOTO = 0x7;
+    private static HashMap<Class, Uri> contentUriMap = new HashMap<>(8);
+    private static HashMap<Class, String[]> projectionMap = new HashMap<>(8);
+    static {
+        Util.contentUriMap.put(Assessment.class, OmniProvider.Content.ASSESSMENT);
+        Util.contentUriMap.put(Course.class, OmniProvider.Content.COURSE);
+        Util.contentUriMap.put(Term.class, OmniProvider.Content.TERM);
+        Util.contentUriMap.put(Mentor.class, OmniProvider.Content.MENTOR);
+        Util.contentUriMap.put(Note.class, OmniProvider.Content.NOTE);
+        Util.contentUriMap.put(CourseMentor.class, OmniProvider.Content.COURSEMENTOR);
+        //contentUriMap.put(Event.class, OmniProvider.EVENT);
+    }
+
+    static {
+        Util.projectionMap.put(Assessment.class, StorageHelper.COLUMNS_ASSESSMENT);
+        Util.projectionMap.put(Course.class, StorageHelper.COLUMNS_COURSE);
+        Util.projectionMap.put(Term.class, StorageHelper.COLUMNS_TERM);
+        Util.projectionMap.put(Mentor.class, StorageHelper.COLUMNS_MENTOR);
+        Util.projectionMap.put(Note.class, StorageHelper.COLUMNS_NOTE);
+        Util.projectionMap.put(CourseMentor.class, StorageHelper.COLUMNS_COURSE_MENTOR);
+    }
+    public static boolean insert(@NonNull Context context, @NonNull HasId hasId) {
+        Uri uri = context.getContentResolver().insert(contentUriMap.get(hasId.getClass()), hasId.toValues());
+        if (uri != null) {
+            long id = ContentUris.parseId(uri);
+            hasId.id(id);
+            return true;
+        }
+        return false;
+    }
+
+    public static boolean delete(@NonNull Context context, @NonNull HasId hasId) {
+        return hasId.hasId()
+            && 0 < context.getContentResolver().delete(
+                ContentUris.withAppendedId(
+                    contentUriMap.get(hasId.getClass()),
+                    hasId.id()),
+                null,
+                null
+            );
+    }
+
+    public static boolean update(@NonNull Context context, @NonNull HasId hasId) {
+        return hasId.hasId() &&
+            0 < context.getContentResolver().update(
+                ContentUris.withAppendedId(
+                    contentUriMap.get(hasId.getClass()),
+                    hasId.id()),
+                hasId.toValues(),
+                null,
+                null
+            );
+    }
+
+    public static boolean addCourseMentor(@NonNull Context context, long courseId, long mentorId) {
+        CourseMentor cm = new CourseMentor(courseId, mentorId);
+        return insert(context, cm); // Doesn't return ID, hmm... but CourseMentor row IDs don't matter.
+    }
+
+    public static boolean deleteCourseMentor(@NonNull Context context, long courseId, long mentorId) {
+//        CourseMentor cm = new CourseMentor(courseId, mentorId);
+//        return delete(context, cm);
+        Uri courseMentorContentUri = ContentUris.appendId(
+            ContentUris.appendId(
+                OmniProvider.Content.COURSEMENTOR_COURSE_ID_MENTOR_ID.buildUpon(),
+                courseId),
+            mentorId)
+            .build();
+        return 0 < context.getContentResolver().delete(courseMentorContentUri, null, null);
+    }
+
+    public static Uri createCourseMentorUri(long courseId, long mentorId) {
+        return ContentUris.withAppendedId(
+            ContentUris.withAppendedId(
+                OmniProvider.Content.COURSEMENTOR_COURSE_ID_MENTOR_ID,
+                courseId),
+            mentorId);
+    }
+
+    @Nullable
+    public static CourseMentor getCourseMentor(@NonNull Context context, long courseId, long mentorId) {
+        Cursor cursor = null;
+        try {
+            cursor = context.getContentResolver().query(
+                createCourseMentorUri(courseId, mentorId), null, null,
+//                StorageHelper.COLUMNS_COURSE_MENTOR,
+//                StorageHelper.SELECT_BY_COURSE_ID_MENTOR_ID,
+                null, null);
+            if (cursor != null && cursor.moveToFirst()) {
+                return new CourseMentor(cursor);
+            }
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Add a mentor to or remove a mentor from a course, as appropriate.
+     * @param context The current context
+     * @param courseId The row ID of the course
+     * @param mentorId The row ID of the mentor
+     * @return false if the mentor was removed, true if the mentor was added
+     */
+    @Nullable
+    public static boolean toggleCourseMentor(@NonNull Context context, long courseId, long mentorId) {
+
+        CourseMentor courseMentor = getCourseMentor(context, courseId, mentorId);
+        if (courseMentor != null) {
+            // returns true if deleted, false if not
+            if (deleteCourseMentor(context, courseId, mentorId)) {
+                return false;
+            }
+            throw new RuntimeException("Failed to remove " + courseMentor.toString() + " from database.");
+        }
+
+        if (addCourseMentor(context, courseId, mentorId)) {
+            return true;
+        }
+        throw new RuntimeException("Failed to add mentor "+mentorId+" to course "+courseId+".");
+    }
+
+    @Nullable
+    public static <T extends HasId> T get(@NonNull Context context, @NonNull Class<T> tClass, long id) {
+        Cursor cursor = null;
+        try {
+            cursor = context.getContentResolver().query(
+                ContentUris.withAppendedId(contentUriMap.get(tClass), id),
+                projectionMap.get(tClass),
+                null,
+                null,
+                null);
+            if (cursor != null && cursor.moveToFirst()) {
+                return newFromCursor(context, tClass, cursor);
+            }
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
+        return null;
+    }
+
+    public static int getCount(@NonNull Context context, @NonNull Uri uri) {
+        Cursor cursor = null;
+        try {
+            cursor = context.getContentResolver().query(
+                uri,
+                null,
+                null,
+                null,
+                null);
+            if (cursor != null) {
+                return cursor.getCount();
+            }
+            else {
+                return -1;
+            }
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
+    }
+
+    @Nullable
+    public static <T extends HasId> T get(@NonNull Context context, @NonNull Class<T> tClass, @NonNull Uri uri) {
+        return get(context, tClass, ContentUris.parseId(uri));
+    }
+
+    @Nullable
+    public static <T extends HasId> T newFromCursor(@NonNull Context context, @NonNull Class<T> tClass, @NonNull Cursor cursor) {
+        HasId hasId;
+        switch (tClass.getCanonicalName()) {
+            case "com.example.clement.studentplanner.data.Assessment":
+                hasId = new Assessment(cursor);
+                break;
+            case "com.example.clement.studentplanner.data.Course":
+                hasId = new Course(cursor);
+                break;
+            case "com.example.clement.studentplanner.data.Term":
+                hasId = new Term(cursor);
+                break;
+            case "com.example.clement.studentplanner.data.Event":
+                hasId = new Event(cursor);
+                break;
+            case "com.example.clement.studentplanner.data.Mentor":
+                hasId = new Mentor(cursor);
+                break;
+            case "com.example.clement.studentplanner.data.Note":
+                hasId = new Note(context, cursor);
+                break;
+            case "com.example.clement.studentplanner.data.CourseMentor":
+                hasId = new CourseMentor(cursor);
+                break;
+            default:
+                throw new IllegalArgumentException();
+        }
+        return tClass.cast(hasId);
+    }
+
     public static class RequestCode {
         public static final int ADD_MENTOR = ADD | MENTOR;
         public static final int ADD_ASSESSMENT = ADD | ASSESSMENT;
@@ -64,6 +266,9 @@ public final class Util {
         public static final int EDIT_NOTE = EDIT | NOTE;
         public static final int PICK_MENTOR = PICK | MENTOR;
         public static final int ADD_CALENDAR_EVENT = ADD | CALENDAR_EVENT;
+        public static final int ADD_PHOTO = ADD | PHOTO;
+        public static final int REQUEST_PERMISSION = 0xFF00;
+
         private RequestCode() {}
     }
     public static class Tag {
@@ -78,103 +283,24 @@ public final class Util {
     private Util() {
         throw null;
     }
-    public static Mentor getMentor(Context context, long mentorId) {
-        Cursor cursor = null;
-        Mentor mentor = null;
-        try {
-            cursor = context.getContentResolver().query(MentorProvider.CONTRACT.contentUri(mentorId), null, null, null, null);
-            if (cursor != null && cursor.moveToFirst()) {
-                mentor = MentorCursorAdapter.cursorToCourseMentor(cursor);
-            }
-        }
-        finally {
-            if (cursor != null) {
-                cursor.close();
-            }
-        }
-        return mentor;
-    }
-    public static Term getTerm(Context context, long termId) {
-        Cursor cursor = null;
-        Term term = null;
-        try {
-            cursor = context.getContentResolver().query(TermProvider.CONTRACT.contentUri(termId), null, null, null, null);
-            if (cursor != null && cursor.moveToFirst()) {
-                term = TermCursorAdapter.cursorToTerm(cursor);
-            }
-        }
-        finally {
-            if (cursor != null) {
-                cursor.close();
-            }
-        }
-        return term;
-    }
-    public static Course getCourse(Context context, long courseId) {
-        Cursor cursor = null;
-        Course course = null;
-        try {
-            cursor = context.getContentResolver().query(CourseProvider.CONTRACT.contentUri(courseId), null, null, null, null);
-            if (cursor != null && cursor.moveToFirst()) {
-                course = CourseCursorAdapter.cursorToCourse(cursor);
-            }
-        }
-        finally {
-            if (cursor != null) {
-                cursor.close();
-            }
-        }
-        return course;
-    }
-    public static Assessment getAssessment(Context context, long assessmentId) {
-        Cursor cursor = null;
-        Assessment assessment = null;
-        try {
-            cursor = context.getContentResolver().query(AssessmentProvider.CONTRACT.contentUri(assessmentId), null, null, null, null);
-            if (cursor != null && cursor.moveToFirst()) {
-                assessment = AssessmentCursorAdapter.cursorToAssessment(cursor);
-            }
-        }
-        finally {
-            if (cursor != null) {
-                cursor.close();
-            }
-        }
-        return assessment;
-    }
-    public static Event getEvent(Context context, long eventId) {
-        Cursor cursor = null;
-        Event event = null;
-        try {
-            cursor = context.getContentResolver().query(EventProvider.CONTRACT.contentUri(eventId), null, null, null, null);
-            if (cursor != null && cursor.moveToFirst()) {
-                event = EventCursorAdapter.cursorToEvent(cursor, context);
-            }
-        }
-        finally {
-            if (cursor != null) {
-                cursor.close();
-            }
-        }
-        return event;
-    }
-    public static Event getEvent(Context context, Uri eventUri) {
-        return getEvent(context, ContentUris.parseId(eventUri));
-    }
-    public static Mentor getMentor(Context context, Uri courseMentorUri) {
-        return getMentor(context, ContentUris.parseId(courseMentorUri));
-    }
-    public static Course getCourse(Context context, Uri courseUri) {
-        return getCourse(context, ContentUris.parseId(courseUri));
-    }
-    public static Term getTerm(Context context, Uri termUri) {
-        return getTerm(context, ContentUris.parseId(termUri));
-    }
-    public static Assessment getAssessment(Context context, Uri assessmentUri) {
-        return getAssessment(context, ContentUris.parseId(assessmentUri));
-    }
 
+    /**
+     * The name of setBackgroundDrawable was changed to setBackground in Jelly Bean.
+     * @param view The view to change the background of.
+     * @param drawable The new background.
+     */
+    public static void setViewBackground(View view, Drawable drawable) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+            view.setBackground(drawable);
+        }
+        else {
+            view.setBackgroundDrawable(drawable);
+        }
+    }
     public static class Photo {
+        public static final String AUTHORITY = "com.example.clement.studentplanner.fileprovider";
+        private static File picFileDir;
+
         public static boolean capture(Activity activity, int requestCode) {
             boolean taken = false;
             if (activity.getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA)) {
@@ -188,7 +314,7 @@ public final class Util {
         }
 
         public static boolean capture(Activity activity) {
-            return capture(activity, RequestCode.ADD_NOTE);
+            return capture(activity, RequestCode.ADD_PHOTO);
         }
 
         public static Uri storeThumbnail(Context context, int resultCode, Intent data, String name) {
@@ -202,7 +328,7 @@ public final class Util {
                     e.printStackTrace();
                 }
                 if (file != null) {
-                    Uri photoUri = FileProvider.getUriForFile(context, "com.example.clement.studentplanner.fileprovider", file);
+                    Uri photoUri = FileProvider.getUriForFile(context, AUTHORITY, file);
                     try {
                         OutputStream out = new FileOutputStream(file);
                         thumbnailBitmap.compress(Bitmap.CompressFormat.JPEG, 50, out);
@@ -218,12 +344,19 @@ public final class Util {
         @Nullable
         public static File openFile(Context context, String name) throws IOException {
             String imageFileName = "PHOTO_"+name;
-            File storageDir = new File(context.getFilesDir(), "pics");
+            File storageDir = picFileDir(context);
             if (storageDir.exists() || storageDir.mkdir()) {
                 File imageFile = File.createTempFile(imageFileName, ".jpg", storageDir);
                 return imageFile;
             }
             return null;
+        }
+        @NonNull
+        public static synchronized File picFileDir(@NonNull Context context) {
+            if (picFileDir == null) {
+                picFileDir = new File(context.getFilesDir(), "pics");
+            }
+            return picFileDir;
         }
     }
 }

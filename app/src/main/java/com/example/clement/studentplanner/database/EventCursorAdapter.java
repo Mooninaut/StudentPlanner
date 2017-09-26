@@ -2,8 +2,6 @@ package com.example.clement.studentplanner.database;
 
 import android.content.Context;
 import android.database.Cursor;
-import android.graphics.drawable.Drawable;
-import android.os.Build;
 import android.support.v4.widget.CursorAdapter;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,6 +9,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.example.clement.studentplanner.R;
+import com.example.clement.studentplanner.Util;
 import com.example.clement.studentplanner.data.Event;
 
 import java.text.DateFormat;
@@ -60,14 +59,14 @@ public class EventCursorAdapter extends CursorAdapter {
                 terminus = context.getResources().getString(R.string.start);
 //                eventTerminus = context.getResources().getString(R.string.start);
                 eventTypeIcon = context.getResources().getString(R.string.go);
-                setViewBackground(eventTV, context.getResources().getDrawable(R.drawable.start_circle));
+                Util.setViewBackground(eventTV, context.getResources().getDrawable(R.drawable.start_circle));
                 eventTV.setTextSize(18f);
                 break;
             case COLUMN_END:
                 terminus = context.getResources().getString(R.string.end);
 //                eventTerminus = context.getResources().getString(R.string.end);
                 eventTypeIcon = context.getResources().getString(R.string.stop);
-                setViewBackground(eventTV, context.getResources().getDrawable(R.drawable.end_circle));
+                Util.setViewBackground(eventTV, context.getResources().getDrawable(R.drawable.end_circle));
                 eventTV.setTextSize(10f);
                 break;
             default:
@@ -101,14 +100,7 @@ public class EventCursorAdapter extends CursorAdapter {
         nameTV.setText(context.getResources().getString(R.string.event_format, terminus, prefix, eventName));
     }
 
-    public static void setViewBackground(View view, Drawable drawable) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-            view.setBackground(drawable);
-        }
-        else {
-            view.setBackgroundDrawable(drawable);
-        }
-    }
+
 
     public static Event cursorToEvent(Cursor cursor, Context context) {
         return new Event(

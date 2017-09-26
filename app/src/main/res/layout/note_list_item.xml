@@ -6,8 +6,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/note_list_item"
     android:background="@color/colorLightGray">
-    <ImageButton
-        android:id="@+id/note_image_button"
+    <ImageView
+        android:id="@+id/note_image_view"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:maxWidth="@dimen/keyline"

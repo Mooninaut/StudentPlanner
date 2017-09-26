@@ -2,17 +2,21 @@ package com.example.clement.studentplanner.data;
 
 import android.content.ContentUris;
 import android.content.ContentValues;
+import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.content.FileProvider;
+import android.util.Log;
 
 import com.example.clement.studentplanner.Util;
 import com.example.clement.studentplanner.database.OmniProvider;
 import com.example.clement.studentplanner.database.StorageHelper;
 
+import java.io.File;
 import java.util.Locale;
 
 
@@ -41,13 +45,16 @@ public class Note implements HasId, Parcelable{
         this.courseId = courseId;
         this.fileUri = fileUri;
     }
-    public Note(@NonNull Cursor cursor) {
+    public static Uri photoUriFromFileName(Context context, String fileName) {
+        return FileProvider.getUriForFile(context, Util.Photo.AUTHORITY, new File(Util.Photo.picFileDir(context), fileName));
+    }
+    public Note(@NonNull Context context, @NonNull Cursor cursor) {
         this(
                 cursor.getLong(cursor.getColumnIndex(StorageHelper.COLUMN_ID)),
                 cursor.getString(cursor.getColumnIndex(StorageHelper.COLUMN_TEXT)),
                 cursor.getLong(cursor.getColumnIndex(StorageHelper.COLUMN_ASSESSMENT_ID)),
                 cursor.getLong(cursor.getColumnIndex(StorageHelper.COLUMN_COURSE_ID)),
-                Uri.parse(cursor.getString(cursor.getColumnIndex(StorageHelper.COLUMN_PHOTO_FILE_URI)))
+                photoUriFromFileName(context, cursor.getString(cursor.getColumnIndex(StorageHelper.COLUMN_PHOTO_FILE_NAME)))
         );
 //        boolean wasNull = false;
         if (cursor.isNull(cursor.getColumnIndex(StorageHelper.COLUMN_ASSESSMENT_ID))) {
@@ -158,8 +165,8 @@ public class Note implements HasId, Parcelable{
         else {
             values.putNull(StorageHelper.COLUMN_COURSE_ID);
         }
-
-        values.put(StorageHelper.COLUMN_PHOTO_FILE_URI, fileUri.toString());
+        Log.d("StudentPlanner", "Note.toValues: File name = '"+fileUri.getLastPathSegment()+"'");
+        values.put(StorageHelper.COLUMN_PHOTO_FILE_NAME, fileUri.getLastPathSegment());
         if (hasId()) {
             values.put(StorageHelper.COLUMN_ID, id);
         }

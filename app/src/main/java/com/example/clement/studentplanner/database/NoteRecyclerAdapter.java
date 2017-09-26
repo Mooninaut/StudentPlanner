@@ -84,7 +84,7 @@ public class NoteRecyclerAdapter extends RecyclerCursorAdapterBase<NoteHolder, N
             Cursor cursor = getCursor();
             Note note = null;
             if (cursor.moveToPosition(position)) {
-                note = new Note(cursor);
+                note = new Note(context, cursor);
             }
             return note;
         }

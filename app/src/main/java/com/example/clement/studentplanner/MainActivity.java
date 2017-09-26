@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Intent;
-import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -12,6 +11,7 @@ import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -23,7 +23,6 @@ import android.widget.Toast;
 
 import com.example.clement.studentplanner.data.Assessment;
 import com.example.clement.studentplanner.data.Course;
-import com.example.clement.studentplanner.data.Note;
 import com.example.clement.studentplanner.data.Term;
 import com.example.clement.studentplanner.database.AssessmentProvider;
 import com.example.clement.studentplanner.database.CourseMentorProvider;
@@ -57,29 +56,17 @@ public class MainActivity extends AppCompatActivity
     private String currentFragment = null;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        File filesDir = getFilesDir();
-        for (File file : filesDir.listFiles()) {
+        for (File file : Util.Photo.picFileDir(this).listFiles()) {
             file = file.getAbsoluteFile();
-            Log.d("StudentPlanner", "MainActivity.onCreate: File \""+file.getName()+"\" is "+(file.isDirectory() ? "" : "not ")+"a directory.");
-            if (file.isDirectory()) {
-                for (File subfile : file.listFiles()) {
-                    Log.d("StudentPlanner", "MainActivity.onCreate: Subfile: \""+subfile.getAbsolutePath()+"\"");
+
+            if (!file.isDirectory()) {
+                int photoPresentInNote = Util.getCount(this, OmniProvider.Content.NOTE_FILE_NAME.buildUpon().appendPath(file.getName()).build());
+                if (photoPresentInNote == 0) {
+                    Log.d("StudentPlanner", "MainActivity.onCreate: File '" + file.getName() +
+                        "' is not a directory and does not belong to a Note object. Deleting...");
+                    int result = getContentResolver().delete(FileProvider.getUriForFile(this, Util.Photo.AUTHORITY, file), null, null);
+                    Log.d("StudentPlanner", "MainActivity.onCreate: Delete " + (result > 0 ? "succeeded" : "failed"));
                 }
-            }
-        }
-        Cursor cursor = null;
-        try {
-            cursor = getContentResolver().query(OmniProvider.Content.NOTE, null, null, null, null);
-            if (cursor != null) {
-                while(cursor.moveToNext()) {
-                    Note note = new Note(cursor);
-                    Log.d("StudentPlanner", "MainActivity.onCreate: \""+note.toString()+"\"");
-                }
-            }
-        }
-        finally {
-            if (cursor != null) {
-                cursor.close();
             }
         }
         super.onCreate(savedInstanceState);
@@ -94,7 +81,6 @@ public class MainActivity extends AppCompatActivity
 
         Toolbar myToolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(myToolbar);
-
     }
 
     private void switchToFragment(Fragment fragment, String tag) {

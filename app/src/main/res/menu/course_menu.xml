@@ -4,13 +4,13 @@
     <item android:id="@+id/edit"
         android:title="@string/edit"
         android:orderInCategory="100"
-        app:showAsAction="ifRoom" />
+        app:showAsAction="always" />
     <item android:id="@+id/reminder"
         android:title="@string/add_reminder"
         android:orderInCategory="200"
-        app:showAsAction="never" />
-    <item android:id="@+id/add_note"
-        android:title="@string/add_note"
+        app:showAsAction="ifRoom" />
+    <item android:id="@+id/delete"
+        android:title="@string/delete"
         android:orderInCategory="300"
-        app:showAsAction="never"/>
+        app:showAsAction="ifRoom"/>
 </menu>

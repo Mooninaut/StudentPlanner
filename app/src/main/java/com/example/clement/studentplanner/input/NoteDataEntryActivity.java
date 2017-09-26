@@ -1,12 +1,16 @@
 package com.example.clement.studentplanner.input;
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.ContentUris;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.ActionBar;
@@ -24,7 +28,6 @@ import android.widget.Toast;
 import com.example.clement.studentplanner.R;
 import com.example.clement.studentplanner.Util;
 import com.example.clement.studentplanner.data.Note;
-import com.example.clement.studentplanner.database.FrontEnd;
 
 import java.io.FileNotFoundException;
 import java.io.InputStream;
@@ -44,7 +47,6 @@ public class NoteDataEntryActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-
         setContentView(R.layout.note_data_entry_activity);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -58,7 +60,19 @@ public class NoteDataEntryActivity extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Util.Photo.capture(NoteDataEntryActivity.this);
+                // From
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    if (checkSelfPermission(Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
+                        Util.Photo.capture(NoteDataEntryActivity.this);
+                    }
+                    else {
+                        requestPermissions(new String[]{Manifest.permission.CAMERA},
+                            Util.RequestCode.REQUEST_PERMISSION);
+                    }
+                }
+                else {
+                    Util.Photo.capture(NoteDataEntryActivity.this);
+                }
             }
         });
         fab.bringToFront();
@@ -82,7 +96,7 @@ public class NoteDataEntryActivity extends AppCompatActivity {
                     }
                     break;
                 case Intent.ACTION_EDIT:
-                    setNote(FrontEnd.get(this, Note.class, intent.getData()));
+                    setNote(Util.get(this, Note.class, intent.getData()));
                     break;
                 default:
                     throw new UnsupportedOperationException();
@@ -96,7 +110,9 @@ public class NoteDataEntryActivity extends AppCompatActivity {
 
         MenuItem item = menu.findItem(R.id.share);
 
+        shareIntent.setType("image/*");
         shareActionProvider = (ShareActionProvider) MenuItemCompat.getActionProvider(item);
+        shareActionProvider.setShareIntent(shareIntent);
         return true;
     }
 
@@ -106,13 +122,13 @@ public class NoteDataEntryActivity extends AppCompatActivity {
             Log.d("StudentPlanner", "NoteDataEntryActivity: Delete of " + tempFileUri.toString()+" "+(result == 0 ? "failed" : "succeeded"));
         }
         tempFileUri = uri;
+
     }
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         Intent intent;
         switch(item.getItemId()) {
             case R.id.save:
-                Log.d("StudentPlanner", "NoteDataEntryActivity: Saving. "+(note != null ? note.toString() : "note is null"));
                 intent = new Intent();
                 EditText editText = findViewById(R.id.note_text_view);
                 if (tempFileUri != null) {
@@ -126,26 +142,27 @@ public class NoteDataEntryActivity extends AppCompatActivity {
                     tempFileUri = null;
                 }
                 note.text(editText.getText().toString());
+                Log.d("StudentPlanner", "NoteDataEntryActivity: Saving. "+(note != null ? note.toString() : "note is null"));
                 if (note.hasId()) {
-                    FrontEnd.update(this, note);
+                    Util.update(this, note);
                 }
                 else {
-                    FrontEnd.insert(this, note);
+                    Util.insert(this, note);
                 }
                 intent.setData(note.toUri());
                 setResult(Activity.RESULT_OK, intent);
                 finish();
                 return true;
-            case R.id.share:
-                shareActionProvider = (ShareActionProvider) MenuItemCompat.getActionProvider(item);
-                shareIntent.setType("image/*");
+/*            case R.id.share:
+
                 if (tempFileUri != null) {
                     shareIntent.putExtra(Intent.EXTRA_STREAM, tempFileUri);
                 } else if (note.hasFileUri()) {
                     shareIntent.putExtra(Intent.EXTRA_STREAM, note.fileUri());
                 }
                 shareActionProvider.setShareIntent(shareIntent);
-                return true;
+
+                return false;*/
             case android.R.id.home:
                 setTempFileUri(null);
                 finish();
@@ -155,10 +172,22 @@ public class NoteDataEntryActivity extends AppCompatActivity {
         }
     }
 
+    // From https://stackoverflow.com/a/32796900
     @Override
-    protected void onDestroy() {
-
-        super.onDestroy();
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == Util.RequestCode.REQUEST_PERMISSION) {
+            if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                // Now user should be able to use camera
+                Util.Photo.capture(NoteDataEntryActivity.this);
+            }
+            else {
+                // Your app will not have this permission. Turn off all functions
+                // that require this permission or it will force close like your
+                // original question
+                Toast.makeText(this, "Camera is disabled by user.", Toast.LENGTH_SHORT).show();
+            }
+        }
     }
 
     @Override
@@ -169,9 +198,10 @@ public class NoteDataEntryActivity extends AppCompatActivity {
         }
         super.onSaveInstanceState(outState);
     }
-    private void setText(String text) {
+    private void setText(@NonNull String text) {
         EditText editText = findViewById(R.id.note_text_view);
         editText.setText(text);
+        shareIntent.putExtra(Intent.EXTRA_TEXT, note.text());
     }
     private void setNote(Note note) {
         this.note = note;
@@ -183,7 +213,7 @@ public class NoteDataEntryActivity extends AppCompatActivity {
         }
 
     }
-    private void setImageView(Uri fileUri) {
+    private void setImageView(@NonNull Uri fileUri) {
         ImageView imageView = findViewById(R.id.note_image_view);
         Log.d("StudentPlanner", "NoteDataEntryActivity: fileUri = '"+fileUri.toString()+"'");
         try {
@@ -193,12 +223,14 @@ public class NoteDataEntryActivity extends AppCompatActivity {
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
+        shareIntent.putExtra(Intent.EXTRA_STREAM, fileUri);
+
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode) {
-            case Util.RequestCode.ADD_NOTE:
+            case Util.RequestCode.ADD_PHOTO:
                 if (resultCode == Activity.RESULT_OK) {
                     Uri newTempFileUri = Util.Photo.storeThumbnail(this, resultCode, data, "Test");
                     if (newTempFileUri == null) {

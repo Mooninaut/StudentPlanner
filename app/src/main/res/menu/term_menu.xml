@@ -9,4 +9,8 @@
         android:title="@string/edit"
         android:orderInCategory="200"
         app:showAsAction="ifRoom" />
+    <item android:id="@+id/delete"
+        android:title="@string/delete"
+        android:orderInCategory="300"
+        app:showAsAction="ifRoom"/>
 </menu>

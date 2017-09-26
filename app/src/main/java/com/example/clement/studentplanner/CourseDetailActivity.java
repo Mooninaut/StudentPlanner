@@ -3,13 +3,16 @@ package com.example.clement.studentplanner;
 
 import android.app.Activity;
 import android.content.ContentUris;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.CalendarContract;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.ActionBar;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
@@ -21,7 +24,6 @@ import android.widget.Toast;
 import com.example.clement.studentplanner.data.Course;
 import com.example.clement.studentplanner.data.Mentor;
 import com.example.clement.studentplanner.database.CourseCursorAdapter;
-import com.example.clement.studentplanner.database.FrontEnd;
 import com.example.clement.studentplanner.database.OmniProvider;
 import com.example.clement.studentplanner.input.AssessmentDataEntryActivity;
 import com.example.clement.studentplanner.input.CourseDataEntryActivity;
@@ -127,11 +129,11 @@ public class CourseDetailActivity extends AppCompatActivity
                 intent.setData(courseContentUri);
                 startActivityForResult(intent, Util.RequestCode.ADD_ASSESSMENT);
                 return true;*/
-            case R.id.add_note:
+/*            case R.id.add_note:
                 intent = new Intent(this, NoteDataEntryActivity.class);
                 intent.setAction(Intent.ACTION_INSERT);
                 startActivityForResult(intent, Util.RequestCode.ADD_NOTE);
-                return true;
+                return true;*/
             case R.id.edit:
                 intent = new Intent(this, CourseDataEntryActivity.class);
                 intent.setAction(Intent.ACTION_EDIT);
@@ -139,7 +141,7 @@ public class CourseDetailActivity extends AppCompatActivity
                 startActivityForResult(intent, Util.RequestCode.EDIT_COURSE);
                 return true;
             case R.id.reminder:
-                Course course = Util.getCourse(this, courseContentUri);
+                Course course = Util.get(this, Course.class, courseContentUri);
                 intent = new Intent(Intent.ACTION_INSERT)
                     .setData(CalendarContract.Events.CONTENT_URI)
                     .putExtra(CalendarContract.EXTRA_EVENT_BEGIN_TIME, course.startMillis())
@@ -149,12 +151,48 @@ public class CourseDetailActivity extends AppCompatActivity
 //                    .putExtra(CalendarContract.Events.DESCRIPTION, course.notes());
                 startActivity(intent);
                 return true;
+            case R.id.delete:
+                showDeleteDialog();
+                return true;
             default:
 //                return super.onOptionsItemSelected(item);
                 throw new UnsupportedOperationException();
         }
     }
 
+    /**
+     * Prompt the user for whether they really want to delete this course, and if so, go ahead and
+     * delete it (with associated notes and assessments).
+     */
+    private void showDeleteDialog() {
+        DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                switch (which){
+                    case DialogInterface.BUTTON_POSITIVE:
+                        //Yes button clicked
+                        deleteCourse();
+                        break;
+
+                    case DialogInterface.BUTTON_NEGATIVE:
+                        //No button clicked
+                        break;
+                }
+            }
+        };
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        Resources resources = getResources();
+        String course = resources.getString(R.string.course);
+        String delete = resources.getString(R.string.delete);
+        String cancel = resources.getString(R.string.cancel);
+        builder.setMessage(getResources().getString(R.string.confirm_delete, course)).setPositiveButton(delete, dialogClickListener)
+            .setNegativeButton(cancel, dialogClickListener).show();
+    }
+
+    private void deleteCourse() {
+        // TODO
+    }
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode) {
@@ -219,8 +257,8 @@ public class CourseDetailActivity extends AppCompatActivity
      */
     public void onMentorToggled(long mentorId) {
         long courseId = ContentUris.parseId(courseContentUri);
-        Mentor mentor = FrontEnd.get(this, Mentor.class, mentorId);
-        if (!FrontEnd.toggleCourseMentor(this, courseId, mentorId)) {
+        Mentor mentor = Util.get(this, Mentor.class, mentorId);
+        if (!Util.toggleCourseMentor(this, courseId, mentorId)) {
             Toast.makeText(this, getResources().getString(R.string.mentor_removed, mentor.name()), Toast.LENGTH_LONG).show();
         }
     }

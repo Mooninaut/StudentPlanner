@@ -69,6 +69,7 @@ public class OmniProvider extends ContentProvider {
         WHERE.append(Key.ID, StorageHelper.SELECT_BY_ID);
         WHERE.append(Key.COURSE_AND_MENTOR, StorageHelper.COLUMN_COURSE_ID
             +" = ? AND "+StorageHelper.COLUMN_MENTOR_ID+" = ?");
+        WHERE.append(Key.FILE_NAME, StorageHelper.COLUMN_PHOTO_FILE_NAME+" = ?");
     }
     private static final int MASK_TABLE = 0x00FF;
     private static final int MASK_KEY   = 0xFF00;
@@ -89,6 +90,7 @@ public class OmniProvider extends ContentProvider {
         private static final int NOT_COURSE = 0x2F00;
         private static final int COURSE_AND_MENTOR = 0x2400;
         private static final int ASSESSMENT = 0x3000;
+        private static final int FILE_NAME = 0x5100;
         private static final int ALL = 0xFF00;
         private static final int ID = 0xF100;
     }
@@ -110,6 +112,7 @@ public class OmniProvider extends ContentProvider {
         private static final int NOTE_ALL = Table.NOTE | Key.ALL;
         private static final int NOTE_COURSE_ID = Table.NOTE | Key.COURSE;
         private static final int NOTE_ASSESSMENT_ID = Table.NOTE | Key.ASSESSMENT;
+        private static final int NOTE_FILE_NAME = Table.NOTE | Key.FILE_NAME;
         private static final int EVENT_ALL = Table.EVENT | Key.ALL;
         private static final int EVENT_ID = Table.EVENT | Key.ID;
         private static final int COURSEMENTOR_ALL = Table.COURSEMENTOR | Key.ALL;
@@ -133,11 +136,12 @@ public class OmniProvider extends ContentProvider {
         public static final Uri NOTE = addMatchUri(Match.NOTE_ALL, StorageHelper.TABLE_NOTE);
         public static final Uri NOTE_COURSE_ID = buildPath(NOTE, StorageHelper.TABLE_COURSE);
         public static final Uri NOTE_ASSESSMENT_ID = buildPath(NOTE, StorageHelper.TABLE_ASSESSMENT);
+        public static final Uri NOTE_FILE_NAME = buildPath(NOTE, StorageHelper.COLUMN_PHOTO_FILE_NAME);
         public static final Uri MENTOR = addMatchUri(Match.MENTOR_ALL, StorageHelper.TABLE_MENTOR);
         public static final Uri MENTOR_NOT_COURSE = buildPath(MENTOR, "not_"+StorageHelper.TABLE_COURSE);
         public static final Uri MENTOR_COURSE = buildPath(MENTOR, StorageHelper.TABLE_COURSE);
         public static final Uri EVENT = addMatchUri(Match.EVENT_ALL, StorageHelper.TABLE_EVENT);
-        // package private, for use by FrontEnd only
+
         public static final Uri COURSEMENTOR = addMatchUri(Match.COURSEMENTOR_ALL, StorageHelper.TABLE_COURSE_MENTOR);
         public static final Uri COURSEMENTOR_COURSE_ID_MENTOR_ID = buildPath(COURSEMENTOR, "both");
 
@@ -172,6 +176,7 @@ public class OmniProvider extends ContentProvider {
         appendMatchUri(Match.NOTE_ID, Content.NOTE, "#");
         appendMatchUri(Match.NOTE_COURSE_ID, Content.NOTE_COURSE_ID, "#");
         appendMatchUri(Match.NOTE_ASSESSMENT_ID, Content.NOTE_ASSESSMENT_ID, "#");
+        appendMatchUri(Match.NOTE_FILE_NAME, Content.NOTE_FILE_NAME, "*"); // File name uses *, not #
         appendMatchUri(Match.MENTOR_ID, Content.MENTOR, "#");
         appendMatchUri(Match.EVENT_ID, Content.EVENT, "#");
         appendMatchUri(Match.COURSEMENTOR_ID, Content.COURSEMENTOR, "#");
@@ -379,12 +384,12 @@ public class OmniProvider extends ContentProvider {
         projection = null;
         selection = null;
         selectionArgs = null;
-        Uri notificationUri = CONTENT_BASE;
         sortOrder = COLUMN_ID + " ASC";
         Cursor cursor;
         int match = URI_MATCHER.match(uri);
         int matchKey = match & MASK_KEY;
         int matchTable = match & MASK_TABLE;
+        Uri notificationUri = uri;
         ContentResolver resolver = getContext().getContentResolver();
         // Unique cases
         switch (match) {
@@ -408,6 +413,11 @@ public class OmniProvider extends ContentProvider {
                 selection = WHERE.get(matchKey);
                 selectionArgs = toStringArray(courseMentor.courseId(), courseMentor.mentorId());
                 notificationUri = Content.MENTOR;
+                break;
+            case Match.NOTE_FILE_NAME:
+                notificationUri = Content.NOTE;
+                selection = WHERE.get(matchKey);
+                selectionArgs = toStringArray(uri.getLastPathSegment());
                 break;
             default:
                 // Generic cases
@@ -454,8 +464,8 @@ public class OmniProvider extends ContentProvider {
             null,
             sortOrder
         );
-        Log.d("StudentPlanner", "OmniProvider.query: URI is '"+uri+"'");
-        cursor.setNotificationUri(resolver, uri);
+        Log.d("StudentPlanner", "OmniProvider.query: URI = '"+uri.toString()+"', notificationUri = '"+notificationUri.toString()+"'");
+        cursor.setNotificationUri(resolver, notificationUri);
         return cursor;
     }
 

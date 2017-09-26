@@ -5,7 +5,6 @@ import android.support.test.InstrumentationRegistry;
 import android.support.test.runner.AndroidJUnit4;
 
 import com.example.clement.studentplanner.data.Term;
-import com.example.clement.studentplanner.database.FrontEnd;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -34,9 +33,9 @@ public class ExampleInstrumentedTest {
         Context appContext = InstrumentationRegistry.getTargetContext();
         Calendar calendar = Calendar.getInstance();
         Term term1a = new Term("test term", calendar.getTimeInMillis() - 1_000_000_000, calendar.getTimeInMillis() + 1_000_000_000, 1);
-        FrontEnd.insert(appContext, term1a);
-        Term term1b = FrontEnd.get(appContext, Term.class, term1a.id());
+        Util.insert(appContext, term1a);
+        Term term1b = Util.get(appContext, Term.class, term1a.id());
         assertEquals(term1a.toString(), term1b.toString());
-        FrontEnd.delete(appContext, term1b);
+        Util.delete(appContext, term1b);
     }
 }

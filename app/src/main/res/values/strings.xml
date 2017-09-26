@@ -47,6 +47,7 @@
     <string name="title_home">Home</string>
     <string name="title_terms">Terms</string>
     <string name="type">Type</string>
+    <string name="confirm_delete">Are you sure you want to delete this %1$s?</string>
     <string name="event_format">%1$s of %2$s %3$s</string>
     <string name="edit">Edit</string>
     <string name="add_reminder">Add Reminder</string>
@@ -94,4 +95,5 @@
     <string name="invalid_term_error">Invalid term number</string>
     <string name="add_note">Add Note</string>
     <string name="note_prompt">Type a note here</string>
+    <string name="delete">Delete</string>
 </resources>
