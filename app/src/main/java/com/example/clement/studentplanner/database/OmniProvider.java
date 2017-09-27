@@ -15,6 +15,7 @@ import android.support.annotation.Nullable;
 import android.util.Log;
 import android.util.SparseArray;
 
+import com.example.clement.studentplanner.Util;
 import com.example.clement.studentplanner.data.Assessment;
 import com.example.clement.studentplanner.data.Course;
 import com.example.clement.studentplanner.data.CourseMentor;
@@ -70,6 +71,7 @@ public class OmniProvider extends ContentProvider {
         WHERE.append(Key.COURSE_AND_MENTOR, StorageHelper.COLUMN_COURSE_ID
             +" = ? AND "+StorageHelper.COLUMN_MENTOR_ID+" = ?");
         WHERE.append(Key.FILE_NAME, StorageHelper.COLUMN_PHOTO_FILE_NAME+" = ?");
+        WHERE.append(Key.MENTOR, StorageHelper.COLUMN_MENTOR_ID+" = ?");
     }
     private static final int MASK_TABLE = 0x00FF;
     private static final int MASK_KEY   = 0xFF00;
@@ -90,6 +92,7 @@ public class OmniProvider extends ContentProvider {
         private static final int NOT_COURSE = 0x2F00;
         private static final int COURSE_AND_MENTOR = 0x2400;
         private static final int ASSESSMENT = 0x3000;
+        private static final int MENTOR = 0x4000;
         private static final int FILE_NAME = 0x5100;
         private static final int ALL = 0xFF00;
         private static final int ID = 0xF100;
@@ -117,6 +120,8 @@ public class OmniProvider extends ContentProvider {
         private static final int EVENT_ID = Table.EVENT | Key.ID;
         private static final int COURSEMENTOR_ALL = Table.COURSEMENTOR | Key.ALL;
         private static final int COURSEMENTOR_ID = Table.COURSEMENTOR | Key.ID;
+        private static final int COURSEMENTOR_COURSE_ID = Table.COURSEMENTOR | Key.COURSE;
+        private static final int COURSEMENTOR_MENTOR_ID = Table.COURSEMENTOR | Key.MENTOR;
         private static final int COURSEMENTOR_COURSE_ID_MENTOR_ID = Table.COURSEMENTOR | Key.COURSE_AND_MENTOR;
 
         //    private static final int TERM_EVENT = Table.TERM | Key.EVENT;
@@ -143,6 +148,8 @@ public class OmniProvider extends ContentProvider {
         public static final Uri EVENT = addMatchUri(Match.EVENT_ALL, StorageHelper.TABLE_EVENT);
 
         public static final Uri COURSEMENTOR = addMatchUri(Match.COURSEMENTOR_ALL, StorageHelper.TABLE_COURSE_MENTOR);
+        public static final Uri COURSEMENTOR_COURSE_ID = buildPath(COURSEMENTOR, StorageHelper.TABLE_COURSE);
+        public static final Uri COURSEMENTOR_MENTOR_ID = buildPath(COURSEMENTOR, StorageHelper.TABLE_MENTOR);
         public static final Uri COURSEMENTOR_COURSE_ID_MENTOR_ID = buildPath(COURSEMENTOR, "both");
 
         private Content() {}
@@ -180,6 +187,8 @@ public class OmniProvider extends ContentProvider {
         appendMatchUri(Match.MENTOR_ID, Content.MENTOR, "#");
         appendMatchUri(Match.EVENT_ID, Content.EVENT, "#");
         appendMatchUri(Match.COURSEMENTOR_ID, Content.COURSEMENTOR, "#");
+        appendMatchUri(Match.COURSEMENTOR_COURSE_ID, Content.COURSEMENTOR_COURSE_ID, "#");
+        appendMatchUri(Match.COURSEMENTOR_MENTOR_ID, Content.COURSEMENTOR_MENTOR_ID, "#");
         appendMatchUri(Match.COURSEMENTOR_COURSE_ID_MENTOR_ID, Content.COURSEMENTOR_COURSE_ID_MENTOR_ID, "#", "#");
         appendMatchUri(Match.MENTOR_COURSE_ID, Content.MENTOR_COURSE, "#");
         appendMatchUri(Match.MENTOR_NOT_COURSE_ID, Content.MENTOR_NOT_COURSE, "#");
@@ -264,7 +273,7 @@ public class OmniProvider extends ContentProvider {
      */
     private static Uri appendMatchUri(int id, Uri base, String... paths) {
         Uri uri = buildPath(base, paths);
-//        Log.d("StudentPlanner", "OmniProvider: Adding "+uri.toString()+" => "+id);
+//        Log.d(Util.LOG_TAG, "OmniProvider: Adding "+uri.toString()+" => "+id);
         URI_MATCHER.addURI(uri.getAuthority(), uri.getPath(), id);
         return uri;
     }
@@ -341,7 +350,7 @@ public class OmniProvider extends ContentProvider {
      * @param uri
      */
     public void notifyChange(@NonNull Uri uri) {
-        Log.d("StudentPlanner", "OmniProvider.notifyChange: uri = '"+uri.toString()+"'");
+        Log.d(Util.LOG_TAG, "OmniProvider.notifyChange: uri = '"+uri.toString()+"'");
         Context context = getContext();
         if (context != null) {
             ContentResolver contentResolver = context.getContentResolver();
@@ -381,6 +390,7 @@ public class OmniProvider extends ContentProvider {
                         @Nullable String selection,
                         @Nullable String[] selectionArgs,
                         @Nullable String sortOrder) {
+        Log.d(Util.LOG_TAG, "OmniProvider.query("+uri.toString()+", ...)");
         projection = null;
         selection = null;
         selectionArgs = null;
@@ -396,14 +406,14 @@ public class OmniProvider extends ContentProvider {
             case Match.MENTOR_COURSE_ID:
                 cursor = mentorByCourseIdQuery(ContentUris.parseId(uri));
                 if (cursor != null) {
-                    Log.d("StudentPlanner", "OmniProvider.query: Setting notification uri for '"+uri.toString()+"' to '"+Content.MENTOR.toString()+"'");
+                    Log.d(Util.LOG_TAG, "OmniProvider.query: Setting notification uri to '"+Content.MENTOR.toString()+"'");
                     cursor.setNotificationUri(resolver, Content.MENTOR);
                 }
                 return cursor;
             case Match.MENTOR_NOT_COURSE_ID:
                 cursor = mentorByNotCourseIdQuery(ContentUris.parseId(uri));
                 if (cursor != null) {
-                    Log.d("StudentPlanner", "OmniProvider.query: Setting notification uri for "+uri.toString()+" to "+Content.MENTOR.toString());
+                    Log.d(Util.LOG_TAG, "OmniProvider.query: Setting notification uri to '"+Content.MENTOR.toString()+"'");
                     cursor.setNotificationUri(resolver, Content.MENTOR);
                 }
                 return cursor;
@@ -429,6 +439,7 @@ public class OmniProvider extends ContentProvider {
                     case Key.TERM:
                     case Key.COURSE:
                     case Key.ASSESSMENT:
+                    case Key.MENTOR:
                         selection = WHERE.get(matchKey);
                         selectionArgs = toStringArray(ContentUris.parseId(uri));
                         break;
@@ -464,7 +475,7 @@ public class OmniProvider extends ContentProvider {
             null,
             sortOrder
         );
-        Log.d("StudentPlanner", "OmniProvider.query: URI = '"+uri.toString()+"', notificationUri = '"+notificationUri.toString()+"'");
+        Log.d(Util.LOG_TAG, "OmniProvider.query: URI = '"+uri.toString()+"', notificationUri = '"+notificationUri.toString()+"'");
         cursor.setNotificationUri(resolver, notificationUri);
         return cursor;
     }
@@ -478,6 +489,7 @@ public class OmniProvider extends ContentProvider {
     @Nullable
     @Override
     public Uri insert(@NonNull Uri uri, @Nullable ContentValues contentValues) {
+        Log.d(Util.LOG_TAG, "OmniProvider.insert("+uri.toString()+", "+contentValues.toString()+")");
         int match = URI_MATCHER.match(uri);
         int matchKey = match & MASK_KEY;
         int matchTable = match & MASK_TABLE;
@@ -506,13 +518,24 @@ public class OmniProvider extends ContentProvider {
             contentValues
         );
         Uri newUri = ContentUris.withAppendedId(uri, id);
+        if (matchTable == Table.COURSEMENTOR) {
+            notifyChange(Content.MENTOR);
+        }
         notifyChange(newUri);
         return newUri;
     }
 
+    /**
+     * Delete something from the database
+     * @param uri The ContentUri to delete
+     * @param selection Unused
+     * @param selectionArgs Unused
+     * @return
+     */
     @Override
     public int delete(@NonNull Uri uri, @Nullable String selection,
                       @Nullable String[] selectionArgs) {
+        Log.d(Util.LOG_TAG, "OmniProvider.delete("+uri.toString()+", ...)");
         int match = URI_MATCHER.match(uri);
         int matchKey = match & MASK_KEY;
         int matchTable = match & MASK_TABLE;
@@ -529,6 +552,8 @@ public class OmniProvider extends ContentProvider {
                 selection = WHERE.get(matchKey);
                 selectionArgs = toStringArray(courseMentor.courseId(), courseMentor.mentorId());
                 break;
+            case Key.NOT_COURSE:
+                throw new IllegalArgumentException("Deleting mentors not in course is not supported");
             default:
                 selection = WHERE.get(matchKey);
                 selectionArgs = toStringArray(ContentUris.parseId(uri));
@@ -540,6 +565,9 @@ public class OmniProvider extends ContentProvider {
         String table = TABLES.get(matchTable);
         int rowsAffected = getWritableDatabase().delete(table, selection, selectionArgs);
         if (rowsAffected > 0) {
+            if (matchTable == Table.COURSEMENTOR) {
+                notifyChange(Content.MENTOR);
+            }
             notifyChange(uri);
         }
         return rowsAffected;
@@ -549,6 +577,7 @@ public class OmniProvider extends ContentProvider {
     @Override
     public int update(@NonNull Uri uri, @Nullable ContentValues contentValues,
                       @Nullable String selection, @Nullable String[] selectionArgs) {
+        Log.d(Util.LOG_TAG, "OmniProvider.update("+uri.toString()+", ...)");
         // FIXME validation like for query()
         int match = URI_MATCHER.match(uri);
         int matchKey = match & MASK_KEY;
@@ -559,6 +588,9 @@ public class OmniProvider extends ContentProvider {
         int rowsAffected = getWritableDatabase().update(
             table, contentValues, selection, selectionArgs);
         if (rowsAffected > 0) {
+            if (matchTable == Table.COURSEMENTOR) {
+                notifyChange(Content.MENTOR);
+            }
             notifyChange(uri);
         }
         return rowsAffected;

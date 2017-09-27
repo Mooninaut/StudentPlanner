@@ -7,6 +7,7 @@ import android.provider.BaseColumns;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
+import com.example.clement.studentplanner.Util;
 import com.example.clement.studentplanner.data.Event.Type;
 
 import java.util.ArrayList;
@@ -140,11 +141,11 @@ public class StorageHelper extends SQLiteOpenHelper {
         CREATE_DATABASE = schema.toArray(new String[schema.size()]);
     }
     private static void createDatabase(SQLiteDatabase db) {
-        Log.d("StudentPlanner", "StorageHelper.createDatabase: Creating database, version"+DATABASE_VERSION+".");
+        Log.d(Util.LOG_TAG, "StorageHelper.createDatabase: Creating database, version"+DATABASE_VERSION+".");
         for (String sql : CREATE_DATABASE) {
             db.execSQL(sql);
         }
-        Log.d("StudentPlanner", "StorageHelper.createDatabase: Database created.");
+        Log.d(Util.LOG_TAG, "StorageHelper.createDatabase: Database created.");
     }
     public StorageHelper(@NonNull Context context) {
         super(context, DATABASE_FILE_NAME, null, DATABASE_VERSION);

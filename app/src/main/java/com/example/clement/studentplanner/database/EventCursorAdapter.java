@@ -2,6 +2,7 @@ package com.example.clement.studentplanner.database;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.support.annotation.Nullable;
 import android.support.v4.widget.CursorAdapter;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -77,7 +78,7 @@ public class EventCursorAdapter extends CursorAdapter {
 //        nameTV.setText(eventName);
         eventTV.setText(eventTypeIcon);
         long eventId = cursor.getLong(cursor.getColumnIndex(COLUMN_ID));
-        long sourceId = EventProvider.eventToSource(eventId);
+        long sourceId = OmniProvider.eventToSource(eventId);
         String prefix;
         boolean showTime = false;
         switch (StorageHelper.classify(sourceId)) {
@@ -100,9 +101,17 @@ public class EventCursorAdapter extends CursorAdapter {
         nameTV.setText(context.getResources().getString(R.string.event_format, terminus, prefix, eventName));
     }
 
+    @Override
+    @Nullable
+    public Event getItem(int position) {
+        Cursor cursor = getCursor();
+        if (cursor.moveToPosition(position)) {
+            return cursorToEvent(cursor);
+        }
+        return null;
+    }
 
-
-    public static Event cursorToEvent(Cursor cursor, Context context) {
+    public static Event cursorToEvent(Cursor cursor) {
         return new Event(
             cursor.getLong(cursor.getColumnIndex(COLUMN_ID)),
             cursor.getString(cursor.getColumnIndex(COLUMN_NAME)),

@@ -28,13 +28,6 @@ public class MentorPickerActivity extends AppCompatActivity
     private static final String TAG = "mentor picker";
     public MentorPickerActivity() {}
 
-//    public static MentorPickerActivity newInstance(Uri courseUri) {
-//        MentorPickerActivity fragment = new MentorPickerActivity();
-//        Bundle args = new Bundle();
-//        args.putParcelable(CourseProvider.CONTRACT.contentItemType, courseUri);
-//        fragment.setArguments(args);
-//        return fragment;
-//    }
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -56,20 +49,12 @@ public class MentorPickerActivity extends AppCompatActivity
                 startActivityForResult(intent, ADD_MENTOR_REQUEST_CODE);
             }
         });
-
-        /*Long courseId = ContentUris.parseId(getIntent().getData());
-        Uri mentorWithoutCourseUri = MentorProvider.CONTRACT.noCourseUri(courseId);
-        MentorListingFragment fragment = MentorListingFragment.newInstance(mentorWithoutCourseUri);
-        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-        transaction.replace(R.id.mentor_picker_frame, fragment, "mentor");
-        transaction.commit();*/
     }
 
     @Override
     protected void onStart() {
         super.onStart();
         Long courseId = ContentUris.parseId(getIntent().getData());
-//        Uri mentorWithoutCourseUri = MentorProvider.CONTRACT.noCourseUri(courseId);
         Uri mentorWithoutCourseUri = ContentUris.withAppendedId(OmniProvider.Content.MENTOR_NOT_COURSE, courseId);
         MentorListingFragment fragment = MentorListingFragment.newInstance(mentorWithoutCourseUri);
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
@@ -88,7 +73,6 @@ public class MentorPickerActivity extends AppCompatActivity
     public void onFragmentItemClick(long mentorId, View view, String tag) {
         if (tag.equals(TAG)) {
             Intent result = new Intent("com.example.clement.studentplanner.RESULT_MENTOR",
-//                MentorProvider.CONTRACT.contentUri(mentorId)
                 ContentUris.withAppendedId(OmniProvider.Content.MENTOR, mentorId)
             );
             setResult(Activity.RESULT_OK, result);

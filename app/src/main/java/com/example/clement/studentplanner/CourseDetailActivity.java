@@ -72,7 +72,6 @@ public class CourseDetailActivity extends AppCompatActivity
         FragmentManager fragmentManager = getSupportFragmentManager();
 
         // Initialize assessment list fragment
-//        Uri assessmentContentUri = AssessmentProvider.CONTRACT.courseUri(courseId);
         Uri assessmentContentUri = ContentUris.withAppendedId(OmniProvider.Content.ASSESSMENT_COURSE_ID, courseId);
 
         assessmentFragment = AssessmentListingFragment.newInstance(assessmentContentUri);
@@ -191,7 +190,7 @@ public class CourseDetailActivity extends AppCompatActivity
     }
 
     private void deleteCourse() {
-        // TODO
+        int result = getContentResolver().delete(courseContentUri, null, null);
     }
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {

@@ -72,7 +72,7 @@ public class EventHolder extends RecyclerViewHolderBase<Event> {
 //        nameTV.setText(eventName);
         eventIdTV.setText(eventTypeIcon);
         long eventId = event.id();
-        long sourceId = EventProvider.eventToSource(eventId);
+        long sourceId = OmniProvider.eventToSource(eventId);
         String prefix;
         boolean showTime = false;
         switch (StorageHelper.classify(sourceId)) {

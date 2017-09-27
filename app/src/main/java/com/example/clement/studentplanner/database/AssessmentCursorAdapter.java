@@ -12,6 +12,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.example.clement.studentplanner.R;
+import com.example.clement.studentplanner.Util;
 import com.example.clement.studentplanner.data.Assessment;
 
 import java.text.DateFormat;
@@ -45,7 +46,7 @@ public class AssessmentCursorAdapter extends CursorAdapter {
     public void bindView(View view, Context context, Cursor cursor) {
         Assessment assessment = cursorToAssessment(cursor);
 
-        Log.d("StudentPlanner", "AssessmentCursorAdapter: Id = \""+assessment.id()+"\", courseId = "+assessment.courseId()+"\"");
+        Log.d(Util.LOG_TAG, "AssessmentCursorAdapter: Id = \""+assessment.id()+"\", courseId = "+assessment.courseId()+"\"");
 
         TextView typeTV = (TextView) view.findViewById(R.id.assessment_type_text_view);
         TextView nameTV = (TextView) view.findViewById(R.id.assessment_name_text_view);

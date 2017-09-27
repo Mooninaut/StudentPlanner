@@ -17,11 +17,6 @@ public class MentorListingFragment
 
     public static final int MENTOR_LOADER_ID = 3; // 3 is M for Mentor sideways
 
-    @Override
-    protected MentorRecyclerAdapter createAdapter(Context context, Cursor cursor) {
-        return new MentorRecyclerAdapter(context, cursor, this, this);
-    }
-
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
      * fragment (e.g. upon screen orientation changes).
@@ -31,6 +26,11 @@ public class MentorListingFragment
             R.layout.mentor_recycler_view,
             MENTOR_LOADER_ID
         );
+    }
+
+    @Override
+    protected MentorRecyclerAdapter createAdapter(Context context, Cursor cursor) {
+        return new MentorRecyclerAdapter(context, cursor, this, this);
     }
 
     public static MentorListingFragment newInstance(Uri contentUri) {

@@ -59,16 +59,16 @@ public class Note implements HasId, Parcelable{
 //        boolean wasNull = false;
         if (cursor.isNull(cursor.getColumnIndex(StorageHelper.COLUMN_ASSESSMENT_ID))) {
             assessmentId = Util.NO_ID;
-//            Log.d("StudentPlanner", "Note(cursor): Assessment ID is null.");
+//            Log.d(Util.LOG_TAG, "Note(cursor): Assessment ID is null.");
 //            wasNull = true;
         }
         if (cursor.isNull(cursor.getColumnIndex(StorageHelper.COLUMN_COURSE_ID))) {
             courseId = Util.NO_ID;
-//            Log.d("StudentPlanner", "Note(cursor): Course ID is null.");
+//            Log.d(Util.LOG_TAG, "Note(cursor): Course ID is null.");
 //            wasNull = true;
         }
 /*        if (wasNull) {
-            Log.d("StudentPlanner", "Note(cursor): Note = "+toString());
+            Log.d(Util.LOG_TAG, "Note(cursor): Note = "+toString());
         }*/
     }
 
@@ -165,7 +165,7 @@ public class Note implements HasId, Parcelable{
         else {
             values.putNull(StorageHelper.COLUMN_COURSE_ID);
         }
-        Log.d("StudentPlanner", "Note.toValues: File name = '"+fileUri.getLastPathSegment()+"'");
+        Log.d(Util.LOG_TAG, "Note.toValues: File name = '"+fileUri.getLastPathSegment()+"'");
         values.put(StorageHelper.COLUMN_PHOTO_FILE_NAME, fileUri.getLastPathSegment());
         if (hasId()) {
             values.put(StorageHelper.COLUMN_ID, id);

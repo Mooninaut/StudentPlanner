@@ -21,10 +21,9 @@ import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.example.clement.studentplanner.R;
+import com.example.clement.studentplanner.Util;
 import com.example.clement.studentplanner.data.Course;
 import com.example.clement.studentplanner.data.Term;
-import com.example.clement.studentplanner.database.CourseCursorAdapter;
-import com.example.clement.studentplanner.database.CourseProvider;
 import com.example.clement.studentplanner.database.TermCursorAdapter;
 import com.example.clement.studentplanner.database.TermProvider;
 
@@ -158,7 +157,7 @@ public class CourseDataEntryActivity extends AppCompatActivity implements DatePi
             cursor = getContentResolver().query(courseUri, null, null, null, null);
             if (cursor != null && cursor.moveToFirst()) {
                 // retrieve Course
-                localCourse = CourseCursorAdapter.cursorToCourse(cursor);
+                localCourse = new Course(cursor);
                 // Find date text views
                 TextView startDateTV = (TextView) findViewById(R.id.edit_start_date);
                 TextView endDateTV = (TextView) findViewById(R.id.edit_end_date);
@@ -234,21 +233,15 @@ public class CourseDataEntryActivity extends AppCompatActivity implements DatePi
         Intent intent = getIntent();
         Uri resultUri = null;
         if (intent.getAction().equals(Intent.ACTION_EDIT)) {
-            int rowsAffected = getContentResolver().update(
-                intent.getData(),
-                CourseProvider.courseToValues(course),
-                null,
-                null
-            );
-            if (rowsAffected > 0) {
+
+            if (Util.update(this, course)) {
                 resultUri = intent.getData();
             }
         }
         else if (intent.getAction().equals(Intent.ACTION_INSERT)) {
-            resultUri = getContentResolver().insert(
-                CourseProvider.CONTRACT.contentUri,
-                CourseProvider.courseToValues(course)
-            );
+            if (Util.insert(this, course)) {
+                resultUri = course.toUri();
+            }
         }
         if (resultUri != null) {
             Intent result = new Intent("com.example.studentplanner.RESULT_COURSE", resultUri);

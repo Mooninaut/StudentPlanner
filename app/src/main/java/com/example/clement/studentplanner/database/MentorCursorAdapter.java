@@ -12,6 +12,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.example.clement.studentplanner.R;
+import com.example.clement.studentplanner.Util;
 import com.example.clement.studentplanner.data.Mentor;
 
 import static com.example.clement.studentplanner.database.StorageHelper.COLUMN_EMAIL;
@@ -40,7 +41,7 @@ public class MentorCursorAdapter extends CursorAdapter {
     public void bindView(View view, Context context, Cursor cursor) {
         Mentor mentor = cursorToCourseMentor(cursor);
 
-        Log.d("StudentPlanner", "MentorCursorAdapter.bindView(): ID = \""+ mentor.id()+"\"");
+        Log.d(Util.LOG_TAG, "MentorCursorAdapter.bindView(): ID = \""+ mentor.id()+"\"");
 
         TextView nameTV = (TextView) view.findViewById(R.id.mentor_name_text_view);
         TextView emailTV = (TextView) view.findViewById(R.id.mentor_email_text_view);

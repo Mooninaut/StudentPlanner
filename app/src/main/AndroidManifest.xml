@@ -33,21 +33,6 @@
             android:enabled="true"
             android:exported="false"/>
         <provider
-            android:name=".database.EventProvider"
-            android:authorities="com.example.clement.studentplanner.eventprovider"
-            android:enabled="true"
-            android:exported="false"/>
-        <provider
-            android:name=".database.CourseProvider"
-            android:authorities="com.example.clement.studentplanner.courseprovider"
-            android:enabled="true"
-            android:exported="false"/>
-        <provider
-            android:name=".database.AssessmentProvider"
-            android:authorities="com.example.clement.studentplanner.assessmentprovider"
-            android:enabled="true"
-            android:exported="false"/>
-        <provider
             android:name="android.support.v4.content.FileProvider"
             android:authorities="com.example.clement.studentplanner.fileprovider"
             android:enabled="true"
@@ -57,16 +42,6 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/file_paths"/>
         </provider>
-        <provider
-            android:name=".database.MentorProvider"
-            android:authorities="com.example.clement.studentplanner.mentorprovider"
-            android:enabled="true"
-            android:exported="false"/>
-        <provider
-            android:name=".database.CourseMentorProvider"
-            android:authorities="com.example.clement.studentplanner.coursementorprovider"
-            android:enabled="true"
-            android:exported="false"/>
         <provider
             android:name=".database.OmniProvider"
             android:authorities="com.example.clement.studentplanner.provider"

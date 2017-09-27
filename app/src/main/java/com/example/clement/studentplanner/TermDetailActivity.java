@@ -16,7 +16,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import com.example.clement.studentplanner.database.CourseProvider;
+import com.example.clement.studentplanner.database.OmniProvider;
 import com.example.clement.studentplanner.database.TermCursorAdapter;
 import com.example.clement.studentplanner.database.TermProvider;
 import com.example.clement.studentplanner.input.CourseDataEntryActivity;
@@ -26,8 +26,7 @@ import com.example.clement.studentplanner.input.TermDataEntryActivity;
  * Created by Clement on 8/18/2017.
  */
 
-public class TermDetailActivity extends AppCompatActivity
-    implements CourseListingFragment.HostActivity {
+public class TermDetailActivity extends AppCompatActivity {
 
     private static final int CREATE_COURSE_REQUEST_CODE = 0x55; // arbitrary
     private static final int EDIT_TERM_REQUEST_CODE = 0x56;
@@ -59,7 +58,7 @@ public class TermDetailActivity extends AppCompatActivity
         setTerm(termContentUri);
 
         long termId = ContentUris.parseId(termContentUri);
-        Uri courseContentUri = ContentUris.withAppendedId(CourseProvider.CONTRACT.termUri, termId);
+        Uri courseContentUri = ContentUris.withAppendedId(OmniProvider.Content.COURSE_TERM_ID, termId);
 
         fragment = CourseListingFragment.newInstance(courseContentUri);
         FragmentManager fragmentManager = getSupportFragmentManager();
@@ -109,7 +108,7 @@ public class TermDetailActivity extends AppCompatActivity
                 finish();
                 return true;
             case R.id.add:
-                Log.d("StudentPlanner", "TermDetailActivity.onOptionsItemSelected: New Course");
+                Log.d(Util.LOG_TAG, "TermDetailActivity.onOptionsItemSelected: New Course");
                 intent = new Intent(this, CourseDataEntryActivity.class);
                 intent.setAction(Intent.ACTION_INSERT);
                 intent.setData(termContentUri);
@@ -144,16 +143,4 @@ public class TermDetailActivity extends AppCompatActivity
         }
     }
 
-    @Override
-    public void onCourseSelected(long courseId) {
-        Intent intent = new Intent(this, CourseDetailActivity.class);
-        intent.setAction(Intent.ACTION_VIEW);
-        intent.setData(CourseProvider.CONTRACT.contentUri(courseId));
-        startActivity(intent);
-    }
-
-//    @Override
-//    public CourseCursorAdapter getCourseCursorAdapter() {
-//        return courseCursorAdapter;
-//    }
 }

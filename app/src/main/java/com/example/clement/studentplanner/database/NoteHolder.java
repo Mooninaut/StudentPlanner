@@ -34,10 +34,6 @@ public class NoteHolder extends RecyclerViewHolderBase<Note> {
         this.context = context;
         this.noteView = itemView.findViewById(R.id.note_text_view);
         this.imageView = itemView.findViewById(R.id.note_image_view);
-/*        noteView.setOnClickListener(this);
-        noteView.setOnLongClickListener(this);
-        imageView.setOnClickListener(this);
-        imageView.setOnLongClickListener(this);*/
         itemView.setOnClickListener(this);
         itemView.setOnLongClickListener(this);
     }

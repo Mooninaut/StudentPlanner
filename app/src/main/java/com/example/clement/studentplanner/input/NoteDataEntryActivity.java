@@ -119,7 +119,7 @@ public class NoteDataEntryActivity extends AppCompatActivity {
     private void setTempFileUri(Uri uri) {
         if (tempFileUri != null) {
             int result = getContentResolver().delete(tempFileUri, null, null);
-            Log.d("StudentPlanner", "NoteDataEntryActivity: Delete of " + tempFileUri.toString()+" "+(result == 0 ? "failed" : "succeeded"));
+            Log.d(Util.LOG_TAG, "NoteDataEntryActivity: Delete of " + tempFileUri.toString()+" "+(result == 0 ? "failed" : "succeeded"));
         }
         tempFileUri = uri;
 
@@ -135,14 +135,14 @@ public class NoteDataEntryActivity extends AppCompatActivity {
                     if (note.hasFileUri()) {
                         // Replace existing file
                         int result = getContentResolver().delete(note.fileUri(), null, null);
-                        Log.d("StudentPlanner", "NoteDataEntryActivity: Delete of " + note.fileUri().toString()+" "+(result == 0 ? "failed" : "succeeded"));
+                        Log.d(Util.LOG_TAG, "NoteDataEntryActivity: Delete of " + note.fileUri().toString()+" "+(result == 0 ? "failed" : "succeeded"));
                     }
                     note.fileUri(tempFileUri);
                     // deliberately not using setTempFileUri, as that would delete the file
                     tempFileUri = null;
                 }
                 note.text(editText.getText().toString());
-                Log.d("StudentPlanner", "NoteDataEntryActivity: Saving. "+(note != null ? note.toString() : "note is null"));
+                Log.d(Util.LOG_TAG, "NoteDataEntryActivity: Saving. "+(note != null ? note.toString() : "note is null"));
                 if (note.hasId()) {
                     Util.update(this, note);
                 }
@@ -215,7 +215,7 @@ public class NoteDataEntryActivity extends AppCompatActivity {
     }
     private void setImageView(@NonNull Uri fileUri) {
         ImageView imageView = findViewById(R.id.note_image_view);
-        Log.d("StudentPlanner", "NoteDataEntryActivity: fileUri = '"+fileUri.toString()+"'");
+        Log.d(Util.LOG_TAG, "NoteDataEntryActivity: fileUri = '"+fileUri.toString()+"'");
         try {
             InputStream inputStream = getContentResolver().openInputStream(fileUri);
             Bitmap bitmap = BitmapFactory.decodeStream(inputStream);

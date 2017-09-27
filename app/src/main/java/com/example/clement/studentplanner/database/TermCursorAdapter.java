@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.example.clement.studentplanner.R;
+import com.example.clement.studentplanner.Util;
 import com.example.clement.studentplanner.data.Term;
 
 import java.text.DateFormat;
@@ -57,7 +58,7 @@ public class TermCursorAdapter extends CursorAdapter{
     public void bindView(View view, Context context, Cursor cursor) {
         Term term = cursorToTerm(cursor);
 
-        Log.d("StudentPlanner", "TermCursorAdapter.bindView: ID = '"+term.id()+"'");
+        Log.d(Util.LOG_TAG, "TermCursorAdapter.bindView: ID = '"+term.id()+"'");
         TextView nameTV = (TextView) view.findViewById(R.id.termNameTextView);
         TextView numberTV = (TextView) view.findViewById(R.id.termNumberTextView);
         TextView startTV = (TextView) view.findViewById(R.id.termStartTextView);

@@ -10,17 +10,11 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.example.clement.studentplanner.R;
+import com.example.clement.studentplanner.Util;
 import com.example.clement.studentplanner.data.Course;
 
 import java.text.DateFormat;
 import java.util.Locale;
-
-import static com.example.clement.studentplanner.database.StorageHelper.COLUMN_END;
-import static com.example.clement.studentplanner.database.StorageHelper.COLUMN_ID;
-import static com.example.clement.studentplanner.database.StorageHelper.COLUMN_NAME;
-import static com.example.clement.studentplanner.database.StorageHelper.COLUMN_START;
-import static com.example.clement.studentplanner.database.StorageHelper.COLUMN_STATUS;
-import static com.example.clement.studentplanner.database.StorageHelper.COLUMN_TERM_ID;
 
 /**
  * Created by Clement on 8/6/2017.
@@ -45,8 +39,8 @@ public class CourseCursorAdapter extends CursorAdapter {
     @Override
     public void bindView(View view, Context context, Cursor cursor) {
 
-        Course course = cursorToCourse(cursor);
-        Log.d("StudentPlanner", "CourseCursorAdapter: ID = \""+course.id()+"\" term ID = \""+course.termId()+"\"");
+        Course course = new Course(cursor);
+        Log.d(Util.LOG_TAG, "CourseCursorAdapter.bindView: "+course.toString());
         TextView nameTV = (TextView) view.findViewById(R.id.course_name_text_view);
         TextView numberTV = (TextView) view.findViewById(R.id.course_number_text_view);
         TextView startTV = (TextView) view.findViewById(R.id.course_start_text_view);
@@ -58,23 +52,12 @@ public class CourseCursorAdapter extends CursorAdapter {
         endTV.setText(dateFormat.format(course.endDate()));
     }
 
-    public static Course cursorToCourse(Cursor cursor) {
-        return new Course(
-            cursor.getLong(cursor.getColumnIndex(COLUMN_ID)),
-            cursor.getString(cursor.getColumnIndex(COLUMN_NAME)),
-            cursor.getLong(cursor.getColumnIndex(COLUMN_START)),
-            cursor.getLong(cursor.getColumnIndex(COLUMN_END)),
-            cursor.getLong(cursor.getColumnIndex(COLUMN_TERM_ID)),
-            Course.Status.of(cursor.getInt(cursor.getColumnIndex(COLUMN_STATUS)))/*,
-            cursor.getString(cursor.getColumnIndex(COLUMN_NOTE))*/
-        );
-    }
     @Override
     public Course getItem(int position) {
         Cursor cursor = getCursor();
         Course course = null;
         if (cursor.moveToPosition(position)) {
-            course = cursorToCourse(cursor);
+            course = new Course(cursor);
         }
         return course;
     }

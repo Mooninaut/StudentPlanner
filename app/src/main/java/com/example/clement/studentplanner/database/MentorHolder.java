@@ -1,11 +1,13 @@
 package com.example.clement.studentplanner.database;
 
 import android.support.annotation.Nullable;
+import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
 import com.example.clement.studentplanner.ItemListener;
 import com.example.clement.studentplanner.R;
+import com.example.clement.studentplanner.Util;
 import com.example.clement.studentplanner.data.Mentor;
 
 /**
@@ -31,6 +33,7 @@ public class MentorHolder extends RecyclerViewHolderBase<Mentor> {
 
     @Override
     public void bindItem(Mentor mentor) {
+        Log.d(Util.LOG_TAG, "MentorHolder.bindItem("+mentor.toString()+")");
         super.bindItem(mentor);
         this.mentorName.setText(mentor.name());
         this.mentorPhone.setText(mentor.phoneNumber());

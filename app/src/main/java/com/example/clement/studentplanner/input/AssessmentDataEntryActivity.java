@@ -3,6 +3,7 @@ package com.example.clement.studentplanner.input;
 import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
+import android.content.ContentUris;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
@@ -23,12 +24,12 @@ import android.widget.TextView;
 import android.widget.TimePicker;
 
 import com.example.clement.studentplanner.R;
+import com.example.clement.studentplanner.Util;
 import com.example.clement.studentplanner.data.Assessment;
 import com.example.clement.studentplanner.data.Course;
 import com.example.clement.studentplanner.database.AssessmentCursorAdapter;
-import com.example.clement.studentplanner.database.AssessmentProvider;
 import com.example.clement.studentplanner.database.CourseCursorAdapter;
-import com.example.clement.studentplanner.database.CourseProvider;
+import com.example.clement.studentplanner.database.OmniProvider;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -78,7 +79,10 @@ public class AssessmentDataEntryActivity extends AppCompatActivity implements
                     throw new NullPointerException();
                 }
                 assessment = editAssessment(assessmentUri);
-                courseUri = CourseProvider.CONTRACT.contentUri(assessment.courseId());
+                if (assessment == null) {
+                    throw new NullPointerException();
+                }
+                courseUri = ContentUris.withAppendedId(OmniProvider.Content.COURSE, assessment.courseId());
                 break;
             default:
                 throw new IllegalStateException();
@@ -291,20 +295,14 @@ public class AssessmentDataEntryActivity extends AppCompatActivity implements
         Uri resultUri = null;
 
         if (intent.getAction().equals(Intent.ACTION_EDIT)) {
-            int rowsAffected = getContentResolver().update(
-                intent.getData(),
-                AssessmentProvider.assessmentToValues(assessment),
-                null, null
-            );
-            if (rowsAffected > 0) {
+            if (Util.update(this, assessment)) {
                 resultUri = intent.getData();
             }
         }
         else if (intent.getAction().equals(Intent.ACTION_INSERT)) {
-            resultUri = getContentResolver().insert(
-                AssessmentProvider.CONTRACT.contentUri,
-                AssessmentProvider.assessmentToValues(assessment)
-            );
+            if (Util.insert(this, assessment)) {
+                resultUri = assessment.toUri();
+            }
         }
         if (resultUri != null) {
             Intent result = new Intent("com.example.clement.studentplanner.RESULT_ASSESSMENT", resultUri);

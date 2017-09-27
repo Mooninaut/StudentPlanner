@@ -7,6 +7,7 @@ import android.util.Log;
 import android.view.View;
 
 import com.example.clement.studentplanner.ItemListener;
+import com.example.clement.studentplanner.Util;
 import com.example.clement.studentplanner.data.HasId;
 
 /**
@@ -48,7 +49,7 @@ public abstract class RecyclerViewHolderBase<T extends HasId> extends RecyclerVi
         if (clickListener != null && item != null) {
             clickListener.onItemClick(view, item.id());
         }
-        Log.d("StudentPlanner","RecyclerViewHolderBase.onClick: clickListener is " +(clickListener == null ? "":"not ")+"null. item is " + (item == null ? "":"not ")+"null.");
+        Log.d(Util.LOG_TAG,"RecyclerViewHolderBase.onClick: clickListener is " +(clickListener == null ? "":"not ")+"null. item is " + (item == null ? "":"not ")+"null.");
     }
 
     @Override

@@ -2,7 +2,6 @@ package com.example.clement.studentplanner;
 
 import android.app.Activity;
 import android.content.ContentUris;
-import android.content.ContentValues;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -24,11 +23,7 @@ import android.widget.Toast;
 import com.example.clement.studentplanner.data.Assessment;
 import com.example.clement.studentplanner.data.Course;
 import com.example.clement.studentplanner.data.Term;
-import com.example.clement.studentplanner.database.AssessmentProvider;
-import com.example.clement.studentplanner.database.CourseMentorProvider;
-import com.example.clement.studentplanner.database.CourseProvider;
 import com.example.clement.studentplanner.database.OmniProvider;
-import com.example.clement.studentplanner.database.ProviderContract;
 import com.example.clement.studentplanner.database.StorageHelper;
 import com.example.clement.studentplanner.database.TermProvider;
 import com.example.clement.studentplanner.input.TermDataEntryActivity;
@@ -38,13 +33,9 @@ import java.util.Calendar;
 import java.util.GregorianCalendar;
 
 import static com.example.clement.studentplanner.Util.Tag.ASSESSMENT;
-import static com.example.clement.studentplanner.Util.Tag.COURSE;
-import static com.example.clement.studentplanner.Util.Tag.TERM;
 
 public class MainActivity extends AppCompatActivity
-    implements EventListingFragment.HostActivity,
-    TermListingFragment.HostActivity,
-    CourseListingFragment.HostActivity,
+    implements TermListingFragment.HostActivity,
     FragmentItemListener.OnClick, FragmentItemListener.OnLongClick {
 
     private EventListingFragment eventListingFragment;
@@ -62,10 +53,10 @@ public class MainActivity extends AppCompatActivity
             if (!file.isDirectory()) {
                 int photoPresentInNote = Util.getCount(this, OmniProvider.Content.NOTE_FILE_NAME.buildUpon().appendPath(file.getName()).build());
                 if (photoPresentInNote == 0) {
-                    Log.d("StudentPlanner", "MainActivity.onCreate: File '" + file.getName() +
+                    Log.d(Util.LOG_TAG, "MainActivity.onCreate: File '" + file.getName() +
                         "' is not a directory and does not belong to a Note object. Deleting...");
                     int result = getContentResolver().delete(FileProvider.getUriForFile(this, Util.Photo.AUTHORITY, file), null, null);
-                    Log.d("StudentPlanner", "MainActivity.onCreate: Delete " + (result > 0 ? "succeeded" : "failed"));
+                    Log.d(Util.LOG_TAG, "MainActivity.onCreate: Delete " + (result > 0 ? "succeeded" : "failed"));
                 }
             }
         }
@@ -91,31 +82,27 @@ public class MainActivity extends AppCompatActivity
     }
     private void launchTermDetailActivity(long id) {
         launchDetailActivity(
-            TermProvider.CONTRACT,
-            TermDetailActivity.class,
-            id
+            ContentUris.withAppendedId(OmniProvider.Content.TERM, id),
+            TermDetailActivity.class
         );
     }
 
     private void launchCourseDetailActivity(long id) {
         launchDetailActivity(
-            CourseProvider.CONTRACT,
-            CourseDetailActivity.class,
-            id
+            ContentUris.withAppendedId(OmniProvider.Content.COURSE, id),
+            CourseDetailActivity.class
         );
     }
     private void launchAssessmentDetailActivity(long id) {
         launchDetailActivity(
-            AssessmentProvider.CONTRACT,
-            AssessmentDetailActivity.class,
-            id
+            ContentUris.withAppendedId(OmniProvider.Content.ASSESSMENT, id),
+            AssessmentDetailActivity.class
         );
     }
-    private void launchDetailActivity(ProviderContract contract, Class activity, long id) {
+    private void launchDetailActivity(Uri contentUri, Class activity) {
         Intent intent = new Intent(this, activity);
-        Uri uri = ContentUris.withAppendedId(contract.contentUri(), id);
         intent.setAction(Intent.ACTION_VIEW);
-        intent.setData(uri);
+        intent.setData(contentUri);
         startActivity(intent);
     }
     @Override
@@ -160,12 +147,12 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void deleteSampleData() {
-        getContentResolver().delete(CourseMentorProvider.CONTRACT.contentUri, null, null);
+        getContentResolver().delete(OmniProvider.Content.COURSEMENTOR, null, null);
         getContentResolver().delete(OmniProvider.Content.MENTOR, null, null);
         getContentResolver().delete(OmniProvider.Content.NOTE, null, null);
-        getContentResolver().delete(AssessmentProvider.CONTRACT.contentUri, null, null);
-        getContentResolver().delete(CourseProvider.CONTRACT.contentUri, null, null);
-        getContentResolver().delete(TermProvider.CONTRACT.contentUri, null, null);
+        getContentResolver().delete(OmniProvider.Content.ASSESSMENT, null, null);
+        getContentResolver().delete(OmniProvider.Content.COURSE, null, null);
+        getContentResolver().delete(OmniProvider.Content.TERM, null, null);
         Toast.makeText(this, "KABOOM!", Toast.LENGTH_SHORT).show();
     }
     private void insertSampleData() {
@@ -180,7 +167,7 @@ public class MainActivity extends AppCompatActivity
             termEnd.add(Calendar.DATE, -1);
             termEnd.set(Calendar.HOUR_OF_DAY, 23);
             final Term term = new Term(Integer.toString(termNumber), termStart.getTimeInMillis(), termEnd.getTimeInMillis(), termNumber);
-            insertTerm(term);
+            Util.insert(this, term);
             Calendar courseStart = (Calendar) termStart.clone();
             courseStart.set(Calendar.HOUR_OF_DAY, 6);
             Calendar courseEnd = (Calendar) termStart.clone();
@@ -197,7 +184,7 @@ public class MainActivity extends AppCompatActivity
                     status = Course.Status.PLANNED;
                 }
                 final Course course = new Course(termNumber + "." + courseNumber, courseStart.getTimeInMillis(), courseEnd.getTimeInMillis(), term, status/*, "Note."*/);
-                insertCourse(course);
+                Util.insert(this, course);
                 Calendar assessmentStart = (Calendar) courseEnd.clone();
                 Calendar assessmentEnd = (Calendar) courseEnd.clone();
                 assessmentStart.add(Calendar.DATE, -8);
@@ -209,7 +196,7 @@ public class MainActivity extends AppCompatActivity
                         termNumber + "." + courseNumber + " " + type.getString(this),
                         assessmentStart.getTimeInMillis(), assessmentEnd.getTimeInMillis(), course, type/*,
                         "This notes text is long and will hopefully wrap to demonstrate the capacity of the field to display multi-line text."*/);
-                    insertAssessment(assessment);
+                    Util.insert(this, assessment);
                     assessmentStart.add(Calendar.DATE, 7);
                     assessmentStart.set(Calendar.HOUR_OF_DAY, 16);
                     assessmentEnd.set(Calendar.HOUR_OF_DAY, 18);
@@ -225,38 +212,6 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    private Uri insertTerm(Term term) {
-        //Uri termUri =
-        Uri inserted = getContentResolver().insert(TermProvider.CONTRACT.contentUri, TermProvider.termToValues(term));
-        if (inserted != null) {
-            long id = ContentUris.parseId(inserted);
-            term.id(id);
-//            Toast.makeText(this, "Term "+ ContentUris.parseId(inserted)+" inserted!", Toast.LENGTH_SHORT).show();
-        }
-        return inserted;
-    }
-    private Uri insertCourse(Course course) {
-        ContentValues values = CourseProvider.courseToValues(course);
-        Uri inserted = getContentResolver().insert(CourseProvider.CONTRACT.contentUri, values);
-        if (inserted != null) {
-            long id = ContentUris.parseId(inserted);
-            course.id(id);
-//            Toast.makeText(this, "Course "+id+" inserted!", Toast.LENGTH_SHORT).show();
-        }
-        return inserted;
-    }
-    private Uri insertAssessment(Assessment assessment) {
-        ContentValues values = AssessmentProvider.assessmentToValues(assessment);
-        Uri inserted = getContentResolver().insert(AssessmentProvider.CONTRACT.contentUri, values);
-        if (inserted != null) {
-            long id = ContentUris.parseId(inserted);
-            assessment.id(id);
-//            Toast.makeText(this, "Assessment "+id+" inserted!", Toast.LENGTH_SHORT).show();
-        }
-        return inserted;
-    }
-
-    @Override
     public synchronized void onEventSelected(long sourceId) {
         switch (StorageHelper.classify(sourceId)) {
             case TERM:
@@ -298,22 +253,22 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
-    public void onCourseSelected(long courseId) {
-        launchCourseDetailActivity(courseId);
-    }
-
-    @Override
     public void onFragmentItemClick(long itemId, View view, String tag) {
         switch (tag) {
-            case ASSESSMENT:
+            case Util.Tag.ASSESSMENT:
                 launchAssessmentDetailActivity(itemId);
                 break;
-            case TERM:
+            case Util.Tag.TERM:
                 launchTermDetailActivity(itemId);
                 break;
-            case COURSE:
+            case Util.Tag.COURSE:
                 launchCourseDetailActivity(itemId);
                 break;
+            case Util.Tag.EVENT:
+                onEventSelected(itemId);
+                break;
+            default:
+                throw new UnsupportedOperationException();
         }
     }
 

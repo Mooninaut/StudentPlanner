@@ -17,7 +17,7 @@ import static com.example.clement.studentplanner.database.StorageHelper.COLUMN_I
  * Created by Clement on 8/17/2017.
  */
 
-abstract class ContentProviderBase extends ContentProvider {
+abstract public class ContentProviderBase extends ContentProvider {
     private SQLiteDatabase writableDatabase;
     private SQLiteDatabase readableDatabase;
     private StorageHelper helper;

@@ -1,6 +1,7 @@
 package com.example.clement.studentplanner;
 
 import android.app.Activity;
+import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.Context;
 import android.content.Intent;
@@ -15,6 +16,7 @@ import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.FileProvider;
+import android.util.Log;
 import android.view.View;
 
 import com.example.clement.studentplanner.data.Assessment;
@@ -34,6 +36,10 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+
+import static android.content.ContentUris.withAppendedId;
 
 /**
  * Created by Clement on 9/9/2017.
@@ -41,6 +47,8 @@ import java.util.HashMap;
 
 public final class Util {
     public static final long NO_ID = -1;
+    public static final String LOG_TAG = "StudentPlanner";
+
     private static final int ADD = 0x100;
     private static final int EDIT = 0x200;
     private static final int PICK = 0x300;
@@ -84,7 +92,7 @@ public final class Util {
     public static boolean delete(@NonNull Context context, @NonNull HasId hasId) {
         return hasId.hasId()
             && 0 < context.getContentResolver().delete(
-                ContentUris.withAppendedId(
+                withAppendedId(
                     contentUriMap.get(hasId.getClass()),
                     hasId.id()),
                 null,
@@ -95,7 +103,7 @@ public final class Util {
     public static boolean update(@NonNull Context context, @NonNull HasId hasId) {
         return hasId.hasId() &&
             0 < context.getContentResolver().update(
-                ContentUris.withAppendedId(
+                withAppendedId(
                     contentUriMap.get(hasId.getClass()),
                     hasId.id()),
                 hasId.toValues(),
@@ -122,8 +130,8 @@ public final class Util {
     }
 
     public static Uri createCourseMentorUri(long courseId, long mentorId) {
-        return ContentUris.withAppendedId(
-            ContentUris.withAppendedId(
+        return withAppendedId(
+            withAppendedId(
                 OmniProvider.Content.COURSEMENTOR_COURSE_ID_MENTOR_ID,
                 courseId),
             mentorId);
@@ -176,34 +184,14 @@ public final class Util {
 
     @Nullable
     public static <T extends HasId> T get(@NonNull Context context, @NonNull Class<T> tClass, long id) {
-        Cursor cursor = null;
-        try {
-            cursor = context.getContentResolver().query(
-                ContentUris.withAppendedId(contentUriMap.get(tClass), id),
-                projectionMap.get(tClass),
-                null,
-                null,
-                null);
-            if (cursor != null && cursor.moveToFirst()) {
-                return newFromCursor(context, tClass, cursor);
-            }
-        } finally {
-            if (cursor != null) {
-                cursor.close();
-            }
-        }
-        return null;
+        return get(context, tClass, withAppendedId(contentUriMap.get(tClass), id));
     }
 
     public static int getCount(@NonNull Context context, @NonNull Uri uri) {
+        Log.d(LOG_TAG, "Util.getList(context, "+uri.toString()+")");
         Cursor cursor = null;
         try {
-            cursor = context.getContentResolver().query(
-                uri,
-                null,
-                null,
-                null,
-                null);
+            cursor = context.getContentResolver().query(uri, null, null, null, null);
             if (cursor != null) {
                 return cursor.getCount();
             }
@@ -219,11 +207,49 @@ public final class Util {
 
     @Nullable
     public static <T extends HasId> T get(@NonNull Context context, @NonNull Class<T> tClass, @NonNull Uri uri) {
-        return get(context, tClass, ContentUris.parseId(uri));
+        Log.d(LOG_TAG, "Util.get(context, "+tClass.getSimpleName()+".class, "+uri.toString()+")");
+        Cursor cursor = null;
+        try {
+            cursor = context.getContentResolver().query(
+                uri,
+                projectionMap.get(tClass),
+                null,
+                null,
+                null);
+            if (cursor != null && cursor.moveToFirst()) {
+                return newFromCursor(context, tClass, cursor);
+            }
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
+        return null;
+
     }
 
+    @NonNull
+    public static <T extends HasId> List<T> getList(@NonNull Context context, @NonNull Class<T> tClass, @NonNull Uri uri) {
+        Log.d(LOG_TAG, "Util.getList(context, "+tClass.getSimpleName()+".class, "+uri.toString()+")");
+        LinkedList<T> list = new LinkedList<>();
+        Cursor cursor = null;
+        try {
+            cursor = context.getContentResolver().query(uri, null, null, null, null);
+            if (cursor != null) {
+                while (cursor.moveToNext()) {
+                    list.add(newFromCursor(context, tClass, cursor));
+                }
+            }
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
+        return list;
+    }
     @Nullable
     public static <T extends HasId> T newFromCursor(@NonNull Context context, @NonNull Class<T> tClass, @NonNull Cursor cursor) {
+        Log.d(LOG_TAG, "Util.newFromCursor(context, "+tClass.getSimpleName()+".class, cursor)");
         HasId hasId;
         switch (tClass.getCanonicalName()) {
             case "com.example.clement.studentplanner.data.Assessment":
@@ -251,6 +277,44 @@ public final class Util {
                 throw new IllegalArgumentException();
         }
         return tClass.cast(hasId);
+    }
+
+    public static <T extends HasId> int deleteRecursive(@NonNull Context context, @NonNull Class<T> tClass, long id) {
+        Log.d(LOG_TAG, "Util.deleteRecursive(context, "+tClass.getSimpleName()+".class, "+id+")");
+        ContentResolver resolver = context.getContentResolver();
+        int result = -1;
+        switch (tClass.getCanonicalName()) {
+            case "com.example.clement.studentplanner.data.Assessment":
+
+                break;
+            case "com.example.clement.studentplanner.data.Course":
+                //Remove mentors from course
+                //Delete notes from course
+                //Delete assessments from course
+                //Delete course
+                break;
+            case "com.example.clement.studentplanner.data.Term":
+                List<Course> courses = getList(context, Course.class, withAppendedId(OmniProvider.Content.COURSE_TERM_ID, id));
+                for (Course course: courses) {
+                    deleteRecursive(context, Course.class, course.id());
+                }
+                result = resolver.delete(withAppendedId(OmniProvider.Content.TERM, id), null, null);
+                break;
+            case "com.example.clement.studentplanner.data.Event":
+                throw new IllegalArgumentException();
+            case "com.example.clement.studentplanner.data.Mentor":
+                resolver.delete(withAppendedId(OmniProvider.Content.COURSEMENTOR_MENTOR_ID, id), null, null);
+                result = resolver.delete(withAppendedId(OmniProvider.Content.MENTOR, id), null, null);
+                break;
+            case "com.example.clement.studentplanner.data.Note":
+
+                break;
+            case "com.example.clement.studentplanner.data.CourseMentor":
+                throw new IllegalArgumentException();
+            default:
+                throw new IllegalArgumentException();
+        }
+        return result;
     }
 
     public static class RequestCode {
@@ -318,6 +382,7 @@ public final class Util {
         }
 
         public static Uri storeThumbnail(Context context, int resultCode, Intent data, String name) {
+            Log.d(LOG_TAG, "Util.Photo.storeThumbnail(context, "+resultCode+", data, "+name+")");
             if (resultCode == Activity.RESULT_OK && data != null) {
                 Bundle extras = data.getExtras();
                 Bitmap thumbnailBitmap = (Bitmap) extras.get("data");
