@@ -43,7 +43,7 @@ public abstract class RecyclerCursorAdapterBase<H extends RecyclerView.ViewHolde
 
     @Override
     public int getItemCount() {
-        return getCursorAdapter().getCursor().getCount();
+        return getCursorAdapter().getCount();
     }
 
     public class CursorDiff extends DiffUtil.Callback {

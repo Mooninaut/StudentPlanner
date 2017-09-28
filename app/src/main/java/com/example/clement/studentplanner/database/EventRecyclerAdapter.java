@@ -46,11 +46,6 @@ public class EventRecyclerAdapter extends RecyclerCursorAdapterBase<EventHolder,
     }
 
     @Override
-    public int getItemCount() {
-        return eventCursorAdapter.getCount();
-    }
-
-    @Override
     public EventCursorAdapter getCursorAdapter() {
         return eventCursorAdapter;
     }

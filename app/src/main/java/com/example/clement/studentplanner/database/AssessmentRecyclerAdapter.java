@@ -45,11 +45,6 @@ public class AssessmentRecyclerAdapter extends RecyclerCursorAdapterBase<Assessm
     }
 
     @Override
-    public int getItemCount() {
-        return assessmentCursorAdapter.getCount();
-    }
-
-    @Override
     public AssessmentCursorAdapter getCursorAdapter() {
         return assessmentCursorAdapter;
     }

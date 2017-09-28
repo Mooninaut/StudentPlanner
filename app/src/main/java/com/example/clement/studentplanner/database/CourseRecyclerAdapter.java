@@ -46,11 +46,6 @@ public class CourseRecyclerAdapter extends RecyclerCursorAdapterBase<CourseHolde
     }
 
     @Override
-    public int getItemCount() {
-        return courseCursorAdapter.getCount();
-    }
-
-    @Override
     public CourseCursorAdapter getCursorAdapter() {
         return courseCursorAdapter;
     }

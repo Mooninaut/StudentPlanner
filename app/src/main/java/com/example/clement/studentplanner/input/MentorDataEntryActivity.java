@@ -9,10 +9,10 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import com.example.clement.studentplanner.R;
 import com.example.clement.studentplanner.Util;
@@ -41,24 +41,13 @@ public class MentorDataEntryActivity extends AppCompatActivity {
         }
         else if (action.equals(Intent.ACTION_EDIT)) {
             setTitle(R.string.edit_mentor);
-            Button createButton = findViewById(R.id.create_button);
-            createButton.setText(R.string.save_changes);
+//            Button createButton = findViewById(R.id.create_button);
+//            createButton.setText(R.string.save_changes);
             mentorContentUri = intent.getData();
             ContentResolver resolver = getContentResolver();
             if (resolver == null) {
                 throw new NullPointerException();
-            }/*
-            Cursor cursor = null;
-            try {
-                cursor = resolver.query(mentorContentUri, null, null, null, null);
-                if (cursor != null && cursor.moveToFirst()) {
-                    mentor = MentorCursorAdapter.cursorToCourseMentor(cursor);
-                }
-            } finally {
-                if (cursor != null) {
-                    cursor.close();
-                }
-            }*/
+            }
             mentor = Util.get(this, Mentor.class, mentorContentUri);
             ((EditText)findViewById(R.id.edit_name)).setText(mentor.name());
             ((EditText)findViewById(R.id.edit_number)).setText(mentor.phoneNumber());
@@ -70,14 +59,29 @@ public class MentorDataEntryActivity extends AppCompatActivity {
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == android.R.id.home) {
-            finish();
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.mentor_entry_menu, menu);
+        return true;
     }
-    public void createCourseMentor(View view) {
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                finish();
+                break;
+            case R.id.save:
+                createCourseMentor();
+                break;
+            case R.id.delete:
+                Toast.makeText(this, "Not implemented", Toast.LENGTH_SHORT).show(); // FIXME
+                break;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+        return true;
+    }
+    public void createCourseMentor() {
         EditText name = (EditText) findViewById(R.id.edit_name);
         EditText number = (EditText) findViewById(R.id.edit_number);
         EditText email = (EditText) findViewById(R.id.edit_email);
@@ -104,7 +108,7 @@ public class MentorDataEntryActivity extends AppCompatActivity {
         }
         finish();
     }
-    public void cancel(View view) {
+    /*public void cancel(View view) {
         finish();
-    }
+    }*/
 }

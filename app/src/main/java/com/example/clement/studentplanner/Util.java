@@ -279,38 +279,78 @@ public final class Util {
         return tClass.cast(hasId);
     }
 
+    public static int deleteRecursive(@NonNull Context context, @NonNull Uri uri) {
+        return deleteRecursive(context, OmniProvider.classOf(uri), ContentUris.parseId(uri));
+    }
     public static <T extends HasId> int deleteRecursive(@NonNull Context context, @NonNull Class<T> tClass, long id) {
         Log.d(LOG_TAG, "Util.deleteRecursive(context, "+tClass.getSimpleName()+".class, "+id+")");
         ContentResolver resolver = context.getContentResolver();
-        int result = -1;
+        int result;
         switch (tClass.getCanonicalName()) {
             case "com.example.clement.studentplanner.data.Assessment":
+                // Delete notes from assessment
+                List<Note> notes = getList(context, Note.class, withAppendedId(OmniProvider.Content.NOTE_ASSESSMENT_ID, id));
+                for (Note note : notes) {
+                    deleteRecursive(context, Note.class, note.id());
+                }
+                // Delete assessment
+                result = resolver.delete(withAppendedId(OmniProvider.Content.ASSESSMENT, id), null, null);
+                break;
 
-                break;
             case "com.example.clement.studentplanner.data.Course":
-                //Remove mentors from course
-                //Delete notes from course
-                //Delete assessments from course
-                //Delete course
+                // Remove mentors from course
+                if (0 == resolver.delete(withAppendedId(OmniProvider.Content.COURSEMENTOR_COURSE_ID, id), null, null)) {
+                    Log.e(Util.LOG_TAG, "Failed to remove mentors from course #"+id);
+                }
+                // Delete notes from course
+                notes = getList(context, Note.class, withAppendedId(OmniProvider.Content.NOTE_COURSE_ID, id));
+                for (Note note : notes) {
+                    deleteRecursive(context, Note.class, note.id());
+                }
+                // Delete assessments from course
+                List<Assessment> assessments = getList(context, Assessment.class, withAppendedId(OmniProvider.Content.ASSESSMENT_COURSE_ID, id));
+                for (Assessment assessment : assessments) {
+                    deleteRecursive(context, Assessment.class, assessment.id());
+                }
+                // Delete course
+                result = resolver.delete(withAppendedId(OmniProvider.Content.COURSE, id), null, null);
                 break;
+
             case "com.example.clement.studentplanner.data.Term":
+                // Delete courses from term
                 List<Course> courses = getList(context, Course.class, withAppendedId(OmniProvider.Content.COURSE_TERM_ID, id));
                 for (Course course: courses) {
                     deleteRecursive(context, Course.class, course.id());
                 }
+                // Delete term
                 result = resolver.delete(withAppendedId(OmniProvider.Content.TERM, id), null, null);
                 break;
+
             case "com.example.clement.studentplanner.data.Event":
                 throw new IllegalArgumentException();
+
             case "com.example.clement.studentplanner.data.Mentor":
+                // Remove mentor from courses
                 resolver.delete(withAppendedId(OmniProvider.Content.COURSEMENTOR_MENTOR_ID, id), null, null);
+                // Delete mentor
                 result = resolver.delete(withAppendedId(OmniProvider.Content.MENTOR, id), null, null);
                 break;
-            case "com.example.clement.studentplanner.data.Note":
 
+            case "com.example.clement.studentplanner.data.Note":
+                // Delete photo, if present
+                Note note = get(context, Note.class, id);
+                if (note.hasFileUri()) {
+                    if (0 == resolver.delete(note.fileUri(), null, null)) {
+                        Log.e(Util.LOG_TAG, "Failed to delete photo '"+note.fileUri().toString()+"'");
+                    }
+                }
+                // Delete note
+                result = resolver.delete(withAppendedId(OmniProvider.Content.NOTE, id), null, null);
                 break;
+
             case "com.example.clement.studentplanner.data.CourseMentor":
                 throw new IllegalArgumentException();
+
             default:
                 throw new IllegalArgumentException();
         }

@@ -143,8 +143,8 @@ public class OmniProvider extends ContentProvider {
         public static final Uri NOTE_ASSESSMENT_ID = buildPath(NOTE, StorageHelper.TABLE_ASSESSMENT);
         public static final Uri NOTE_FILE_NAME = buildPath(NOTE, StorageHelper.COLUMN_PHOTO_FILE_NAME);
         public static final Uri MENTOR = addMatchUri(Match.MENTOR_ALL, StorageHelper.TABLE_MENTOR);
-        public static final Uri MENTOR_NOT_COURSE = buildPath(MENTOR, "not_"+StorageHelper.TABLE_COURSE);
-        public static final Uri MENTOR_COURSE = buildPath(MENTOR, StorageHelper.TABLE_COURSE);
+        public static final Uri MENTOR_NOT_COURSE_ID = buildPath(MENTOR, "not_"+StorageHelper.TABLE_COURSE);
+        public static final Uri MENTOR_COURSE_ID = buildPath(MENTOR, StorageHelper.TABLE_COURSE);
         public static final Uri EVENT = addMatchUri(Match.EVENT_ALL, StorageHelper.TABLE_EVENT);
 
         public static final Uri COURSEMENTOR = addMatchUri(Match.COURSEMENTOR_ALL, StorageHelper.TABLE_COURSE_MENTOR);
@@ -190,8 +190,8 @@ public class OmniProvider extends ContentProvider {
         appendMatchUri(Match.COURSEMENTOR_COURSE_ID, Content.COURSEMENTOR_COURSE_ID, "#");
         appendMatchUri(Match.COURSEMENTOR_MENTOR_ID, Content.COURSEMENTOR_MENTOR_ID, "#");
         appendMatchUri(Match.COURSEMENTOR_COURSE_ID_MENTOR_ID, Content.COURSEMENTOR_COURSE_ID_MENTOR_ID, "#", "#");
-        appendMatchUri(Match.MENTOR_COURSE_ID, Content.MENTOR_COURSE, "#");
-        appendMatchUri(Match.MENTOR_NOT_COURSE_ID, Content.MENTOR_NOT_COURSE, "#");
+        appendMatchUri(Match.MENTOR_COURSE_ID, Content.MENTOR_COURSE_ID, "#");
+        appendMatchUri(Match.MENTOR_NOT_COURSE_ID, Content.MENTOR_NOT_COURSE_ID, "#");
     }
 
     private static final SQLiteQueryBuilder COURSE_QUERY = new SQLiteQueryBuilder();
@@ -390,7 +390,7 @@ public class OmniProvider extends ContentProvider {
                         @Nullable String selection,
                         @Nullable String[] selectionArgs,
                         @Nullable String sortOrder) {
-        Log.d(Util.LOG_TAG, "OmniProvider.query("+uri.toString()+", ...)");
+//        Log.d(Util.LOG_TAG, "OmniProvider.query("+uri.toString()+", ...)");
         projection = null;
         selection = null;
         selectionArgs = null;
@@ -406,14 +406,14 @@ public class OmniProvider extends ContentProvider {
             case Match.MENTOR_COURSE_ID:
                 cursor = mentorByCourseIdQuery(ContentUris.parseId(uri));
                 if (cursor != null) {
-                    Log.d(Util.LOG_TAG, "OmniProvider.query: Setting notification uri to '"+Content.MENTOR.toString()+"'");
+//                    Log.d(Util.LOG_TAG, "OmniProvider.query: Setting notification uri to '"+Content.MENTOR.toString()+"'");
                     cursor.setNotificationUri(resolver, Content.MENTOR);
                 }
                 return cursor;
             case Match.MENTOR_NOT_COURSE_ID:
                 cursor = mentorByNotCourseIdQuery(ContentUris.parseId(uri));
                 if (cursor != null) {
-                    Log.d(Util.LOG_TAG, "OmniProvider.query: Setting notification uri to '"+Content.MENTOR.toString()+"'");
+//                    Log.d(Util.LOG_TAG, "OmniProvider.query: Setting notification uri to '"+Content.MENTOR.toString()+"'");
                     cursor.setNotificationUri(resolver, Content.MENTOR);
                 }
                 return cursor;
@@ -475,7 +475,7 @@ public class OmniProvider extends ContentProvider {
             null,
             sortOrder
         );
-        Log.d(Util.LOG_TAG, "OmniProvider.query: URI = '"+uri.toString()+"', notificationUri = '"+notificationUri.toString()+"'");
+//        Log.d(Util.LOG_TAG, "OmniProvider.query: URI = '"+uri.toString()+"', notificationUri = '"+notificationUri.toString()+"'");
         cursor.setNotificationUri(resolver, notificationUri);
         return cursor;
     }
@@ -518,8 +518,15 @@ public class OmniProvider extends ContentProvider {
             contentValues
         );
         Uri newUri = ContentUris.withAppendedId(uri, id);
-        if (matchTable == Table.COURSEMENTOR) {
-            notifyChange(Content.MENTOR);
+        switch (matchTable) {
+            case Table.COURSEMENTOR:
+                notifyChange(Content.MENTOR);
+                break;
+            case Table.TERM:
+            case Table.COURSE:
+            case Table.ASSESSMENT:
+                notifyChange(Content.EVENT);
+                break;
         }
         notifyChange(newUri);
         return newUri;
@@ -560,13 +567,17 @@ public class OmniProvider extends ContentProvider {
                 break;
         }
 
-        // FIXME unfinished
-//        throw new UnsupportedOperationException();
         String table = TABLES.get(matchTable);
         int rowsAffected = getWritableDatabase().delete(table, selection, selectionArgs);
         if (rowsAffected > 0) {
-            if (matchTable == Table.COURSEMENTOR) {
-                notifyChange(Content.MENTOR);
+            switch (matchTable) {
+                case Table.COURSEMENTOR:
+                    notifyChange(Content.MENTOR);
+                    break;
+                case Table.TERM:
+                case Table.COURSE:
+                case Table.ASSESSMENT:
+                    notifyChange(Content.EVENT);
             }
             notifyChange(uri);
         }
@@ -588,8 +599,16 @@ public class OmniProvider extends ContentProvider {
         int rowsAffected = getWritableDatabase().update(
             table, contentValues, selection, selectionArgs);
         if (rowsAffected > 0) {
-            if (matchTable == Table.COURSEMENTOR) {
-                notifyChange(Content.MENTOR);
+            switch(matchTable) {
+                case Table.COURSEMENTOR:
+                    notifyChange(Content.MENTOR);
+                    break;
+
+                case Table.TERM:
+                case Table.COURSE:
+                case Table.ASSESSMENT:
+                    notifyChange(Content.EVENT);
+                    break;
             }
             notifyChange(uri);
         }

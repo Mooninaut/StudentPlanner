@@ -25,7 +25,6 @@ import com.example.clement.studentplanner.data.Course;
 import com.example.clement.studentplanner.data.Term;
 import com.example.clement.studentplanner.database.OmniProvider;
 import com.example.clement.studentplanner.database.StorageHelper;
-import com.example.clement.studentplanner.database.TermProvider;
 import com.example.clement.studentplanner.input.TermDataEntryActivity;
 
 import java.io.File;
@@ -35,8 +34,7 @@ import java.util.GregorianCalendar;
 import static com.example.clement.studentplanner.Util.Tag.ASSESSMENT;
 
 public class MainActivity extends AppCompatActivity
-    implements TermListingFragment.HostActivity,
-    FragmentItemListener.OnClick, FragmentItemListener.OnLongClick {
+    implements FragmentItemListener.OnClick, FragmentItemListener.OnLongClick {
 
     private EventListingFragment eventListingFragment;
     private TermListingFragment termListingFragment;
@@ -44,7 +42,7 @@ public class MainActivity extends AppCompatActivity
     private AssessmentListingFragment assessmentListingFragment;
     private final BottomNavigationListener bottomNavigationListener = new BottomNavigationListener();
     private FragmentManager fragmentManager;
-    private String currentFragment = null;
+    //private String currentFragment = null;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         for (File file : Util.Photo.picFileDir(this).listFiles()) {
@@ -75,7 +73,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void switchToFragment(Fragment fragment, String tag) {
-        currentFragment = tag;
+        //currentFragment = tag;
         FragmentTransaction transaction = fragmentManager.beginTransaction();
         transaction.replace(R.id.contentFragment, fragment, tag);
         transaction.commit();
@@ -114,7 +112,7 @@ public class MainActivity extends AppCompatActivity
     private void addTerm() {
         Intent intent = new Intent(this, TermDataEntryActivity.class);
         intent.setAction(Intent.ACTION_INSERT);
-        intent.setData(TermProvider.CONTRACT.contentUri);
+        intent.setData(OmniProvider.Content.TERM);
         startActivityForResult(intent, Util.RequestCode.ADD_TERM);
     }
     @Override
@@ -212,7 +210,8 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    public synchronized void onEventSelected(long sourceId) {
+    public synchronized void onEventSelected(long eventId) {
+        long sourceId = OmniProvider.eventToSource(eventId);
         switch (StorageHelper.classify(sourceId)) {
             case TERM:
                 launchTermDetailActivity(sourceId);
@@ -245,11 +244,6 @@ public class MainActivity extends AppCompatActivity
             assessmentListingFragment = new AssessmentListingFragment();
         }
         return assessmentListingFragment;
-    }
-
-    @Override
-    public void onTermSelected(long termId) {
-        launchTermDetailActivity(termId);
     }
 
     @Override

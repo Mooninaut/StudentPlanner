@@ -48,6 +48,7 @@
     <string name="title_terms">Terms</string>
     <string name="type">Type</string>
     <string name="confirm_delete">Are you sure you want to delete this %1$s?</string>
+    <string name="confirm_delete_item">Are you sure you want to delete %1$s \"%2$s\"?</string>
     <string name="event_format">%1$s of %2$s %3$s</string>
     <string name="edit">Edit</string>
     <string name="add_reminder">Add Reminder</string>
@@ -96,4 +97,9 @@
     <string name="add_note">Add Note</string>
     <string name="note_prompt">Type a note here</string>
     <string name="delete">Delete</string>
+    <string name="term_detail">Term Detail</string>
+    <string name="assessment_detail">Assessment Detail</string>
+    <string name="choose_course_mentor">Choose Course Mentor</string>
+    <string name="deleted">Deleted %s.</string>
+    <string name="deleted_item">Deleted %1$s \"%2$s\"</string>>
 </resources>

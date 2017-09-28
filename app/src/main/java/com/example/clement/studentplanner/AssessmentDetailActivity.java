@@ -2,7 +2,9 @@ package com.example.clement.studentplanner;
 
 import android.app.Activity;
 import android.content.ContentUris;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
@@ -10,6 +12,7 @@ import android.provider.CalendarContract;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.ActionBar;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
@@ -21,7 +24,6 @@ import android.widget.Toast;
 
 import com.example.clement.studentplanner.data.Assessment;
 import com.example.clement.studentplanner.database.AssessmentCursorAdapter;
-import com.example.clement.studentplanner.database.AssessmentHolder;
 import com.example.clement.studentplanner.database.OmniProvider;
 import com.example.clement.studentplanner.input.AssessmentDataEntryActivity;
 import com.example.clement.studentplanner.input.NoteDataEntryActivity;
@@ -36,7 +38,6 @@ public class AssessmentDetailActivity extends AppCompatActivity
         implements FragmentItemListener.OnClick, FragmentItemListener.OnLongClick {
     private Uri assessmentContentUri;
     private NoteListingFragment noteFragment;
-    private AssessmentHolder assessmentHolder;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -156,8 +157,51 @@ public class AssessmentDetailActivity extends AppCompatActivity
                     startActivityForResult(intent, Util.RequestCode.ADD_CALENDAR_EVENT);
                 }
                 return true;
+            case R.id.delete:
+                showDeleteDialog();
+                return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+    /**
+     * Prompt the user for whether they really want to delete this course, and if so, go ahead and
+     * delete it (with associated notes and assessments).
+     */
+    private void showDeleteDialog() {
+        DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                switch (which){
+                    case DialogInterface.BUTTON_POSITIVE:
+                        //Yes button clicked
+                        deleteAssessment();
+                        break;
+
+                    case DialogInterface.BUTTON_NEGATIVE:
+                        //No button clicked
+                        break;
+                }
+            }
+        };
+        Assessment assessment = Util.get(this, Assessment.class, assessmentContentUri);
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        Resources resources = getResources();
+        String assessmentString = resources.getString(R.string.assessment).toLowerCase();
+        String delete = resources.getString(R.string.delete);
+        String cancel = resources.getString(R.string.cancel);
+        String question = resources.getString(R.string.confirm_delete_item, assessmentString, assessment.name());
+        builder.setMessage(question)
+            .setPositiveButton(delete, dialogClickListener)
+            .setNegativeButton(cancel, dialogClickListener)
+            .show();
+    }
+
+    private void deleteAssessment() {
+        Assessment assessment = Util.get(this, Assessment.class, assessmentContentUri);
+        Util.deleteRecursive(this, assessmentContentUri);
+        finish();
+        String assessmentString = getResources().getString(R.string.assessment);
+        Toast.makeText(this, getResources().getString(R.string.deleted_item, assessmentString, assessment.name()), Toast.LENGTH_SHORT).show();
     }
     public void addNote(View view) {
         Intent intent = new Intent(this, NoteDataEntryActivity.class);

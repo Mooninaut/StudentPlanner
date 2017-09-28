@@ -55,7 +55,7 @@ public class MentorPickerActivity extends AppCompatActivity
     protected void onStart() {
         super.onStart();
         Long courseId = ContentUris.parseId(getIntent().getData());
-        Uri mentorWithoutCourseUri = ContentUris.withAppendedId(OmniProvider.Content.MENTOR_NOT_COURSE, courseId);
+        Uri mentorWithoutCourseUri = ContentUris.withAppendedId(OmniProvider.Content.MENTOR_NOT_COURSE_ID, courseId);
         MentorListingFragment fragment = MentorListingFragment.newInstance(mentorWithoutCourseUri);
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         transaction.replace(R.id.mentor_picker_frame, fragment, TAG);

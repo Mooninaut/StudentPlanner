@@ -45,10 +45,6 @@ public class MentorRecyclerAdapter extends RecyclerCursorAdapterBase<MentorHolde
         holder.bindItem(mentorCursorAdapter.getItem(position));
     }
 
-    @Override
-    public int getItemCount() {
-        return mentorCursorAdapter.getCount();
-    }
 
     @Override
     public MentorCursorAdapter getCursorAdapter() {

@@ -46,30 +46,26 @@ public class Note implements HasId, Parcelable{
         this.fileUri = fileUri;
     }
     public static Uri photoUriFromFileName(Context context, String fileName) {
+        if (fileName == null) {
+            return Uri.EMPTY;
+        }
         return FileProvider.getUriForFile(context, Util.Photo.AUTHORITY, new File(Util.Photo.picFileDir(context), fileName));
     }
     public Note(@NonNull Context context, @NonNull Cursor cursor) {
-        this(
-                cursor.getLong(cursor.getColumnIndex(StorageHelper.COLUMN_ID)),
-                cursor.getString(cursor.getColumnIndex(StorageHelper.COLUMN_TEXT)),
-                cursor.getLong(cursor.getColumnIndex(StorageHelper.COLUMN_ASSESSMENT_ID)),
-                cursor.getLong(cursor.getColumnIndex(StorageHelper.COLUMN_COURSE_ID)),
-                photoUriFromFileName(context, cursor.getString(cursor.getColumnIndex(StorageHelper.COLUMN_PHOTO_FILE_NAME)))
-        );
-//        boolean wasNull = false;
-        if (cursor.isNull(cursor.getColumnIndex(StorageHelper.COLUMN_ASSESSMENT_ID))) {
-            assessmentId = Util.NO_ID;
-//            Log.d(Util.LOG_TAG, "Note(cursor): Assessment ID is null.");
-//            wasNull = true;
-        }
-        if (cursor.isNull(cursor.getColumnIndex(StorageHelper.COLUMN_COURSE_ID))) {
-            courseId = Util.NO_ID;
-//            Log.d(Util.LOG_TAG, "Note(cursor): Course ID is null.");
-//            wasNull = true;
-        }
-/*        if (wasNull) {
-            Log.d(Util.LOG_TAG, "Note(cursor): Note = "+toString());
-        }*/
+        id = cursor.getLong(cursor.getColumnIndex(StorageHelper.COLUMN_ID));
+        text = cursor.getString(cursor.getColumnIndex(StorageHelper.COLUMN_TEXT));
+
+        int assessmentIndex = cursor.getColumnIndex(StorageHelper.COLUMN_ASSESSMENT_ID);
+        assessmentId = cursor.isNull(assessmentIndex)
+            ? Util.NO_ID
+            : cursor.getLong(assessmentIndex);
+
+        int courseIndex = cursor.getColumnIndex(StorageHelper.COLUMN_COURSE_ID);
+        courseId = cursor.isNull(courseIndex)
+            ? Util.NO_ID
+            : cursor.getLong(courseIndex);
+
+        fileUri = photoUriFromFileName(context, cursor.getString(cursor.getColumnIndex(StorageHelper.COLUMN_PHOTO_FILE_NAME)));
     }
 
     protected Note(Parcel in) {
@@ -78,6 +74,15 @@ public class Note implements HasId, Parcelable{
         assessmentId = in.readLong();
         id = in.readLong();
         text = in.readString();
+    }
+
+    @Override
+    public void writeToParcel(Parcel parcel, int i) {
+        parcel.writeParcelable(fileUri, i);
+        parcel.writeLong(courseId);
+        parcel.writeLong(assessmentId);
+        parcel.writeLong(id);
+        parcel.writeString(text);
     }
 
     public static final Creator<Note> CREATOR = new Creator<Note>() {
@@ -151,7 +156,9 @@ public class Note implements HasId, Parcelable{
     @NonNull
     public ContentValues toValues() {
         ContentValues values = new ContentValues();
+
         values.put(StorageHelper.COLUMN_TEXT, text);
+
         if (hasAssessmentId()) {
             values.put(StorageHelper.COLUMN_ASSESSMENT_ID, assessmentId);
         }
@@ -165,8 +172,12 @@ public class Note implements HasId, Parcelable{
         else {
             values.putNull(StorageHelper.COLUMN_COURSE_ID);
         }
-        Log.d(Util.LOG_TAG, "Note.toValues: File name = '"+fileUri.getLastPathSegment()+"'");
-        values.put(StorageHelper.COLUMN_PHOTO_FILE_NAME, fileUri.getLastPathSegment());
+
+        if (hasFileUri()) {
+            Log.d(Util.LOG_TAG, "Note.toValues: File name = '" + fileUri.getLastPathSegment() + "'");
+            values.put(StorageHelper.COLUMN_PHOTO_FILE_NAME, fileUri.getLastPathSegment());
+        }
+
         if (hasId()) {
             values.put(StorageHelper.COLUMN_ID, id);
         }
@@ -176,15 +187,6 @@ public class Note implements HasId, Parcelable{
     @Override
     public int describeContents() {
         return 0;
-    }
-
-    @Override
-    public void writeToParcel(Parcel parcel, int i) {
-        parcel.writeParcelable(fileUri, i);
-        parcel.writeLong(courseId);
-        parcel.writeLong(assessmentId);
-        parcel.writeLong(id);
-        parcel.writeString(text);
     }
 
     @Nullable

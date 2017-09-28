@@ -16,7 +16,6 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
@@ -38,6 +37,7 @@ import static android.content.ContentUris.withAppendedId;
  */
 public class CourseDetailActivity extends AppCompatActivity
         implements FragmentItemListener.OnClick, FragmentItemListener.OnLongClick {
+
     private AssessmentListingFragment assessmentFragment;
     private MentorListingFragment mentorFragment;
     private NoteListingFragment noteFragment;
@@ -80,7 +80,7 @@ public class CourseDetailActivity extends AppCompatActivity
             .commit();
 
         // Initialize mentor list fragment
-        Uri mentorContentUri = withAppendedId(OmniProvider.Content.MENTOR_COURSE, courseId);
+        Uri mentorContentUri = withAppendedId(OmniProvider.Content.MENTOR_COURSE_ID, courseId);
 
         mentorFragment = MentorListingFragment.newInstance(mentorContentUri);
         fragmentManager.beginTransaction()
@@ -111,8 +111,7 @@ public class CourseDetailActivity extends AppCompatActivity
         }
     }
     public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.course_menu, menu);
+        getMenuInflater().inflate(R.menu.course_menu, menu);
         return true;
     }
     @Override
@@ -122,17 +121,6 @@ public class CourseDetailActivity extends AppCompatActivity
             case android.R.id.home:
                 finish();
                 return true;
-/*            case R.id.add:
-                intent = new Intent(this, AssessmentDataEntryActivity.class);
-                intent.setAction(Intent.ACTION_INSERT);
-                intent.setData(courseContentUri);
-                startActivityForResult(intent, Util.RequestCode.ADD_ASSESSMENT);
-                return true;*/
-/*            case R.id.add_note:
-                intent = new Intent(this, NoteDataEntryActivity.class);
-                intent.setAction(Intent.ACTION_INSERT);
-                startActivityForResult(intent, Util.RequestCode.ADD_NOTE);
-                return true;*/
             case R.id.edit:
                 intent = new Intent(this, CourseDataEntryActivity.class);
                 intent.setAction(Intent.ACTION_EDIT);
@@ -154,7 +142,6 @@ public class CourseDetailActivity extends AppCompatActivity
                 showDeleteDialog();
                 return true;
             default:
-//                return super.onOptionsItemSelected(item);
                 throw new UnsupportedOperationException();
         }
     }
@@ -179,18 +166,25 @@ public class CourseDetailActivity extends AppCompatActivity
                 }
             }
         };
-
+        Course course = Util.get(this, Course.class, courseContentUri);
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         Resources resources = getResources();
-        String course = resources.getString(R.string.course);
+        String courseString = resources.getString(R.string.course);
         String delete = resources.getString(R.string.delete);
         String cancel = resources.getString(R.string.cancel);
-        builder.setMessage(getResources().getString(R.string.confirm_delete, course)).setPositiveButton(delete, dialogClickListener)
-            .setNegativeButton(cancel, dialogClickListener).show();
+        String question = resources.getString(R.string.confirm_delete_item, courseString, course.name());
+        builder.setMessage(question)
+            .setPositiveButton(delete, dialogClickListener)
+            .setNegativeButton(cancel, dialogClickListener)
+            .show();
     }
 
     private void deleteCourse() {
-        int result = getContentResolver().delete(courseContentUri, null, null);
+        Course course = Util.get(this, Course.class, courseContentUri);
+        String courseString = getResources().getString(R.string.course);
+        Util.deleteRecursive(this, courseContentUri);
+        finish();
+        Toast.makeText(this, getResources().getString(R.string.deleted_item, courseString, course.name()), Toast.LENGTH_SHORT).show();
     }
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {

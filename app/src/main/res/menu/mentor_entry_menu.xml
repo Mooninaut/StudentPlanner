@@ -1,16 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:id="@+id/add"
-            android:title="@string/add_course"
+    <item android:id="@+id/save"
+            android:title="@string/save_changes"
             android:orderInCategory="100"
-            app:showAsAction="ifRoom" />
-    <item android:id="@+id/edit"
-        android:title="@string/edit"
-        android:orderInCategory="200"
-        app:showAsAction="never" />
+            app:showAsAction="always" />
     <item android:id="@+id/delete"
         android:title="@string/delete"
-        android:orderInCategory="300"
+        android:orderInCategory="200"
         app:showAsAction="never"/>
 </menu>
