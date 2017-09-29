@@ -23,6 +23,7 @@
     <string name="end_date">End Date</string>
     <string name="end_time">End Time</string>
     <string name="go">GO</string>
+    <string name="mentor">Mentor</string>
     <string name="mentor_name">Mentor Name</string>
     <string name="notes">Notes</string>
     <string name="objective">Objective</string>
@@ -101,5 +102,7 @@
     <string name="assessment_detail">Assessment Detail</string>
     <string name="choose_course_mentor">Choose Course Mentor</string>
     <string name="deleted">Deleted %s.</string>
-    <string name="deleted_item">Deleted %1$s \"%2$s\"</string>>
+    <string name="deleted_item">Deleted %1$s \"%2$s\"</string>
+    <string name="help">Help</string>
+    <string name="course_detail_help">Tap and hold on a mentor to remove the mentor from this course.\n\nTo permanently delete a mentor, tap on the mentor and choose Delete from the menu in the upper-right corner.</string>
 </resources>

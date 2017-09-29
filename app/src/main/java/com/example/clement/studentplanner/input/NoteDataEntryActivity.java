@@ -185,7 +185,7 @@ public class NoteDataEntryActivity extends AppCompatActivity {
                 // Your app will not have this permission. Turn off all functions
                 // that require this permission or it will force close like your
                 // original question
-                Toast.makeText(this, "Camera is disabled by user.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Camera is disabled by user.", Toast.LENGTH_LONG).show();
             }
         }
     }
@@ -237,13 +237,11 @@ public class NoteDataEntryActivity extends AppCompatActivity {
                         throw new NullPointerException("newTempFileUri is null");
                     }
                     setTempFileUri(newTempFileUri);
-
-//                    note.fileUri(tempFileUri);
                     setImageView(tempFileUri);
                 }
-                else {
-                    Toast.makeText(this, "FAIL", Toast.LENGTH_LONG).show();
-                }
+//                else {
+//                    Toast.makeText(this, "FAIL", Toast.LENGTH_LONG).show();
+//                }
                 break;
         }
     }

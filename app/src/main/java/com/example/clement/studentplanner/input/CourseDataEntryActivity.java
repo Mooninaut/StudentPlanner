@@ -24,7 +24,7 @@ import com.example.clement.studentplanner.R;
 import com.example.clement.studentplanner.Util;
 import com.example.clement.studentplanner.data.Course;
 import com.example.clement.studentplanner.data.Term;
-import com.example.clement.studentplanner.database.TermCursorAdapter;
+import com.example.clement.studentplanner.database.TermHolder;
 import com.example.clement.studentplanner.database.TermProvider;
 
 import java.util.Calendar;
@@ -130,8 +130,13 @@ public class CourseDataEntryActivity extends AppCompatActivity implements DatePi
     }
 
     private Term setTermView(@NonNull Uri termUri) {
-        Term localTerm = null;
-        Cursor cursor = null;
+        Term localTerm = Util.get(this, Term.class, termUri);
+        if (term == null) {
+            throw new NullPointerException();
+        }
+        TermHolder termHolder = new TermHolder(findViewById(R.id.term_list_item), null, null);
+        termHolder.bindTerm(localTerm);
+        /*Cursor cursor = null;
         try {
             cursor = getContentResolver().query(termUri, null, null, null, null);
             if (cursor != null && cursor.moveToFirst()) {
@@ -144,7 +149,8 @@ public class CourseDataEntryActivity extends AppCompatActivity implements DatePi
             if (cursor != null) {
                 cursor.close();
             }
-        }
+        }*/
+
         return localTerm;
     }
     private void setStatusSpinnerFromCourse(Spinner spinner, Course course) {

@@ -10,9 +10,9 @@
         android:title="@string/settings"
         android:orderInCategory="100"/>-->
     <item android:id="@+id/sample_data"
-        android:title="Add Sample Data"
+        android:title="Add Sample Data (DEBUG)"
         android:orderInCategory="200"/>
     <item android:id="@+id/delete_sample_data"
-        android:title="Delete Sample Data"
+        android:title="Delete All Data (DEBUG)"
         android:orderInCategory="300"/>
 </menu>

@@ -74,7 +74,10 @@ public class MentorDataEntryActivity extends AppCompatActivity {
                 createCourseMentor();
                 break;
             case R.id.delete:
-                Toast.makeText(this, "Not implemented", Toast.LENGTH_SHORT).show(); // FIXME
+                Util.deleteRecursive(this, mentorContentUri);
+                String mentorString = getResources().getString(R.string.mentor);
+                Toast.makeText(this, getResources().getString(R.string.deleted_item, mentorString, mentor.name()), Toast.LENGTH_LONG).show();
+                finish();
                 break;
             default:
                 return super.onOptionsItemSelected(item);

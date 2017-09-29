@@ -300,7 +300,7 @@ public final class Util {
             case "com.example.clement.studentplanner.data.Course":
                 // Remove mentors from course
                 if (0 == resolver.delete(withAppendedId(OmniProvider.Content.COURSEMENTOR_COURSE_ID, id), null, null)) {
-                    Log.e(Util.LOG_TAG, "Failed to remove mentors from course #"+id);
+                    //Log.e(Util.LOG_TAG, "Failed to remove mentors from course #"+id);
                 }
                 // Delete notes from course
                 notes = getList(context, Note.class, withAppendedId(OmniProvider.Content.NOTE_COURSE_ID, id));
@@ -450,16 +450,17 @@ public final class Util {
         public static File openFile(Context context, String name) throws IOException {
             String imageFileName = "PHOTO_"+name;
             File storageDir = picFileDir(context);
-            if (storageDir.exists() || storageDir.mkdir()) {
-                File imageFile = File.createTempFile(imageFileName, ".jpg", storageDir);
-                return imageFile;
-            }
-            return null;
+            File imageFile = File.createTempFile(imageFileName, ".jpg", storageDir);
+            return imageFile;
         }
         @NonNull
         public static synchronized File picFileDir(@NonNull Context context) {
             if (picFileDir == null) {
                 picFileDir = new File(context.getFilesDir(), "pics");
+                if (!picFileDir.exists()) {
+                    Log.i(LOG_TAG, "Creating photo directory '" + picFileDir.getName() + "' "
+                        + (picFileDir.mkdir() ? "succeeded" : "failed") + ".");
+                }
             }
             return picFileDir;
         }

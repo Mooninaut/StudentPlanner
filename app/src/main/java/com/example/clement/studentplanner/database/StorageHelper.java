@@ -18,7 +18,7 @@ import java.util.ArrayList;
 
 public class StorageHelper extends SQLiteOpenHelper {
 
-    public static final int DATABASE_VERSION = 28;
+    public static final int DATABASE_VERSION = 1;
     public static final String TABLE_TERM = "term";
     public static final String COLUMN_ID = BaseColumns._ID;
     public static final String COLUMN_NAME = "name";
@@ -75,7 +75,7 @@ public class StorageHelper extends SQLiteOpenHelper {
     public static final String[] COLUMNS_EVENT = {
         COLUMN_ID, COLUMN_NAME, COLUMN_TIME, COLUMN_TERMINUS
     };
-    public static final String TABLE_EVENT = "eventView";
+    public static final String TABLE_EVENT = "event_view";
     private static final String SELECT_EVENT_START = "SELECT "+COLUMN_ID+"*2 AS "+COLUMN_ID+", "
         +COLUMN_NAME+", "+COLUMN_START+" AS "+COLUMN_TIME+", '"+COLUMN_START+"' AS "+COLUMN_TERMINUS+" FROM ";
     private static final String SELECT_EVENT_END = "SELECT "+COLUMN_ID+"*2+1 AS "+COLUMN_ID+", "

@@ -196,7 +196,7 @@ public class TermDetailActivity extends AppCompatActivity
         String termString = getResources().getString(R.string.term);
         Util.deleteRecursive(this, termContentUri);
         finish();
-        Toast.makeText(this, getResources().getString(R.string.deleted_item, termString, term.name()), Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, getResources().getString(R.string.deleted_item, termString, term.name()), Toast.LENGTH_LONG).show();
     }
     @Override
     public void onFragmentItemClick(long itemId, View view, String tag) {

@@ -141,6 +141,9 @@ public class CourseDetailActivity extends AppCompatActivity
             case R.id.delete:
                 showDeleteDialog();
                 return true;
+            case R.id.help:
+                showHelp();
+                return true;
             default:
                 throw new UnsupportedOperationException();
         }
@@ -179,6 +182,12 @@ public class CourseDetailActivity extends AppCompatActivity
             .show();
     }
 
+    private void showHelp() {
+        AlertDialog.Builder  builder = new AlertDialog.Builder(this);
+        builder.setMessage(R.string.course_detail_help)
+            .setPositiveButton("OK", null)
+            .show();
+    }
     private void deleteCourse() {
         Course course = Util.get(this, Course.class, courseContentUri);
         String courseString = getResources().getString(R.string.course);
@@ -290,10 +299,9 @@ public class CourseDetailActivity extends AppCompatActivity
                 onMentorToggled(itemId);
                 break;
             case Util.Tag.ASSESSMENT:
-                Toast.makeText(this, "Deleting assessments is not supported yet", Toast.LENGTH_SHORT).show();
                 break;
             case Util.Tag.NOTE:
-                Toast.makeText(this, "Deleting notes is not supported yet", Toast.LENGTH_SHORT).show();
+                break;
             default:
                 throw new IllegalStateException("Unknown tag "+tag);
         }

@@ -35,7 +35,7 @@ import static android.content.ContentUris.withAppendedId;
  */
 
 public class AssessmentDetailActivity extends AppCompatActivity
-        implements FragmentItemListener.OnClick, FragmentItemListener.OnLongClick {
+        implements FragmentItemListener.OnClick {
     private Uri assessmentContentUri;
     private NoteListingFragment noteFragment;
 
@@ -111,10 +111,10 @@ public class AssessmentDetailActivity extends AppCompatActivity
             if (resultCode == Activity.RESULT_OK) {
                 Toast.makeText(this, "Reminder added!", Toast.LENGTH_SHORT).show();
             }
-            else {
-                String result = data == null ? "Null" : data.getData().toString();
-                Toast.makeText(this, "Result code: "+resultCode+" Data: "+result, Toast.LENGTH_LONG).show();
-            }
+//            else {
+//                String result = data == null ? "Null" : data.getData().toString();
+//                Toast.makeText(this, "Result code: "+resultCode+" Data: "+result, Toast.LENGTH_LONG).show();
+//            }
         }
     }
 
@@ -201,7 +201,7 @@ public class AssessmentDetailActivity extends AppCompatActivity
         Util.deleteRecursive(this, assessmentContentUri);
         finish();
         String assessmentString = getResources().getString(R.string.assessment);
-        Toast.makeText(this, getResources().getString(R.string.deleted_item, assessmentString, assessment.name()), Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, getResources().getString(R.string.deleted_item, assessmentString, assessment.name()), Toast.LENGTH_LONG).show();
     }
     public void addNote(View view) {
         Intent intent = new Intent(this, NoteDataEntryActivity.class);
@@ -220,16 +220,6 @@ public class AssessmentDetailActivity extends AppCompatActivity
                 intent.setData(withAppendedId(OmniProvider.Content.NOTE, itemId));
                 startActivity(intent);
                 break;
-            default:
-                throw new IllegalStateException("Unknown tag "+tag);
-        }
-    }
-
-    @Override
-    public void onFragmentItemLongClick(long itemId, View view, String tag) {
-        switch(tag) {
-            case Util.Tag.NOTE:
-                Toast.makeText(this, "Deleting notes is not supported yet", Toast.LENGTH_SHORT).show();
             default:
                 throw new IllegalStateException("Unknown tag "+tag);
         }

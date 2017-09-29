@@ -13,4 +13,8 @@
         android:title="@string/delete"
         android:orderInCategory="300"
         app:showAsAction="never"/>
+    <item android:id="@+id/help"
+        android:title="@string/help"
+        android:orderInCategory="400"
+        app:showAsAction="ifRoom"/>
 </menu>

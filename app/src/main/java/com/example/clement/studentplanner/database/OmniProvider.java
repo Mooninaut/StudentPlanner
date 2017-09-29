@@ -273,8 +273,10 @@ public class OmniProvider extends ContentProvider {
      */
     private static Uri appendMatchUri(int id, Uri base, String... paths) {
         Uri uri = buildPath(base, paths);
-//        Log.d(Util.LOG_TAG, "OmniProvider: Adding "+uri.toString()+" => "+id);
-        URI_MATCHER.addURI(uri.getAuthority(), uri.getPath(), id);
+        String path = uri.getPath().substring(1); // Remove leading '/'
+        Log.d(Util.LOG_TAG, "OmniProvider: Adding "+uri.getAuthority()+" "+path+" => "+id);
+
+        URI_MATCHER.addURI(uri.getAuthority(), path, id);
         return uri;
     }
 

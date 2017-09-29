@@ -18,7 +18,6 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Toast;
 
 import com.example.clement.studentplanner.data.Assessment;
 import com.example.clement.studentplanner.data.Course;
@@ -30,6 +29,7 @@ import com.example.clement.studentplanner.input.TermDataEntryActivity;
 import java.io.File;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
+import java.util.List;
 
 import static com.example.clement.studentplanner.Util.Tag.ASSESSMENT;
 
@@ -45,6 +45,7 @@ public class MainActivity extends AppCompatActivity
     //private String currentFragment = null;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         for (File file : Util.Photo.picFileDir(this).listFiles()) {
             file = file.getAbsoluteFile();
 
@@ -145,13 +146,10 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void deleteSampleData() {
-        getContentResolver().delete(OmniProvider.Content.COURSEMENTOR, null, null);
-        getContentResolver().delete(OmniProvider.Content.MENTOR, null, null);
-        getContentResolver().delete(OmniProvider.Content.NOTE, null, null);
-        getContentResolver().delete(OmniProvider.Content.ASSESSMENT, null, null);
-        getContentResolver().delete(OmniProvider.Content.COURSE, null, null);
-        getContentResolver().delete(OmniProvider.Content.TERM, null, null);
-        Toast.makeText(this, "KABOOM!", Toast.LENGTH_SHORT).show();
+        List<Term> terms = Util.getList(this, Term.class, OmniProvider.Content.TERM);
+        for (Term term : terms) {
+            Util.deleteRecursive(this, Term.class, term.id());
+        }
     }
     private void insertSampleData() {
         deleteSampleData();
