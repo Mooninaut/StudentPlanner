@@ -7,6 +7,7 @@
     <color name="colorLightGray">#e0e0e0</color>
     <color name="colorMediumGray">#d0d0d0</color>
     <color name="colorTerm">#5c6bbf</color> <!-- Material Indigo 400 -->
+    <color name="colorTermBackground">#205ffe</color>
     <color name="colorCourse">#558B2F</color> <!-- Material Light Green 800 -->
     <color name="colorCourseBackground">#628c46</color>
     <color name="colorAssessment">#F57F17</color> <!-- Material Yellow 900 -->

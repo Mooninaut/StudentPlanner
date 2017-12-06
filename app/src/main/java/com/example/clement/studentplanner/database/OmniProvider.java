@@ -269,12 +269,12 @@ public class OmniProvider extends ContentProvider {
      * @param id The integer ID of the match clause.
      * @param base A base Content URI to build from.
      * @param paths Additional path segments to add to the base.
-     * @return
+     * @return The newly constructed URI
      */
     private static Uri appendMatchUri(int id, Uri base, String... paths) {
         Uri uri = buildPath(base, paths);
         String path = uri.getPath().substring(1); // Remove leading '/'
-        Log.d(Util.LOG_TAG, "OmniProvider: Adding "+uri.getAuthority()+" "+path+" => "+id);
+        Log.d(Util.LOG_TAG, "OmniProvider: Adding "+uri.getAuthority()+" "+path+" => "+String.format("0x%X",id));
 
         URI_MATCHER.addURI(uri.getAuthority(), path, id);
         return uri;
@@ -349,7 +349,7 @@ public class OmniProvider extends ContentProvider {
     /**
      * Notify the appropriate listeners. Notify both mentor and coursementor listeners of
      * changes to either table.
-     * @param uri
+     * @param uri Notify listeners to this Content URI that a change has occurred.
      */
     public void notifyChange(@NonNull Uri uri) {
         Log.d(Util.LOG_TAG, "OmniProvider.notifyChange: uri = '"+uri.toString()+"'");
@@ -491,7 +491,7 @@ public class OmniProvider extends ContentProvider {
     @Nullable
     @Override
     public Uri insert(@NonNull Uri uri, @Nullable ContentValues contentValues) {
-        Log.d(Util.LOG_TAG, "OmniProvider.insert("+uri.toString()+", "+contentValues.toString()+")");
+        Log.d(Util.LOG_TAG, "OmniProvider.insert("+uri.toString()+", "+(contentValues == null ? "null" : contentValues.toString()+")"));
         int match = URI_MATCHER.match(uri);
         int matchKey = match & MASK_KEY;
         int matchTable = match & MASK_TABLE;
@@ -535,11 +535,11 @@ public class OmniProvider extends ContentProvider {
     }
 
     /**
-     * Delete something from the database
+     * Delete zero or more rows from the database
      * @param uri The ContentUri to delete
      * @param selection Unused
      * @param selectionArgs Unused
-     * @return
+     * @return The number of rows affected
      */
     @Override
     public int delete(@NonNull Uri uri, @Nullable String selection,

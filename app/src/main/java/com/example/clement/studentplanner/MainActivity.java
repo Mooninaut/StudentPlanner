@@ -130,6 +130,10 @@ public class MainActivity extends AppCompatActivity
             case R.id.delete_sample_data:
                 deleteSampleData();
                 return true;
+            case R.id.fake_term_view:
+                Intent intent = new Intent(this, TermDetailActivity2.class);
+                startActivity(intent);
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }

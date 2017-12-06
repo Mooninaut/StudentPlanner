@@ -41,7 +41,6 @@ public class CourseRecyclerAdapter extends RecyclerCursorAdapterBase<CourseHolde
     @Override
     public void onBindViewHolder(CourseHolder holder, int position) {
         courseCursorAdapter.getCursor().moveToPosition(position);
-//        courseCursorAdapter.bindView(holder.itemView, context, courseCursorAdapter.getCursor());
         holder.bindItem(courseCursorAdapter.getItem(position));
     }
 

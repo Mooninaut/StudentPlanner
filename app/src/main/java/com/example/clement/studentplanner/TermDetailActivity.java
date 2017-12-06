@@ -5,7 +5,6 @@ import android.content.ContentUris;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Resources;
-import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -22,7 +21,7 @@ import android.widget.Toast;
 
 import com.example.clement.studentplanner.data.Term;
 import com.example.clement.studentplanner.database.OmniProvider;
-import com.example.clement.studentplanner.database.TermCursorAdapter;
+import com.example.clement.studentplanner.database.TermHolder;
 import com.example.clement.studentplanner.input.CourseDataEntryActivity;
 import com.example.clement.studentplanner.input.TermDataEntryActivity;
 
@@ -77,20 +76,12 @@ public class TermDetailActivity extends AppCompatActivity
      * Single Term item at top
      */
     protected void setTerm(Uri termUri) {
-//        Uri termUri = getIntent().getParcelableExtra(TermProvider.contentItemType);
-        Cursor cursor = null;
-        try {
-            cursor = getContentResolver().query(termUri, null, null, null, null);
-            if (cursor != null && cursor.moveToFirst()) {
-                TermCursorAdapter termAdapter = new TermCursorAdapter(this, cursor, 0);
-                termAdapter.bindView(findViewById(R.id.term_detail), this, cursor);
-//                term = termAdapter.getItem(0);
-            }
-        } finally {
-            if (cursor != null) {
-                cursor.close();
-            }
+        Term term = Util.get(this, Term.class, termUri);
+        if (term == null) {
+            throw new NullPointerException();
         }
+        TermHolder termHolder = new TermHolder(findViewById(R.id.term_detail), null, null);
+        termHolder.bindItem(term);
     }
 
     @Override
@@ -158,8 +149,8 @@ public class TermDetailActivity extends AppCompatActivity
         }
     }
     /**
-     * Prompt the user for whether they really want to delete this course, and if so, go ahead and
-     * delete it (with associated notes and assessments).
+     * Prompt the user for whether they really want to delete this term, and if so, go ahead and
+     * delete it. Only called if the term has no courses associated with it.
      */
     private void showDeleteDialog() {
         DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {

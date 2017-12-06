@@ -88,7 +88,7 @@ public class StorageHelper extends SQLiteOpenHelper {
     public static final String DATABASE_FILE_NAME = "studentplanner.sqlite3";
 
     static {
-        ArrayList<String> schema = new ArrayList<String>(30);
+        ArrayList<String> schema = new ArrayList<>(30);
         schema.add("DROP VIEW IF EXISTS "+ TABLE_EVENT);
         schema.add("DROP TABLE IF EXISTS "+TABLE_NOTE);
         schema.add("DROP TABLE IF EXISTS "+TABLE_ASSESSMENT);

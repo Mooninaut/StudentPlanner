@@ -3,8 +3,10 @@ package com.example.clement.studentplanner.input;
 import android.Manifest;
 import android.app.Activity;
 import android.content.ContentUris;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
@@ -14,6 +16,7 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.ActionBar;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.ShareActionProvider;
 import android.support.v7.widget.Toolbar;
@@ -33,7 +36,7 @@ import java.io.FileNotFoundException;
 import java.io.InputStream;
 
 public class NoteDataEntryActivity extends AppCompatActivity {
-    public static final String TYPE = "type"; // Values: StorageHelper.TABLE_COURSE or StorageHelper.TABLE_ASSESSMENT
+    public static final String TYPE = "type"; // Values: StorageHelper.TABLE_NOTE or StorageHelper.TABLE_ASSESSMENT
     private static final String NOTE = "note";
     private static final String TEMP_FILE_URI = "temp-file-uri";
 
@@ -153,25 +156,67 @@ public class NoteDataEntryActivity extends AppCompatActivity {
                 setResult(Activity.RESULT_OK, intent);
                 finish();
                 return true;
-/*            case R.id.share:
 
-                if (tempFileUri != null) {
-                    shareIntent.putExtra(Intent.EXTRA_STREAM, tempFileUri);
-                } else if (note.hasFileUri()) {
-                    shareIntent.putExtra(Intent.EXTRA_STREAM, note.fileUri());
-                }
-                shareActionProvider.setShareIntent(shareIntent);
-
-                return false;*/
             case android.R.id.home:
                 setTempFileUri(null);
                 finish();
                 return true;
+            case R.id.delete:
+                showDeleteDialog();
+                return true;
             default:
-                return super.onOptionsItemSelected(item);
+                throw new UnsupportedOperationException();
         }
     }
+    /**
+     * Prompt the user for whether they really want to delete this course, and if so, go ahead and
+     * delete it (with associated notes and assessments).
+     */
+    private void showDeleteDialog() {
+        DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                switch (which){
+                    case DialogInterface.BUTTON_POSITIVE:
+                        //Yes button clicked
+                        if (note == null) {
+                            finish();
+                        }
+                        else {
+                            deleteNote();
+                        }
+                        break;
 
+                    case DialogInterface.BUTTON_NEGATIVE:
+                        //No button clicked
+                        break;
+                }
+            }
+        };
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        Resources resources = getResources();
+        String noteString = resources.getString(R.string.note);
+        String delete = resources.getString(R.string.delete);
+        String cancel = resources.getString(R.string.cancel);
+        String question = resources.getString(R.string.confirm_delete_item, noteString, note.text());
+        builder.setMessage(question)
+            .setPositiveButton(delete, dialogClickListener)
+            .setNegativeButton(cancel, dialogClickListener)
+            .show();
+    }
+
+    private void deleteNote() {
+        setTempFileUri(null);
+        String noteString = getResources().getString(R.string.note);
+        Uri noteUri = note.toUri();
+        if (noteUri == null) {
+            throw new NullPointerException();
+        }
+        Util.deleteRecursive(this, noteUri);
+        finish();
+        Toast.makeText(this, getResources().getString(R.string.deleted_item, noteString, note.text()), Toast.LENGTH_SHORT).show();
+    }
     // From https://stackoverflow.com/a/32796900
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {

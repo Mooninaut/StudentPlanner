@@ -16,7 +16,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.example.clement.studentplanner.database.ProviderContract;
 import com.example.clement.studentplanner.database.RecyclerCursorAdapterBase;
 
 /**
@@ -27,7 +26,6 @@ import com.example.clement.studentplanner.database.RecyclerCursorAdapterBase;
 public abstract class RecyclerListingFragmentBase<A extends RecyclerCursorAdapterBase> extends Fragment
     implements ItemListener.OnClick, ItemListener.OnLongClick {
     private static final String CONTENT_URI_KEY = "content-uri";
-    private int itemViewId = Integer.MIN_VALUE;
     private Cursor cursor;
     private A adapter;
     private Context context;
@@ -37,18 +35,6 @@ public abstract class RecyclerListingFragmentBase<A extends RecyclerCursorAdapte
     private int loaderId = Integer.MIN_VALUE;
 
     protected abstract A createAdapter(Context context, Cursor cursor);
-
-    /**
-     * For use with multi-providers
-     * @param contract Contract to retrieve the content URI from
-     * @param recyclerViewId RecyclerView widget to display items in
-     * @param loaderId An arbitrary constant to identify the content loader
-     */
-    protected RecyclerListingFragmentBase(ProviderContract contract, int recyclerViewId, int loaderId) {
-        this.defaultContentUri = contract.contentUri();
-        this.recyclerViewId = recyclerViewId;
-        this.loaderId = loaderId;
-    }
 
     /**
      * For use with OmniProvider

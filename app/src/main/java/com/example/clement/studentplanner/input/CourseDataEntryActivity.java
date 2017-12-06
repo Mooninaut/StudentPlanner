@@ -2,6 +2,7 @@ package com.example.clement.studentplanner.input;
 
 import android.app.Activity;
 import android.app.DatePickerDialog;
+import android.content.ContentUris;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
@@ -24,8 +25,8 @@ import com.example.clement.studentplanner.R;
 import com.example.clement.studentplanner.Util;
 import com.example.clement.studentplanner.data.Course;
 import com.example.clement.studentplanner.data.Term;
+import com.example.clement.studentplanner.database.OmniProvider;
 import com.example.clement.studentplanner.database.TermHolder;
-import com.example.clement.studentplanner.database.TermProvider;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -57,23 +58,25 @@ public class CourseDataEntryActivity extends AppCompatActivity implements DatePi
             statusToSpinnerPosition.append(spinnerPositionToStatus[i], i);
         }
 
-        if (action.equals(Intent.ACTION_INSERT)) {
-            setTitle(R.string.add_course);
-            termUri = intent.getData();
-        }
-        else if (action.equals(Intent.ACTION_EDIT)) {
-            setTitle(R.string.edit_course);
-            Button saveButton = (Button) findViewById(R.id.create_button);
-            saveButton.setText(R.string.save_changes);
-            Uri courseUri = intent.getData();
-            if (courseUri == null) {
-                throw new NullPointerException();
-            }
-            course = editCourse(courseUri);
-            termUri = TermProvider.CONTRACT.contentUri(course.termId());
-        }
-        else {
-            throw new IllegalStateException();
+        switch (action) {
+            case Intent.ACTION_INSERT:
+                setTitle(R.string.add_course);
+                termUri = intent.getData();
+
+                break;
+            case Intent.ACTION_EDIT:
+                setTitle(R.string.edit_course);
+                Button saveButton = (Button) findViewById(R.id.create_button);
+                saveButton.setText(R.string.save_changes);
+                Uri courseUri = intent.getData();
+                if (courseUri == null) {
+                    throw new NullPointerException();
+                }
+                course = editCourse(courseUri);
+                termUri = ContentUris.withAppendedId(OmniProvider.Content.TERM, course.termId());
+                break;
+            default:
+                throw new IllegalStateException();
         }
         term = setTermView(termUri);
 
@@ -131,11 +134,11 @@ public class CourseDataEntryActivity extends AppCompatActivity implements DatePi
 
     private Term setTermView(@NonNull Uri termUri) {
         Term localTerm = Util.get(this, Term.class, termUri);
-        if (term == null) {
+        if (localTerm == null) {
             throw new NullPointerException();
         }
         TermHolder termHolder = new TermHolder(findViewById(R.id.term_list_item), null, null);
-        termHolder.bindTerm(localTerm);
+        termHolder.bindItem(localTerm);
         /*Cursor cursor = null;
         try {
             cursor = getContentResolver().query(termUri, null, null, null, null);

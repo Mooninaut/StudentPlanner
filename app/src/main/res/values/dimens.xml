@@ -10,7 +10,9 @@
     <dimen name="margin_section">32dp</dimen>
     <dimen name="keyline">72dp</dimen>
     <dimen name="item_height">64dp</dimen>
+    <dimen name="item_height_v2">96dp</dimen>
     <dimen name="circle_size">32sp</dimen>
+    <dimen name="circle_size_v2">40dp</dimen>
     <dimen name="mentor_item_height">72dp</dimen>
     <dimen name="margin_very_small">4dp</dimen>
     <dimen name="photo_view_height">300dp</dimen>

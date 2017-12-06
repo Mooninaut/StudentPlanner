@@ -15,4 +15,7 @@
     <item android:id="@+id/delete_sample_data"
         android:title="Delete All Data (DEBUG)"
         android:orderInCategory="300"/>
+    <item android:id="@+id/fake_term_view"
+        android:title="FAKE TERM VIEW"
+        android:orderInCategory="100"/>
 </menu>

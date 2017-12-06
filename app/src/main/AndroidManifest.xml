@@ -140,6 +140,7 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.example.clement.studentplanner.MainActivity"/>
         </activity>
+        <activity android:name=".TermDetailActivity2"/>
     </application>
 
 </manifest>

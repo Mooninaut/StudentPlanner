@@ -13,7 +13,7 @@ import java.text.DateFormat;
 import java.util.Locale;
 
 /**
- * Created by Clement on 9/10/2017.
+ * Holds the View for a Course list item.
  */
 
 public class CourseHolder extends RecyclerViewHolderBase<Course> {

@@ -21,8 +21,8 @@ import android.widget.Toast;
 
 import com.example.clement.studentplanner.R;
 import com.example.clement.studentplanner.data.Term;
+import com.example.clement.studentplanner.database.OmniProvider;
 import com.example.clement.studentplanner.database.TermCursorAdapter;
-import com.example.clement.studentplanner.database.TermProvider;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -222,7 +222,7 @@ public class TermDataEntryActivity extends AppCompatActivity implements DatePick
         if (intent.getAction().equals(Intent.ACTION_EDIT)) {
             int rowsAffected = getContentResolver().update(
                 intent.getData(),
-                TermProvider.termToValues(term),
+                term.toValues(),
                 null,
                 null
             );
@@ -232,8 +232,8 @@ public class TermDataEntryActivity extends AppCompatActivity implements DatePick
         }
         else if (intent.getAction().equals(Intent.ACTION_INSERT)) {
             resultUri = getContentResolver().insert(
-                TermProvider.CONTRACT.contentUri,
-                TermProvider.termToValues(term)
+                OmniProvider.Content.TERM,
+                term.toValues()
             );
         }
         if (resultUri != null) {
