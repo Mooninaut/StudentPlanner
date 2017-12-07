@@ -51,16 +51,22 @@ public class TermDetailActivity2 extends AppCompatActivity {
             4));
         courses.add(new Course2(5,
             LocalDate.of(2017, 4, 16),
-            LocalDate.of(2017,4,30),
-            "C179 Business of IT - Applications",
+            LocalDate.of(2017, 4, 30),
+            "C195 Software II - Advanced Java Concepts",
             CourseState.PASSED,
-            4));
+            6));
         courses.add(new Course2(5,
-            LocalDate.of(2017,5,1),
-            LocalDate.of(2017,6,14),
+            LocalDate.of(2017, 5, 1),
+            LocalDate.of(2017, 6, 14),
             "C193 Client-Server Application Development",
             CourseState.PASSED,
             3));
+        courses.add(new Course2(5,
+            LocalDate.of(2017, 6, 15),
+            LocalDate.of(2017, 7, 23),
+            "C179 Business of IT - Applications",
+            CourseState.PASSED,
+            4));
     }
     static class Course2Adapter extends RecyclerView.Adapter<Course2Adapter.Course2ViewHolder> {
         List<Course2> courses;

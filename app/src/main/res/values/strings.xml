@@ -114,4 +114,11 @@
         <item>⚄</item>
         <item>⚅</item>
     </string-array>
+    <string-array name="ordinal_suffix">
+        <item>th</item>
+        <item>st</item>
+        <item>nd</item>
+        <item>rd</item>
+    </string-array>
+    <string name="generic_ordinal_suffix">th</string>
 </resources>
