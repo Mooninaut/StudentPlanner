@@ -1,3 +1,11 @@
+/*
+ * Copyright (c) 2017 Clement Cherlin. All rights reserved.
+ *
+ * This file is part of the Android application "Student Planner",
+ * created by Clement Cherlin as an assignment for the class
+ * "Mobile Application Development" at WGU.
+ */
+
 package com.example.clement.studentplanner.database;
 
 import android.content.ContentProvider;
@@ -36,10 +44,6 @@ import static com.example.clement.studentplanner.database.StorageHelper.COLUMN_S
 import static com.example.clement.studentplanner.database.StorageHelper.COLUMN_TIME;
 import static com.example.clement.studentplanner.database.StorageHelper.TABLE_COURSE_MENTOR;
 import static com.example.clement.studentplanner.database.StorageHelper.TABLE_MENTOR;
-
-/**
- * Created by Clement on 9/15/2017.
- */
 
 public class OmniProvider extends ContentProvider {
     private static final SparseArray<String> TABLES = new SparseArray<>(10);

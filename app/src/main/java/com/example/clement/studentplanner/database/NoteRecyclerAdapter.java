@@ -1,3 +1,12 @@
+/*
+ * This file is part of the project "Student Planner", created by
+ * Clement Cherlin as an assignment for the class "Mobile Application
+ * Development" at WGU.
+ *
+ * Copyright (c) 2017 Clement Cherlin. All rights reserved.
+ *
+ * Loosely based on https://stackoverflow.com/a/27732748 (fair use)
+ */
 package com.example.clement.studentplanner.database;
 
 import android.content.Context;
@@ -11,11 +20,6 @@ import android.view.ViewGroup;
 import com.example.clement.studentplanner.ItemListener;
 import com.example.clement.studentplanner.R;
 import com.example.clement.studentplanner.data.Note;
-
-/**
- * Created by Clement on 9/10/2017.
- * Based loosely on https://stackoverflow.com/a/27732748
- */
 
 public class NoteRecyclerAdapter extends RecyclerCursorAdapterBase<NoteHolder, NoteRecyclerAdapter.NoteCursorAdapter> {
 

@@ -1,3 +1,11 @@
+/*
+ * Copyright (c) 2017 Clement Cherlin. All rights reserved.
+ *
+ * This file is part of the Android application "Student Planner",
+ * created by Clement Cherlin as an assignment for the class
+ * "Mobile Application Development" at WGU.
+ */
+
 package com.example.clement.studentplanner.database;
 
 import android.support.annotation.Nullable;
@@ -9,10 +17,6 @@ import com.example.clement.studentplanner.ItemListener;
 import com.example.clement.studentplanner.R;
 import com.example.clement.studentplanner.Util;
 import com.example.clement.studentplanner.data.Mentor;
-
-/**
- * Created by Clement on 9/10/2017.
- */
 
 public class MentorHolder extends RecyclerViewHolderBase<Mentor> {
 

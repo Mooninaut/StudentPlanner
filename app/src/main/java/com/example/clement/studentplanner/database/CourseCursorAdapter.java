@@ -1,3 +1,11 @@
+/*
+ * Copyright (c) 2017 Clement Cherlin. All rights reserved.
+ *
+ * This file is part of the Android application "Student Planner",
+ * created by Clement Cherlin as an assignment for the class
+ * "Mobile Application Development" at WGU.
+ */
+
 package com.example.clement.studentplanner.database;
 
 import android.content.Context;
@@ -15,10 +23,6 @@ import com.example.clement.studentplanner.data.Course;
 
 import java.text.DateFormat;
 import java.util.Locale;
-
-/**
- * Created by Clement on 8/6/2017.
- */
 
 public class CourseCursorAdapter extends CursorAdapter {
 

@@ -1,5 +1,8 @@
-package com.example.clement.studentplanner.input;
+/*
+ * Copyright (c) 2017 Clement Cherlin. All rights reserved.
+ */
 
+package com.example.clement.studentplanner.input;
 import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.content.Intent;
@@ -131,11 +134,11 @@ public class CourseDataEntryActivity extends AppCompatActivity implements DatePi
 
     private Term setTermView(@NonNull Uri termUri) {
         Term localTerm = Util.get(this, Term.class, termUri);
-        if (term == null) {
+        if (localTerm == null) {
             throw new NullPointerException();
         }
         TermHolder termHolder = new TermHolder(findViewById(R.id.term_list_item), null, null);
-        termHolder.bindTerm(localTerm);
+        termHolder.bindItem(localTerm);
         /*Cursor cursor = null;
         try {
             cursor = getContentResolver().query(termUri, null, null, null, null);

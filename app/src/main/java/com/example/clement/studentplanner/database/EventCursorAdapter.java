@@ -1,3 +1,11 @@
+/*
+ * Copyright (c) 2017 Clement Cherlin. All rights reserved.
+ *
+ * This file is part of the Android application "Student Planner",
+ * created by Clement Cherlin as an assignment for the class
+ * "Mobile Application Development" at WGU.
+ */
+
 package com.example.clement.studentplanner.database;
 
 import android.content.Context;
@@ -22,10 +30,6 @@ import static com.example.clement.studentplanner.database.StorageHelper.COLUMN_N
 import static com.example.clement.studentplanner.database.StorageHelper.COLUMN_START;
 import static com.example.clement.studentplanner.database.StorageHelper.COLUMN_TERMINUS;
 import static com.example.clement.studentplanner.database.StorageHelper.COLUMN_TIME;
-
-/**
- * Created by Clement on 8/13/2017.
- */
 
 public class EventCursorAdapter extends CursorAdapter {
     private static final DateFormat DATE_FORMAT = DateFormat.getDateInstance();

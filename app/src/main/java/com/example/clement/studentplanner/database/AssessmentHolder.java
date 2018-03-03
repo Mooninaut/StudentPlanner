@@ -1,3 +1,11 @@
+/*
+ * Copyright (c) 2017 Clement Cherlin. All rights reserved.
+ *
+ * This file is part of the Android application "Student Planner",
+ * created by Clement Cherlin as an assignment for the class
+ * "Mobile Application Development" at WGU.
+ */
+
 package com.example.clement.studentplanner.database;
 
 import android.support.annotation.Nullable;
@@ -14,10 +22,6 @@ import java.util.Date;
 
 import static java.util.Calendar.DAY_OF_YEAR;
 import static java.util.Calendar.YEAR;
-
-/**
- * Created by Clement on 9/10/2017.
- */
 
 public class AssessmentHolder extends RecyclerViewHolderBase<Assessment> {
     private static DateFormat dateFormat = DateFormat.getDateInstance(DateFormat.MEDIUM);
