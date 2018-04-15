@@ -8,7 +8,7 @@
   -->
 
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.clement.studentplanner">
+    package="io.github.mooninaut.studentplanner">
 
     <uses-feature
         android:name="android.hardware.camera"
@@ -36,7 +36,7 @@
         </activity>
         <provider
             android:name="android.support.v4.content.FileProvider"
-            android:authorities="com.example.clement.studentplanner.fileprovider"
+            android:authorities="io.github.mooninaut.studentplanner.fileprovider"
             android:enabled="true"
             android:exported="false"
             android:grantUriPermissions="true">
@@ -46,7 +46,7 @@
         </provider>
         <provider
             android:name=".database.OmniProvider"
-            android:authorities="com.example.clement.studentplanner.provider"
+            android:authorities="io.github.mooninaut.studentplanner.provider"
             android:enabled="true"
             android:exported="false"/>
         <activity
@@ -57,7 +57,7 @@
             android:theme="@style/AppTheme">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.example.clement.studentplanner.MainActivity"/>
+                android:value="io.github.mooninaut.studentplanner.MainActivity"/>
         </activity>
         <activity
             android:name=".TermDetailActivity"
@@ -67,7 +67,7 @@
             android:theme="@style/AppTheme">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.example.clement.studentplanner.MainActivity"/>
+                android:value="io.github.mooninaut.studentplanner.MainActivity"/>
         </activity>
         <activity
             android:name=".AssessmentDetailActivity"
@@ -77,7 +77,7 @@
             android:theme="@style/AppTheme">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.example.clement.studentplanner.MainActivity"/>
+                android:value="io.github.mooninaut.studentplanner.MainActivity"/>
         </activity>
         <activity
             android:name=".input.AssessmentDataEntryActivity"
@@ -87,7 +87,7 @@
             android:theme="@style/AppTheme">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.example.clement.studentplanner.CourseDetailActivity"/>
+                android:value="io.github.mooninaut.studentplanner.CourseDetailActivity"/>
         </activity>
         <activity
             android:name=".input.TermDataEntryActivity"
@@ -97,7 +97,7 @@
             android:theme="@style/AppTheme">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.example.clement.studentplanner.MainActivity"/>
+                android:value="io.github.mooninaut.studentplanner.MainActivity"/>
         </activity>
         <activity
             android:name=".input.CourseDataEntryActivity"
@@ -107,7 +107,7 @@
             android:theme="@style/AppTheme">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.example.clement.studentplanner.TermDetailActivity"/>
+                android:value="io.github.mooninaut.studentplanner.TermDetailActivity"/>
         </activity>
         <activity
             android:name=".input.MentorDataEntryActivity"
@@ -117,7 +117,7 @@
             android:theme="@style/AppTheme">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.example.clement.studentplanner.CourseDetailActivity"/>
+                android:value="io.github.mooninaut.studentplanner.CourseDetailActivity"/>
         </activity>
         <activity
             android:name=".input.MentorPickerActivity"
@@ -127,7 +127,7 @@
             android:theme="@style/AppTheme">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.example.clement.studentplanner.CourseDetailActivity"/>
+                android:value="io.github.mooninaut.studentplanner.CourseDetailActivity"/>
         </activity>
         <activity
             android:name=".input.NoteDataEntryActivity"
@@ -137,7 +137,7 @@
             android:theme="@style/AppTheme">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.example.clement.studentplanner.MainActivity"/>
+                android:value="io.github.mooninaut.studentplanner.MainActivity"/>
         </activity>
         <activity android:name=".PhotoViewActivity"
             android:label="@string/view_photo"
@@ -146,7 +146,7 @@
             android:theme="@style/AppTheme">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.example.clement.studentplanner.MainActivity"/>
+                android:value="io.github.mooninaut.studentplanner.MainActivity"/>
         </activity>
     </application>
 

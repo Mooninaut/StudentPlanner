@@ -5,7 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.example.clement.studentplanner.input.NoteDataEntryActivity">
+    tools:context="io.github.mooninaut.studentplanner.input.NoteDataEntryActivity">
 
     <android.support.design.widget.AppBarLayout
         android:id="@+id/app_bar"
@@ -25,7 +25,8 @@
             android:layout_height="match_parent"
             android:scaleType="fitCenter"
             app:srcCompat="@drawable/image_area"
-            android:background="@color/colorPrimary"/>
+            android:background="@color/colorPrimary"
+            android:contentDescription="@string/photograph_attached_to_note"/>
     </android.support.design.widget.AppBarLayout>
 
     <android.support.design.widget.FloatingActionButton

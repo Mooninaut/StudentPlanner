@@ -4,10 +4,10 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/course_list_view"
-    android:name="com.example.clement.studentplanner.CourseListingFragment"
+    android:name="io.github.mooninaut.studentplanner.CourseListingFragment"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#FFFF"
-    app:layoutManager="LinearLayoutManager"
-    tools:context="com.example.clement.studentplanner.CourseListingFragment"
+    app:layoutManager="android.support.v7.widget.LinearLayoutManager"
+    tools:context="io.github.mooninaut.studentplanner.CourseListingFragment"
     tools:listitem="@layout/course_list_item"/>

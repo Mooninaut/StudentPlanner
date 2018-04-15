@@ -4,9 +4,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.example.clement.studentplanner.PhotoViewActivity">
+    tools:context="io.github.mooninaut.studentplanner.PhotoViewActivity">
 <ImageView
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:id="@+id/image_view"/>
+    android:id="@+id/image_view"
+    android:contentDescription="@string/photograph_attached_to_note"/>
 </android.support.constraint.ConstraintLayout>
