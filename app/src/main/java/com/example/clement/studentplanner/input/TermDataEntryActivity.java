@@ -21,8 +21,8 @@ import android.widget.Toast;
 
 import com.example.clement.studentplanner.R;
 import com.example.clement.studentplanner.data.Term;
+import com.example.clement.studentplanner.database.OmniProvider;
 import com.example.clement.studentplanner.database.TermCursorAdapter;
-import com.example.clement.studentplanner.database.TermProvider;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -33,9 +33,7 @@ import java.util.Date;
  * and setData(someTermContentUri).
  */
 public class TermDataEntryActivity extends AppCompatActivity implements DatePickerDialog.OnDateSetListener {
-//        TimePickerDialog.OnTimeSetListener,
     private enum When { START, END }
-//    private static final String WHEN = "When";
     private Term term = new Term();
     private Calendar start = Calendar.getInstance();
     private Calendar end = Calendar.getInstance();
@@ -64,7 +62,7 @@ public class TermDataEntryActivity extends AppCompatActivity implements DatePick
             editTerm(termUri);
         }
 
-        Toolbar myToolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar myToolbar = findViewById(R.id.toolbar);
         setSupportActionBar(myToolbar);
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
@@ -130,8 +128,8 @@ public class TermDataEntryActivity extends AppCompatActivity implements DatePick
                 // Retrieve Term object
                 Term term = TermCursorAdapter.cursorToTerm(cursor);
                 // Find date text views
-                TextView startDateTV = (TextView) findViewById(R.id.edit_start_date);
-                TextView endDateTV = (TextView) findViewById(R.id.edit_end_date);
+                TextView startDateTV = findViewById(R.id.edit_start_date);
+                TextView endDateTV = findViewById(R.id.edit_end_date);
                 // Set date values
                 start.setTimeInMillis(term.startMillis());
                 end.setTimeInMillis(term.endMillis());
@@ -147,8 +145,8 @@ public class TermDataEntryActivity extends AppCompatActivity implements DatePick
                 endDateTV.setText(dateFormat.format(endDate));
 
                 // Fill other views
-                EditText nameET = (EditText) findViewById(R.id.edit_name);
-                EditText numberET = (EditText) findViewById(R.id.edit_number);
+                EditText nameET = findViewById(R.id.edit_name);
+                EditText numberET = findViewById(R.id.edit_number);
 
                 nameET.setText(term.name());
                 numberET.setText(Integer.toString(term.number()));
@@ -190,8 +188,8 @@ public class TermDataEntryActivity extends AppCompatActivity implements DatePick
     }
     public void createTerm(View view) {
 
-        EditText name = (EditText) findViewById(R.id.edit_name);
-        EditText number = (EditText) findViewById(R.id.edit_number);
+        EditText name = findViewById(R.id.edit_name);
+        EditText number = findViewById(R.id.edit_number);
         int termNumber;
         try {
             termNumber = Integer.parseInt(number.getText().toString());
@@ -222,7 +220,7 @@ public class TermDataEntryActivity extends AppCompatActivity implements DatePick
         if (intent.getAction().equals(Intent.ACTION_EDIT)) {
             int rowsAffected = getContentResolver().update(
                 intent.getData(),
-                TermProvider.termToValues(term),
+                term.toValues(),
                 null,
                 null
             );
@@ -232,8 +230,8 @@ public class TermDataEntryActivity extends AppCompatActivity implements DatePick
         }
         else if (intent.getAction().equals(Intent.ACTION_INSERT)) {
             resultUri = getContentResolver().insert(
-                TermProvider.CONTRACT.contentUri,
-                TermProvider.termToValues(term)
+                OmniProvider.Content.TERM,
+                term.toValues()
             );
         }
         if (resultUri != null) {

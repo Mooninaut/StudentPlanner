@@ -1,3 +1,11 @@
+/*
+ * Copyright (c) 2017 Clement Cherlin. All rights reserved.
+ *
+ * This file is part of the Android application "Student Planner",
+ * created by Clement Cherlin as an assignment for the class
+ * "Mobile Application Development" at WGU.
+ */
+
 package com.example.clement.studentplanner;
 
 import android.app.Activity;
@@ -29,10 +37,6 @@ import com.example.clement.studentplanner.input.AssessmentDataEntryActivity;
 import com.example.clement.studentplanner.input.NoteDataEntryActivity;
 
 import static android.content.ContentUris.withAppendedId;
-
-/**
- * Created by Clement on 8/30/2017.
- */
 
 public class AssessmentDetailActivity extends AppCompatActivity
         implements FragmentItemListener.OnClick {

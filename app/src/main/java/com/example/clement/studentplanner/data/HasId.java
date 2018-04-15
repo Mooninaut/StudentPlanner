@@ -1,13 +1,17 @@
+/*
+ * Copyright (c) 2017 Clement Cherlin. All rights reserved.
+ *
+ * This file is part of the Android application "Student Planner",
+ * created by Clement Cherlin as an assignment for the class
+ * "Mobile Application Development" at WGU.
+ */
+
 package com.example.clement.studentplanner.data;
 
 import android.content.ContentValues;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-
-/**
- * Created by Clement on 9/10/2017.
- */
 
 public interface HasId {
     long id();

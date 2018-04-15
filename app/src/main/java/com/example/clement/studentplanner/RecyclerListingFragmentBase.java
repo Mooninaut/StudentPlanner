@@ -1,3 +1,11 @@
+/*
+ * Copyright (c) 2017 Clement Cherlin. All rights reserved.
+ *
+ * This file is part of the Android application "Student Planner",
+ * created by Clement Cherlin as an assignment for the class
+ * "Mobile Application Development" at WGU.
+ */
+
 package com.example.clement.studentplanner;
 
 import android.content.Context;
@@ -16,7 +24,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.example.clement.studentplanner.database.ProviderContract;
 import com.example.clement.studentplanner.database.RecyclerCursorAdapterBase;
 
 /**
@@ -37,18 +44,6 @@ public abstract class RecyclerListingFragmentBase<A extends RecyclerCursorAdapte
     private int loaderId = Integer.MIN_VALUE;
 
     protected abstract A createAdapter(Context context, Cursor cursor);
-
-    /**
-     * For use with multi-providers
-     * @param contract Contract to retrieve the content URI from
-     * @param recyclerViewId RecyclerView widget to display items in
-     * @param loaderId An arbitrary constant to identify the content loader
-     */
-    protected RecyclerListingFragmentBase(ProviderContract contract, int recyclerViewId, int loaderId) {
-        this.defaultContentUri = contract.contentUri();
-        this.recyclerViewId = recyclerViewId;
-        this.loaderId = loaderId;
-    }
 
     /**
      * For use with OmniProvider

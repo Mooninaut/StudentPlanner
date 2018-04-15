@@ -1,3 +1,11 @@
+/*
+ * Copyright (c) 2017 Clement Cherlin. All rights reserved.
+ *
+ * This file is part of the Android application "Student Planner",
+ * created by Clement Cherlin as an assignment for the class
+ * "Mobile Application Development" at WGU.
+ */
+
 package com.example.clement.studentplanner;
 
 import android.app.Activity;
@@ -40,10 +48,6 @@ import java.util.LinkedList;
 import java.util.List;
 
 import static android.content.ContentUris.withAppendedId;
-
-/**
- * Created by Clement on 9/9/2017.
- */
 
 public final class Util {
     public static final long NO_ID = -1;

@@ -3,6 +3,7 @@
  */
 
 package com.example.clement.studentplanner.input;
+
 import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.content.Intent;
@@ -27,8 +28,8 @@ import com.example.clement.studentplanner.R;
 import com.example.clement.studentplanner.Util;
 import com.example.clement.studentplanner.data.Course;
 import com.example.clement.studentplanner.data.Term;
+import com.example.clement.studentplanner.database.OmniProvider;
 import com.example.clement.studentplanner.database.TermHolder;
-import com.example.clement.studentplanner.database.TermProvider;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -73,7 +74,7 @@ public class CourseDataEntryActivity extends AppCompatActivity implements DatePi
                 throw new NullPointerException();
             }
             course = editCourse(courseUri);
-            termUri = TermProvider.CONTRACT.contentUri(course.termId());
+            termUri = OmniProvider.Content.COURSE_TERM_ID;
         }
         else {
             throw new IllegalStateException();

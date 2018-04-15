@@ -1,3 +1,11 @@
+/*
+ * Copyright (c) 2017 Clement Cherlin. All rights reserved.
+ *
+ * This file is part of the Android application "Student Planner",
+ * created by Clement Cherlin as an assignment for the class
+ * "Mobile Application Development" at WGU.
+ */
+
 package com.example.clement.studentplanner.data;
 
 import android.content.ContentUris;
@@ -22,10 +30,6 @@ import static com.example.clement.studentplanner.database.StorageHelper.COLUMN_T
 import static com.example.clement.studentplanner.database.StorageHelper.TABLE_ASSESSMENT;
 import static com.example.clement.studentplanner.database.StorageHelper.TABLE_COURSE;
 import static com.example.clement.studentplanner.database.StorageHelper.TABLE_TERM;
-
-/**
- * Created by Clement on 9/10/2017.
- */
 
 public class Event implements HasId {
     public enum Terminus {

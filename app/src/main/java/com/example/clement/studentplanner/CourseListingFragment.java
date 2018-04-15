@@ -1,3 +1,11 @@
+/*
+ * Copyright (c) 2017 Clement Cherlin. All rights reserved.
+ *
+ * This file is part of the Android application "Student Planner",
+ * created by Clement Cherlin as an assignment for the class
+ * "Mobile Application Development" at WGU.
+ */
+
 package com.example.clement.studentplanner;
 
 import android.content.Context;
@@ -8,10 +16,9 @@ import com.example.clement.studentplanner.database.CourseRecyclerAdapter;
 import com.example.clement.studentplanner.database.OmniProvider;
 
 /**
-     * A fragment representing a list of Courses.
-     */
+ * A fragment representing a list of Courses.
+ */
 public class CourseListingFragment extends RecyclerListingFragmentBase<CourseRecyclerAdapter> {
-//    private CourseLoaderListener courseLoaderListener;
 //    private HostActivity hostActivity;
     public static final int COURSE_LOADER_ID = 0xC;
 

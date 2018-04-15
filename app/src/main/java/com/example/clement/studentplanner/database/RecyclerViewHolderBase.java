@@ -1,3 +1,11 @@
+/*
+ * Copyright (c) 2017 Clement Cherlin. All rights reserved.
+ *
+ * This file is part of the Android application "Student Planner",
+ * created by Clement Cherlin as an assignment for the class
+ * "Mobile Application Development" at WGU.
+ */
+
 package com.example.clement.studentplanner.database;
 
 import android.support.annotation.CallSuper;
@@ -9,10 +17,6 @@ import android.view.View;
 import com.example.clement.studentplanner.ItemListener;
 import com.example.clement.studentplanner.Util;
 import com.example.clement.studentplanner.data.HasId;
-
-/**
- * Created by Clement on 9/10/2017.
- */
 
 public abstract class RecyclerViewHolderBase<T extends HasId> extends RecyclerView.ViewHolder
     implements View.OnClickListener, View.OnLongClickListener{

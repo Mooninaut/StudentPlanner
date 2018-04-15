@@ -1,3 +1,13 @@
+/*
+ * Copyright (c) 2017 Clement Cherlin. All rights reserved.
+ *
+ * This file is part of the Android application "Student Planner",
+ * created by Clement Cherlin as an assignment for the class
+ * "Mobile Application Development" at WGU.
+ *
+ * Based loosely on https://stackoverflow.com/a/27732748 (fair use)
+ */
+
 package com.example.clement.studentplanner.database;
 
 import android.content.Context;
@@ -7,11 +17,6 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.clement.studentplanner.ItemListener;
-
-/**
- * Created by Clement on 9/27/2017.
- * Based loosely on https://stackoverflow.com/a/27732748
- */
 
 public class TermRecyclerAdapter extends RecyclerCursorAdapterBase<TermHolder, TermCursorAdapter> {
 

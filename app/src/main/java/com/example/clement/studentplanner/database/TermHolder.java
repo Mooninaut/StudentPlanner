@@ -1,3 +1,11 @@
+/*
+ * Copyright (c) 2017 Clement Cherlin. All rights reserved.
+ *
+ * This file is part of the Android application "Student Planner",
+ * created by Clement Cherlin as an assignment for the class
+ * "Mobile Application Development" at WGU.
+ */
+
 package com.example.clement.studentplanner.database;
 
 import android.content.Context;
@@ -11,10 +19,6 @@ import com.example.clement.studentplanner.data.Term;
 
 import java.text.DateFormat;
 import java.util.Locale;
-
-/**
- * Created by Clement on 9/10/2017.
- */
 
 public class TermHolder extends RecyclerViewHolderBase<Term> {
     private static final DateFormat DATE_FORMAT = DateFormat.getDateInstance();
@@ -30,10 +34,10 @@ public class TermHolder extends RecyclerViewHolderBase<Term> {
 
         super(itemView, onClick, onLongClick);
 
-        nameTV = (TextView) itemView.findViewById(R.id.termNameTextView);
-        numberTV = (TextView) itemView.findViewById(R.id.termNumberTextView);
-        startTV = (TextView) itemView.findViewById(R.id.termStartTextView);
-        endTV = (TextView) itemView.findViewById(R.id.termEndTextView);
+        nameTV = itemView.findViewById(R.id.termNameTextView);
+        numberTV = itemView.findViewById(R.id.termNumberTextView);
+        startTV = itemView.findViewById(R.id.termStartTextView);
+        endTV = itemView.findViewById(R.id.termEndTextView);
         context = this.itemView.getContext();
     }
 

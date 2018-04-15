@@ -1,3 +1,11 @@
+/*
+ * Copyright (c) 2017 Clement Cherlin. All rights reserved.
+ *
+ * This file is part of the Android application "Student Planner",
+ * created by Clement Cherlin as an assignment for the class
+ * "Mobile Application Development" at WGU.
+ */
+
 package com.example.clement.studentplanner;
 
 
@@ -7,10 +15,6 @@ import android.net.Uri;
 
 import com.example.clement.studentplanner.database.EventRecyclerAdapter;
 import com.example.clement.studentplanner.database.OmniProvider;
-
-/**
- * Created by Clement on 8/22/2017.
- */
 
 public class EventListingFragment
     extends RecyclerListingFragmentBase<EventRecyclerAdapter> {

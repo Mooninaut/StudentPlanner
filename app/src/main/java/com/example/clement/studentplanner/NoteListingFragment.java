@@ -1,3 +1,11 @@
+/*
+ * Copyright (c) 2017 Clement Cherlin. All rights reserved.
+ *
+ * This file is part of the Android application "Student Planner",
+ * created by Clement Cherlin as an assignment for the class
+ * "Mobile Application Development" at WGU.
+ */
+
 package com.example.clement.studentplanner;
 
 import android.content.Context;
@@ -7,10 +15,6 @@ import android.view.View;
 
 import com.example.clement.studentplanner.database.NoteRecyclerAdapter;
 import com.example.clement.studentplanner.database.OmniProvider;
-
-/**
- * Created by Clement on 9/13/2017.
- */
 
 public class NoteListingFragment extends RecyclerListingFragmentBase<NoteRecyclerAdapter>
     implements FragmentItemListener.OnClick, FragmentItemListener.OnLongClick {

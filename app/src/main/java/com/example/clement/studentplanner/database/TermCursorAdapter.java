@@ -1,3 +1,11 @@
+/*
+ * Copyright (c) 2017 Clement Cherlin. All rights reserved.
+ *
+ * This file is part of the Android application "Student Planner",
+ * created by Clement Cherlin as an assignment for the class
+ * "Mobile Application Development" at WGU.
+ */
+
 package com.example.clement.studentplanner.database;
 
 import android.content.Context;
@@ -23,9 +31,6 @@ import static com.example.clement.studentplanner.database.StorageHelper.COLUMN_N
 import static com.example.clement.studentplanner.database.StorageHelper.COLUMN_NUMBER;
 import static com.example.clement.studentplanner.database.StorageHelper.COLUMN_START;
 
-/**
- * Created by Clement on 8/6/2017.
- */
 
 public class TermCursorAdapter extends CursorAdapter{
 
@@ -34,18 +39,6 @@ public class TermCursorAdapter extends CursorAdapter{
     public TermCursorAdapter(Context context, Cursor cursor, int flags) {
         super(context, cursor, flags);
     }
-
-    /*    @Override
-            public int update(@NonNull Uri uri, @Nullable ContentValues values, @Nullable String selection, @Nullable String[] selectionArgs) {
-                int rowsAffected = getWritableDatabase().update(TABLE_TERM, values, selection, selectionArgs);
-                if (rowsAffected > 0) {
-                    notifyChange(contentUri);
-                }
-                return rowsAffected;
-            }*/
-    /*    public void erase() {
-            getHelper().erase(getWritableDatabase());
-        }*/
 
     @Override
     public View newView(Context context, Cursor cursor, ViewGroup parent) {

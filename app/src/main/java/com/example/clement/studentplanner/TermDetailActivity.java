@@ -1,3 +1,11 @@
+/*
+ * Copyright (c) 2017 Clement Cherlin. All rights reserved.
+ *
+ * This file is part of the Android application "Student Planner",
+ * created by Clement Cherlin as an assignment for the class
+ * "Mobile Application Development" at WGU.
+ */
+
 package com.example.clement.studentplanner;
 
 import android.app.Activity;
@@ -25,10 +33,6 @@ import com.example.clement.studentplanner.database.OmniProvider;
 import com.example.clement.studentplanner.database.TermCursorAdapter;
 import com.example.clement.studentplanner.input.CourseDataEntryActivity;
 import com.example.clement.studentplanner.input.TermDataEntryActivity;
-
-/**
- * Created by Clement on 8/18/2017.
- */
 
 public class TermDetailActivity extends AppCompatActivity
         implements FragmentItemListener.OnClick {
@@ -77,14 +81,12 @@ public class TermDetailActivity extends AppCompatActivity
      * Single Term item at top
      */
     protected void setTerm(Uri termUri) {
-//        Uri termUri = getIntent().getParcelableExtra(TermProvider.contentItemType);
         Cursor cursor = null;
         try {
             cursor = getContentResolver().query(termUri, null, null, null, null);
             if (cursor != null && cursor.moveToFirst()) {
                 TermCursorAdapter termAdapter = new TermCursorAdapter(this, cursor, 0);
                 termAdapter.bindView(findViewById(R.id.term_detail), this, cursor);
-//                term = termAdapter.getItem(0);
             }
         } finally {
             if (cursor != null) {

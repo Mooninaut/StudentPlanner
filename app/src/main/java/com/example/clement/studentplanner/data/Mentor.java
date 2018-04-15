@@ -1,3 +1,11 @@
+/*
+ * Copyright (c) 2017 Clement Cherlin. All rights reserved.
+ *
+ * This file is part of the Android application "Student Planner",
+ * created by Clement Cherlin as an assignment for the class
+ * "Mobile Application Development" at WGU.
+ */
+
 package com.example.clement.studentplanner.data;
 
 import android.content.ContentUris;
@@ -16,10 +24,6 @@ import static com.example.clement.studentplanner.database.StorageHelper.COLUMN_E
 import static com.example.clement.studentplanner.database.StorageHelper.COLUMN_ID;
 import static com.example.clement.studentplanner.database.StorageHelper.COLUMN_NAME;
 import static com.example.clement.studentplanner.database.StorageHelper.COLUMN_PHONE_NUMBER;
-
-/**
- * Created by Clement on 9/4/2017.
- */
 
 public class Mentor implements HasId {
     private long id = Util.NO_ID;

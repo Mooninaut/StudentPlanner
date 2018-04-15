@@ -1,3 +1,11 @@
+/*
+ * Copyright (c) 2017 Clement Cherlin. All rights reserved.
+ *
+ * This file is part of the Android application "Student Planner",
+ * created by Clement Cherlin as an assignment for the class
+ * "Mobile Application Development" at WGU.
+ */
+
 package com.example.clement.studentplanner.database;
 
 import android.database.Cursor;
@@ -15,7 +23,8 @@ import static android.database.Cursor.FIELD_TYPE_STRING;
 import static com.example.clement.studentplanner.database.StorageHelper.COLUMN_ID;
 
 /**
- * Created by Clement on 9/10/2017. This is wrong, according to https://academy.realm.io/posts/360andev-yigit-boyar-pro-recyclerview-android-ui-java/
+ * According to https://academy.realm.io/posts/360andev-yigit-boyar-pro-recyclerview-android-ui-java/
+ * it's not good to run DiffUtil on a cursor.
  * However, this app will never have enough data in it for the performance to matter.
  */
 
