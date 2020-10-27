@@ -7,7 +7,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context="com.example.clement.studentplanner.MainActivity">
+    tools:context="io.github.mooninaut.studentplanner.MainActivity">
 
     <include layout="@layout/toolbar"/>
 

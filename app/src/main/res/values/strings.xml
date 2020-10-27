@@ -1,4 +1,4 @@
-<resources>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
     <string name="add_assessment">Add Assessment</string>
     <string name="add_course">Add Course</string>
     <string name="add_mentor">Add Mentor</string>
@@ -7,7 +7,7 @@
     <string name="edit_course">Edit Course</string>
     <string name="edit_mentor">Edit Mentor</string>
     <string name="edit_term">Edit Term</string>
-    <string name="app_name">Student Calendar</string>
+    <string name="app_name">Student Planner</string>
     <string name="assessment">Assessment</string>
     <string name="assessment_name">Assessment Name</string>
     <string name="assessment_type">Assessment Type</string>
@@ -48,12 +48,12 @@
     <string name="title_home">Home</string>
     <string name="title_terms">Terms</string>
     <string name="type">Type</string>
-    <string name="confirm_delete">Are you sure you want to delete this %1$s?</string>
-    <string name="confirm_delete_item">Are you sure you want to delete %1$s \"%2$s\"?</string>
-    <string name="event_format">%1$s of %2$s %3$s</string>
+    <string name="confirm_delete">Are you sure you want to delete this <xliff:g id="item" example="course">%1$s</xliff:g>?</string>
+    <string name="confirm_delete_item">Are you sure you want to delete <xliff:g id="item type" example="assessment">%1$s</xliff:g>\"<xliff:g id="item name" example="CS202 Final Exam">%2$s</xliff:g>\"?</string>
+    <string name="event_format"><xliff:g id="terminus" example="Start">%1$s</xliff:g> of <xliff:g id="prefix" example="Assessment">%2$s</xliff:g> <xliff:g id="name" example="CS202 Final Exam">%3$s</xliff:g></string>
     <string name="edit">Edit</string>
     <string name="add_reminder">Add Reminder</string>
-    <string name="mentor_removed">Mentor %s removed</string>
+    <string name="mentor_removed">Mentor <xliff:g id="mentor" example="Sir Isaac Newton">%s</xliff:g> removed</string>
     <plurals name="assessment">
         <item quantity="one">@string/assessment</item>
         <item quantity="other">@string/assessments</item>
@@ -101,8 +101,10 @@
     <string name="term_detail">Term Detail</string>
     <string name="assessment_detail">Assessment Detail</string>
     <string name="choose_course_mentor">Choose Course Mentor</string>
-    <string name="deleted">Deleted %s.</string>
-    <string name="deleted_item">Deleted %1$s \"%2$s\"</string>
+    <string name="deleted">Deleted <xliff:g id="item name" example="Some Item">%s</xliff:g>.</string>
+    <string name="deleted_item">Deleted <xliff:g id="item type" example="Course">%1$s</xliff:g> \"<xliff:g id="item name" example="EWRT 100B">%2$s</xliff:g>\"</string>
     <string name="help">Help</string>
     <string name="course_detail_help">Tap and hold on a mentor to remove the mentor from this course.\n\nTo permanently delete a mentor, tap on the mentor and choose Delete from the menu in the upper-right corner.</string>
+    <string name="photograph_attached_to_note">Photograph attached to note</string>
+    <string name="hyphenated_duration"><xliff:g id="start" example="4:00 PM">%1$s</xliff:g><xliff:g id="em dash">\u2014</xliff:g><xliff:g id="end" example="6:00 PM">%2$s</xliff:g></string>
 </resources>
